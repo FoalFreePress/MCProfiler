@@ -30,7 +30,6 @@ class CommandSupplement {
     private final Data d;
     private final VanishController vc;
     private final Settings s;
-    private final ArrayUtils au;
     private final HashMap<CommandSender, Integer> noteList;
 
     CommandSupplement(final Settings s, final Data d, final MCProfilerPlugin p) {
@@ -46,7 +45,6 @@ class CommandSupplement {
             vc = new VanishController(d);
         else
             vc = null;
-        au = new ArrayUtils();
         noteList = new HashMap<CommandSender, Integer>(256);
     }
 
@@ -149,8 +147,9 @@ class CommandSupplement {
      * @param pos index
      * @param playername name of player
      */
+    @SuppressWarnings("unused")
     private void displayNotes(CommandSender sender, String[] notes, int pos, String playername) {
-        int size = au.actualSize(notes);
+        int size = notes.length;
         if (size <= 5) {
             for (int i = size; i < size; i--) {
                 sender.sendMessage(notes[i]);
@@ -218,7 +217,7 @@ class CommandSupplement {
         if (altAccounts == null)
             throw new NullPointerException("Account list cannot be null!");
         if (recursive) {
-            for (int i = 0; i < au.actualSize(altAccounts); i++) {
+            for (int i = 0; i < altAccounts.length; i++) {
                 final AltAccount alt = altAccounts[i];
                 if (first)
                     pSender.sendMessage("§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
@@ -229,7 +228,7 @@ class CommandSupplement {
                 pSender.sendMessage("§cNo known alts of that Account.");
         } else {
             final ArrayList<AltAccount> alreadypassed = new ArrayList<AltAccount>();
-            for (int i = 0; i < au.actualSize(altAccounts); i++) {
+            for (int i = 0; i < altAccounts.length; i++) {
                 final AltAccount alt = altAccounts[i];
                 if (alt.uuid.equals(a.getUUID()) || alreadypassed.contains(alt))
                     continue;
@@ -481,12 +480,12 @@ class CommandSupplement {
         // Build the string to display
         String string = getPrefix(player.getUniqueId()) + player.getName() + " §fmight be ";
         final ArrayList<AltAccount> alreadyadded = new ArrayList<AltAccount>(256);
-        for (int i = 0; i < au.actualSize(altAccounts); i++) {
+        for (int i = 0; i < altAccounts.length; i++) {
             final AltAccount alt = altAccounts[i];
             if (alt == null)
                 return;
             final UUID uuid = alt.uuid;
-            if (uuid.equals(player.getUniqueId()) || au.containsUUID(alreadyadded, alt))
+            if (uuid.equals(player.getUniqueId()) || alreadyadded.contains(alt))
                 continue;
             final Account a = d.getAccount(uuid, false);
             if (isBanned(uuid))
