@@ -33,9 +33,26 @@ class CommandHandler implements CommandExecutor {
      */
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
+        // Handle short commands.
         if (command.getName().equalsIgnoreCase("status")) {
             if (args.length == 1)
                 return cs.displayPlayerInformation(args[0], sender);
+            return false;
+        }
+        if (command.getName().equalsIgnoreCase("note")) {
+            if (args.length >= 2) {
+                if (sender.hasPermission("mcprofiler.addnote")) {
+                    String note = "";
+                    for (int i = 1; i < args.length; i++) {
+                        note += args[i] + " ";
+                    }
+                    if (sender instanceof Player)
+                        return cs.addNoteToPlayer(args[0], sender.getName(), note, sender);
+                    return cs.addNoteToPlayer(args[0], "Console", note, sender);
+                }
+                sender.sendMessage(noPermission);
+                return true;
+            }
             return false;
         }
         // Make sure there's enough arguments, if not, end here

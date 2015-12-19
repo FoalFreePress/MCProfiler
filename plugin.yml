@@ -1,6 +1,6 @@
 name: MCProfiler
 main: org.sweetiebelle.mcprofiler.MCProfilerPlugin
-version: 1.0
+version: 1.1
 authors: [SweetieBelle, Hepolite]
 softdepend: [CommandBook, VanishNoPacket, PermissionsEx]
 description: >
@@ -12,6 +12,9 @@ commands:
    status:
       description: Short command for /MCProfiler info
       usage: /<command> <playername | uuid>
+   note:
+      description: Short command for /MCProfiler addnote
+      usage: /<command> <playername | uuid> <note>
 permissions:
     mcprofiler.help:
       description: Allows usage of /MCProfiler help

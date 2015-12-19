@@ -389,14 +389,14 @@ class CommandSupplement {
     /**
      * Worker class for getting a prefix from a permissions plugin. Post a feature or pull request for other permission plugins!
      * @param uuid player UUID
-     * @return the prefix
+     * @return the prefix, or §b if no prefix providing plugin was found.
      */
     private String getPrefix(final UUID uuid) {
         try {
             return PermissionsEx.getPermissionManager().getUser(uuid).getPrefix().replace('&', '§');
         } catch (final NullPointerException | NoClassDefFoundError e) {
             d.error(e);
-            return "";
+            return "§b";
         }
     }
 

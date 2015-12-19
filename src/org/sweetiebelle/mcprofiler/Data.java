@@ -98,7 +98,7 @@ class Data {
             return;
         if (e instanceof NoDataException) {
             // If true, then it was caused by data in Account not being found.
-            if (e.getMessage().equals("Set was empty."))
+            if (e.getMessage().equalsIgnoreCase("No Account found."))
                 return;
             p.getLogger().severe("NoDataException: " + e.getMessage());
             return;
@@ -488,7 +488,8 @@ class Data {
         try {
             return getResultSet("SELECT * FROM " + pTable) != null;
         } catch (final SQLException e) {
-            if (e.getMessage().equals("Table '" + s.dbDatabase + "." + s.dbPrefix + pTable + "' doesn't exist") || e.getMessage().equals("Table \"" + s.dbDatabase + "." + s.dbPrefix + pTable + "\" doesn't exist") || e.getMessage().equals("Table '" + s.dbDatabase + "." + s.dbPrefix + pTable + "' doesn't exist"))
+            // Handle both ' and "
+            if (e.getMessage().equalsIgnoreCase("Table '" + s.dbDatabase + "." + pTable + "' doesn't exist") || e.getMessage().equalsIgnoreCase("Table \"" + s.dbDatabase + "." + pTable + "\" doesn't exist"))
                 return false;
             error(e);
         }

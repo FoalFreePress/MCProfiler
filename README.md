@@ -2,23 +2,23 @@ This plugin was based off of McftProfiler http://dev.bukkit.org/bukkit-plugins/m
 
 This plugin gives staff members the ability to keep accounts on players, place sticky notes on them, see their previous usernames, and much more!
 
-Requirements:
+#Requirements:
 - MySQL database
 
-Features
+#Features
 - Add notes to a players
 - View online and offline player locations
 - Track players' IPs and be notified of their possible alts! (This is all IP based, similar names will never be taken into account)
 - Contact Mojang's API to look up the previous usernames of the players!
 - Display a list of assocaited player accounts when a player joins, and if they are banned or not! (Tries to find CommandBook, if not found, uses Bukkit's ban system. Post a feature request if you'd like another ban plugin to be included!)
 
-Optional dependencies
+#Optional dependencies
 - VanishNoPacket http://dev.bukkit.org/bukkit-plugins/vanish/
      - Users who are vanished will have their "online time" displayed to people who cannot see them as the time they vanished.
 - CommandBook http://dev.bukkit.org/bukkit-plugins/commandbook/
      - Hooks into CommandBook to display alts if they are banned according to it.
 
-Commands:
+#Commands:
     /status <playername | uuid> - Short for /MCProfiler info
     /MCProfiler addnote <playerName> <note>  - Adds a note to the given player
     /MCProfiler readnotes <playerName>  - Displays the notes on the given player
@@ -31,7 +31,7 @@ Commands:
     /MCProfiler maintenance fixnotes <UUID> <name>   - Associates a playername with the UUID.
     /MCProfiler maintenance forcemakeaccount UUID lastKnownName IP  - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.
     /MCProfiler reload - Reloads general configuration settings.
-Permissions:
+#Permissions:
     mcprofiler.help:
       description: Allows usage of /MCProfiler help
     mcprofiler.addnote:
@@ -63,14 +63,14 @@ Permissions:
     mcprofiler.listips:
       description: Allows usage of /MCProfiler listips
 
-Config:
-
+#Config:
+```YAML
 general:
   #If true, will print debug stack traces. By default, only unexpected exceptions will be printed. If this is true, all handled exceptions will be printed.
   printStackTraces: false
   #If true, prints all the queries being executed.
   showquery: false
-#database settings
+#MySQL Database settings
 database:
   username: username
   password: password
@@ -79,8 +79,9 @@ database:
   database: schema
   #table prefix
   prefix: MCProfiler_
+```
 
-Installation:
+#Installation:
 - Make a config.yml and have it look like the config above.
 - Configure the config to set the database settings to your settings.
 - Drop the .jar in your plugins folder, and run!
