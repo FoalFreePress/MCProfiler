@@ -8,6 +8,10 @@ Desktop.ini
 # Recycle Bin used on file shares
 $RECYCLE.BIN/
 
+#Eclipse files
+.classpath
+.project
+
 # Windows Installer files
 *.cab
 *.msi

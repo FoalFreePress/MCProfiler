@@ -1,0 +1,45 @@
+name: MCProfiler
+main: org.sweetiebelle.mcprofiler.MCProfilerPlugin
+version: 1.0
+authors: [SweetieBelle, Hepolite]
+softdepend: [CommandBook, VanishNoPacket, PermissionsEx]
+description: >
+             Allows the creation of profiles on users. Tracks their IP, and allows creation of notes.
+commands:
+   MCProfiler:
+      description: Core command for MCProfiler. Use /MCProfiler help for info
+      usage: /<command> <arguments>
+   status:
+      description: Short command for /MCProfiler info
+      usage: /<command> <playername | uuid>
+permissions:
+    mcprofiler.help:
+      description: Allows usage of /MCProfiler help
+    mcprofiler.addnote:
+      description: Allows usage of /MCProfiler addnote
+    mcprofiler.notifiedofalts:
+      description: Allows player to recieve notification of players alts.
+    mcprofiler.info.basic:
+      description: Allows user to get a name on /MCProfiler info
+    mcprofiler.info.basic.uuid:
+      description: Allows user to get UUID on /MCProfiler info
+    mcprofiler.info.basic.previoususernames:
+      description: Allows user to get previous usernames on /MCProfiler info
+    mcprofiler.info.online:
+      description: Allows user to get Online or last online status on /MCProfiler info
+    mcprofiler.info.ip:
+      description: Allows user to get IP on /MCProfiler info
+    mcprofiler.info.position:
+      description: Allows user to get last position on /MCProfiler info
+    mcprofiler.uuid:
+      description: Allows usage of /MCProfiler uuid
+    mcprofiler.listlinks:
+      description: Allows usage of /MCProfiler listlinks
+    mcprofiler.lookup:
+      description: Allows usage of /MCProfiler lookup
+    mcprofiler.readnotes:
+      description: Allows usage of /MCProfiler readnotes. Allows user to read notes on /MCProfiler info.
+    mcprofiler.reload:
+      description: Allows usage of /MCProfiler reload
+    mcprofiler.listips:
+      description: Allows usage of /MCProfiler listips

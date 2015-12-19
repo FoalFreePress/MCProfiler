@@ -1,0 +1,10 @@
+general:
+  printStackTraces: false
+  showquery: false
+database:
+  username: username
+  password: password
+  host: localhost
+  port: 3306
+  database: schema
+  prefix: MCProfiler_
