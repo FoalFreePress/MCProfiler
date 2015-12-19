@@ -11,6 +11,7 @@ $RECYCLE.BIN/
 #Eclipse files
 .classpath
 .project
+bin/
 
 # Windows Installer files
 *.cab
