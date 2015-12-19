@@ -10,9 +10,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Location;
 import org.json.simple.parser.ParseException;
 import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
+
+import com.google.common.collect.ObjectArrays;
 
 /**
  * This class handles data transfer to and from the SQL server.
@@ -22,12 +25,10 @@ class Data {
     private Connection connection;
     private final MCProfilerPlugin p;
     private final Settings s;
-    private final ArrayUtils au;
 
     Data(final MCProfilerPlugin p, final Settings s) {
         this.s = s;
         this.p = p;
-        au = new ArrayUtils();
         createTables();
     }
 
@@ -308,13 +309,13 @@ class Data {
      */
     AltAccount[] getAltsOfPlayer(final UUID pUUID, final boolean isRecursive) {
         ResultSet rs;
-        AltAccount[] map = new AltAccount[65536];
+        AltAccount[] map = new AltAccount[0];
         try {
             rs = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + pUUID.toString() + "\";");
             while (rs.next()) {
                 final ResultSet ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + rs.getString("ip") + "\";");
                 while (ipSet.next()) {
-                    map = (AltAccount[]) au.append(map, new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip")));
+                    map = ObjectArrays.concat(map, new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip")));
                 }
                 ipSet.close();
             }
@@ -341,7 +342,7 @@ class Data {
         ResultSet ipSet;
         boolean ipSetComplete = true;
         boolean uuidSetComplete = true;
-        for (int i = 0; i < au.actualSize(map); i++) {
+        for (int i = 0; i < map.length; i++) {
             final AltAccount a = map[i];
             final UUID uuid = a.uuid;
             uuidSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + uuid.toString() + "\";");
@@ -349,28 +350,28 @@ class Data {
                 final UUID uuidUUID = UUID.fromString(uuidSet.getString("uuid"));
                 final String uuidIP = uuidSet.getString("ip");
                 final AltAccount uuidAlt = new AltAccount(uuidUUID, uuidIP);
-                if (au.containsElement(map, uuidAlt))
+                if (ArrayUtils.contains(map, uuidAlt))
                     continue;
                 uuidSetComplete = false;
-                map = (AltAccount[]) au.append(map, uuidAlt);
+                map = ObjectArrays.concat(map, uuidAlt);
                 ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + uuidIP + "\";");
                 while (ipSet.next()) {
                     final AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip"));
-                    if (au.containsElement(map, ipAlt))
+                    if (ArrayUtils.contains(map, ipAlt))
                         continue;
                     ipSetComplete = false;
-                    map = (AltAccount[]) au.append(map, ipAlt);
+                    map = ObjectArrays.concat(map, ipAlt);
                 }
             }
             if (uuidSetComplete && ipSetComplete) {
                 finalContinue++;
-                if (finalContinue == au.actualSize(map)) {
+                if (finalContinue == map.length) {
                     return map;
                 }
                 continue;
             }
         }
-        return (AltAccount[]) au.appendAll(map, recursivePlayerSearch(map));
+        return ObjectArrays.concat(map, recursivePlayerSearch(map), AltAccount.class);
     }
 
     /**
