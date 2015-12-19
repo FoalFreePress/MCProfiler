@@ -65,4 +65,22 @@ Permissions:
 
 Config:
 
-Installation:     
+general:
+  #If true, will print debug stack traces. By default, only unexpected exceptions will be printed. If this is true, all handled exceptions will be printed.
+  printStackTraces: false
+  #If true, prints all the queries being executed.
+  showquery: false
+#database settings
+database:
+  username: username
+  password: password
+  host: localhost
+  port: 3306
+  database: schema
+  #table prefix
+  prefix: MCProfiler_
+
+Installation:
+- Make a config.yml and have it look like the config above.
+- Configure the config to set the database settings to your settings.
+- Drop the .jar in your plugins folder, and run!
