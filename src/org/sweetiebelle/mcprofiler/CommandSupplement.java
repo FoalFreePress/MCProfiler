@@ -412,7 +412,7 @@ class CommandSupplement {
         } catch (final NoClassDefFoundError | NullPointerException e) {
             d.error(e);
         }
-        return Bukkit.getPlayer(uuid).isBanned();
+        return Bukkit.getOfflinePlayer(uuid).isBanned();
     }
 
     /**
@@ -469,6 +469,20 @@ class CommandSupplement {
     }
 
     /**
+     * Cehcks if the added has toCheck. This is based on UUIDs only, not IP
+     * @param added
+     * @param toCheck
+     * @return
+     */
+    private boolean altContainsalt(ArrayList<AltAccount> added, AltAccount toCheck) {
+        for (int i = 0; i < added.size(); i++) {
+            if (added.get(i).uuid.equals(toCheck.uuid))
+                return true;
+        }
+        return false;
+    }
+
+    /**
      * Handle the displaying of alts to people with a permission node.
      * @param player the player
      * @param altAccounts their alts
@@ -479,13 +493,14 @@ class CommandSupplement {
             return;
         // Build the string to display
         String string = getPrefix(player.getUniqueId()) + player.getName() + " §fmight be ";
-        final ArrayList<AltAccount> alreadyadded = new ArrayList<AltAccount>(256);
+        final ArrayList<AltAccount> alreadyadded = new ArrayList<AltAccount>(altAccounts.length);
         for (int i = 0; i < altAccounts.length; i++) {
             final AltAccount alt = altAccounts[i];
             if (alt == null)
                 return;
             final UUID uuid = alt.uuid;
-            if (uuid.equals(player.getUniqueId()) || alreadyadded.contains(alt))
+            // And no, ArrayList<E>.contains() would NEVER WORK
+            if (uuid.equals(player.getUniqueId()) || altContainsalt(alreadyadded, alt))
                 continue;
             final Account a = d.getAccount(uuid, false);
             if (isBanned(uuid))

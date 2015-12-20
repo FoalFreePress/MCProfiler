@@ -293,7 +293,6 @@ class Data {
         try {
             if (needsLastTime)
                 names = NamesFetcher.getPreviousNames(uuid);
-            names = NamesFetcher.getPreviousNames(uuid);
         } catch (final IOException e) {
             error(e);
         }
