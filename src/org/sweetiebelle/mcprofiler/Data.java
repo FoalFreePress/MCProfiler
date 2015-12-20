@@ -5,9 +5,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -309,6 +311,11 @@ class Data {
         ResultSet rs;
         AltAccount[] map = new AltAccount[0];
         try {
+            if (isRecursive) {
+                AltAccount[] temp = trim(recursivePlayerSearch(ObjectArrays.concat(map, new AltAccount(pUUID, getAccount(pUUID, false).getIP()))));
+                MCProfilerPlugin.debug("Size of array is now #out " + temp.length);
+                return trim(temp);
+            }
             rs = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + pUUID.toString() + "\";");
             while (rs.next()) {
                 final ResultSet ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + rs.getString("ip") + "\";");
@@ -318,8 +325,6 @@ class Data {
                 ipSet.close();
             }
             rs.close();
-            if (isRecursive)
-                return recursivePlayerSearch(map);
             return map;
         } catch (final SQLException e) {
             error(e);
@@ -327,10 +332,24 @@ class Data {
         }
     }
 
-    private boolean contains(AltAccount[] map, AltAccount element) {
+    private AltAccount[] trim(AltAccount[] array) {
+        Set<AltAccount> list = new HashSet<AltAccount>(array.length);
+        for (int i = 0; i < array.length; i++) {
+            list.add(array[i]);
+        }
+        MCProfilerPlugin.debug("trim size = " + list.size());
+        return list.toArray(new AltAccount[0]);
+    }
+
+    private boolean contains(AltAccount[] map, AltAccount alt) {
+        UUID uuid = alt.uuid;
+        String ip = alt.ip;
         for (int i = 0; i < map.length; i++) {
-            if (map[i].ip.equalsIgnoreCase(element.ip) && map[i].uuid.equals(element.uuid))
+            UUID uuidtoCheck = map[i].uuid;
+            String iptoCheck = map[i].ip;
+            if (uuidtoCheck.equals(uuid) && iptoCheck.equals(ip)) {
                 return true;
+            }
         }
         return false;
     }
@@ -343,9 +362,7 @@ class Data {
      * @throws SQLException if an error occurs, to allow the method that calls this function to catch it.
      */
     private AltAccount[] recursivePlayerSearch(AltAccount[] map) throws SQLException {
-        // TODO fucking FIXME
-        // altaccount.equals changes
-        // this method relies on both uuids and ips
+        MCProfilerPlugin.debug("Size of array is now #1 " + map.length);
         int finalContinue = 0;
         ResultSet uuidSet;
         ResultSet ipSet;
@@ -353,30 +370,37 @@ class Data {
         boolean uuidSetComplete = true;
         // The size of the array is the number of times to iterate.
         for (int i = 0; i < map.length; i++) {
+            MCProfilerPlugin.debug("Size of array is now #2 " + map.length);
             final AltAccount a = map[i];
             final UUID uuid = a.uuid;
             // Get the IPs where uuid is equal to the account's UUID
             uuidSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + uuid.toString() + "\";");
             while (uuidSet.next()) {
+                MCProfilerPlugin.debug("Size of array is now #3 " + map.length);
                 final UUID uuidUUID = UUID.fromString(uuidSet.getString("uuid"));
                 final String uuidIP = uuidSet.getString("ip");
                 final AltAccount uuidAlt = new AltAccount(uuidUUID, uuidIP);
+                MCProfilerPlugin.debug(uuidAlt.toString());
                 // If the map already contains the alt account, continue onto the next one.
                 if (contains(map, uuidAlt))
                     continue;
                 // If we got to this point, then there are ips with uuids we haven't found yet.
                 uuidSetComplete = false;
                 map = ObjectArrays.concat(map, uuidAlt);
+                MCProfilerPlugin.debug("Added!");
                 ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + uuidIP + "\";");
                 while (ipSet.next()) {
+                    MCProfilerPlugin.debug("Size of array is now #4 " + map.length);
                     // Get the UUIDs associated with the IP.
                     final AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip"));
                     // If we already have it, continue onto the next.
+                    MCProfilerPlugin.debug(ipAlt.toString());
                     if (contains(map, ipAlt))
                         continue;
                     // If we reached this point, it means there were uuids with ips we haven't found yet.
                     ipSetComplete = false;
                     map = ObjectArrays.concat(map, ipAlt);
+                    MCProfilerPlugin.debug("Added!");
                 }
             }
             if (uuidSetComplete && ipSetComplete) {
