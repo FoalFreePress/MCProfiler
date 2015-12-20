@@ -469,20 +469,6 @@ class CommandSupplement {
     }
 
     /**
-     * Cehcks if the added has toCheck. This is based on UUIDs only, not IP
-     * @param added
-     * @param toCheck
-     * @return
-     */
-    private boolean altContainsalt(ArrayList<AltAccount> added, AltAccount toCheck) {
-        for (int i = 0; i < added.size(); i++) {
-            if (added.get(i).uuid.equals(toCheck.uuid))
-                return true;
-        }
-        return false;
-    }
-
-    /**
      * Handle the displaying of alts to people with a permission node.
      * @param player the player
      * @param altAccounts their alts
@@ -499,8 +485,7 @@ class CommandSupplement {
             if (alt == null)
                 return;
             final UUID uuid = alt.uuid;
-            // And no, ArrayList<E>.contains() would NEVER WORK
-            if (uuid.equals(player.getUniqueId()) || altContainsalt(alreadyadded, alt))
+            if (uuid.equals(player.getUniqueId()) || alreadyadded.contains(alt))
                 continue;
             final Account a = d.getAccount(uuid, false);
             if (isBanned(uuid))

@@ -20,7 +20,7 @@ class AltAccount {
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof AltAccount) {
-            if (uuid.equals(((AltAccount) obj).uuid) && ip.equalsIgnoreCase(((AltAccount) obj).ip))
+            if (uuid.equals(((AltAccount) obj).uuid))
                 return true;
             return false;
         }

@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Location;
 import org.json.simple.parser.ParseException;
 import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
@@ -328,6 +327,14 @@ class Data {
         }
     }
 
+    private boolean contains(AltAccount[] map, AltAccount element) {
+        for (int i = 0; i < map.length; i++) {
+            if (map[i].ip.equalsIgnoreCase(element.ip) && map[i].uuid.equals(element.uuid))
+                return true;
+        }
+        return false;
+    }
+
     /**
      * Does a recursive player search with the given params
      *
@@ -336,40 +343,53 @@ class Data {
      * @throws SQLException if an error occurs, to allow the method that calls this function to catch it.
      */
     private AltAccount[] recursivePlayerSearch(AltAccount[] map) throws SQLException {
+        // TODO fucking FIXME
+        // altaccount.equals changes
+        // this method relies on both uuids and ips
         int finalContinue = 0;
         ResultSet uuidSet;
         ResultSet ipSet;
         boolean ipSetComplete = true;
         boolean uuidSetComplete = true;
+        // The size of the array is the number of times to iterate.
         for (int i = 0; i < map.length; i++) {
             final AltAccount a = map[i];
             final UUID uuid = a.uuid;
+            // Get the IPs where uuid is equal to the account's UUID
             uuidSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + uuid.toString() + "\";");
             while (uuidSet.next()) {
                 final UUID uuidUUID = UUID.fromString(uuidSet.getString("uuid"));
                 final String uuidIP = uuidSet.getString("ip");
                 final AltAccount uuidAlt = new AltAccount(uuidUUID, uuidIP);
-                if (ArrayUtils.contains(map, uuidAlt))
+                // If the map already contains the alt account, continue onto the next one.
+                if (contains(map, uuidAlt))
                     continue;
+                // If we got to this point, then there are ips with uuids we haven't found yet.
                 uuidSetComplete = false;
                 map = ObjectArrays.concat(map, uuidAlt);
                 ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + uuidIP + "\";");
                 while (ipSet.next()) {
+                    // Get the UUIDs associated with the IP.
                     final AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip"));
-                    if (ArrayUtils.contains(map, ipAlt))
+                    // If we already have it, continue onto the next.
+                    if (contains(map, ipAlt))
                         continue;
+                    // If we reached this point, it means there were uuids with ips we haven't found yet.
                     ipSetComplete = false;
                     map = ObjectArrays.concat(map, ipAlt);
                 }
             }
             if (uuidSetComplete && ipSetComplete) {
+                // Number of total times to iterate.
                 finalContinue++;
+                // If the number of times we've iterated equals the number of elements in the Array, it means we've found all the data. It's time to get out of here.
                 if (finalContinue == map.length) {
                     return map;
                 }
                 continue;
             }
         }
+        // There's still more stuff to find.
         return ObjectArrays.concat(map, recursivePlayerSearch(map), AltAccount.class);
     }
 
