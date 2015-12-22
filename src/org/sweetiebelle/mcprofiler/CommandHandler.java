@@ -1,10 +1,13 @@
 package org.sweetiebelle.mcprofiler;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import com.google.common.base.Joiner;
 
 /**
  * This class handles basic commands, but does not really do the bulk of the work.
@@ -42,10 +45,7 @@ class CommandHandler implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("note")) {
             if (args.length >= 2) {
                 if (sender.hasPermission("mcprofiler.addnote")) {
-                    String note = "";
-                    for (int i = 1; i < args.length; i++) {
-                        note += args[i] + " ";
-                    }
+                    String note = Joiner.on(' ').join(ArrayUtils.subarray(args, 1, args.length));
                     if (sender instanceof Player)
                         return cs.addNoteToPlayer(args[0], sender.getName(), note, sender);
                     return cs.addNoteToPlayer(args[0], "Console", note, sender);
@@ -83,12 +83,7 @@ class CommandHandler implements CommandExecutor {
         }
         if (instruction.equals("addnote") && args.length >= 3) {
             if (sender.hasPermission("mcprofiler.addnote")) {
-                String note = "";
-                for (int i = 2; i < args.length; i++) {
-                    if (i != 2)
-                        note += " ";
-                    note += args[i];
-                }
+                String note = Joiner.on(' ').join(ArrayUtils.subarray(args, 2, args.length));
                 if (sender instanceof Player)
                     return cs.addNoteToPlayer(args[1], sender.getName(), note, sender);
                 return cs.addNoteToPlayer(args[1], "Console", note, sender);

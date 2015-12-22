@@ -16,6 +16,7 @@ class Settings {
 
     Settings(final MCProfilerPlugin plugin) {
         this.plugin = plugin;
+        plugin.saveDefaultConfig();
         readSettings(plugin.getConfig());
     }
 
