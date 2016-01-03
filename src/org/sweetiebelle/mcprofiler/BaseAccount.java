@@ -4,7 +4,7 @@ import java.util.UUID;
 
 /**
  * Interface for all other Accounts
- * @author shroo
+ *
  */
 interface BaseAccount {
     /**
@@ -18,4 +18,8 @@ interface BaseAccount {
      * @return the ip
      */
     String getIP();
+
+    static UUIDAlt getUUIDFromBase(BaseAccount alt) {
+        return new UUIDAlt(alt.getUUID(), alt.getIP());
+    }
 }

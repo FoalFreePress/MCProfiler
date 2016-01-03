@@ -74,7 +74,7 @@ class CommandHandler implements CommandExecutor {
                 sender.sendMessage("§c/MCProfiler listlinks [-r] <playerName> §f - Displays all accounts that might be linked to the given user. Use the -r flag for recursive player searching. This displays all of the alts of the player's alts, and all the alts of those alts....");
                 sender.sendMessage("§c/MCProfiler listips <playerName> §f - Lists all known IPs from a given player");
                 sender.sendMessage("§c/MCProfiler uuid <uuid> §f - Displays a username based on a UUID.");
-                sender.sendMessage("§c/MCProfiler maintenance <fixnotes | forcemakeaccount> <args> §f - Performs maintence commands See /MCProfiler maintenance with no args for help.");
+                sender.sendMessage("§c/MCProfiler maintenance <fixnotes | forcemakeaccount | updatename> <args> §f - Performs maintence commands See /MCProfiler maintenance with no args for help.");
                 sender.sendMessage("§c/MCProfiler reload§f - Reloads general configuration settings.");
                 return true;
             }

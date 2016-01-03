@@ -27,9 +27,10 @@ This plugin gives staff members the ability to keep accounts on players, place s
     /MCProfiler listlinks -r <playerName>  - Displays all accounts that might be linked to the given user. Use the -r flag for recursive player searching. This displays all of the alts of the player's alts, and all the alts of those alts....
     /MCProfiler listips <playerName>  - Lists all known IPs from a given player
     /MCProfiler uuid <uuid>  - Displays a username based on a UUID.
-    /MCProfiler maintenance <fixnotes | forcemakeaccount> <args>  - Performs maintence.
+    /MCProfiler maintenance <fixnotes | forcemakeaccount | updatename> <args>  - Performs maintence.
     /MCProfiler maintenance fixnotes <UUID> <name>   - Associates a playername with the UUID.
     /MCProfiler maintenance forcemakeaccount UUID lastKnownName IP  - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.
+    /MCProfiler maintenance updatename UUID newname - Forces an account to be updated with the new name.
     /MCProfiler reload - Reloads general configuration settings.
 #Permissions:
     mcprofiler.help:
