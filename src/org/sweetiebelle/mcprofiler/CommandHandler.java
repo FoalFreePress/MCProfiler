@@ -45,7 +45,7 @@ class CommandHandler implements CommandExecutor {
         if (command.getName().equalsIgnoreCase("note")) {
             if (args.length >= 2) {
                 if (sender.hasPermission("mcprofiler.addnote")) {
-                    String note = Joiner.on(' ').join(ArrayUtils.subarray(args, 1, args.length));
+                    final String note = Joiner.on(' ').join(ArrayUtils.subarray(args, 1, args.length));
                     if (sender instanceof Player)
                         return cs.addNoteToPlayer(args[0], sender.getName(), note, sender);
                     return cs.addNoteToPlayer(args[0], "Console", note, sender);
@@ -83,7 +83,7 @@ class CommandHandler implements CommandExecutor {
         }
         if (instruction.equals("addnote") && args.length >= 3) {
             if (sender.hasPermission("mcprofiler.addnote")) {
-                String note = Joiner.on(' ').join(ArrayUtils.subarray(args, 2, args.length));
+                final String note = Joiner.on(' ').join(ArrayUtils.subarray(args, 2, args.length));
                 if (sender instanceof Player)
                     return cs.addNoteToPlayer(args[1], sender.getName(), note, sender);
                 return cs.addNoteToPlayer(args[1], "Console", note, sender);

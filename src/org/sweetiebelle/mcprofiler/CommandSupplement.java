@@ -3,7 +3,6 @@ package org.sweetiebelle.mcprofiler;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.TimeZone;
 import java.util.UUID;
 
@@ -15,37 +14,28 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
 
-import com.sk89q.commandbook.CommandBook;
-import com.sk89q.commandbook.bans.BanDatabase;
-import com.sk89q.commandbook.bans.BansComponent;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
-
 /**
  * This guy does most of the bulk work.
  *
  */
 class CommandSupplement {
     private final static String noPermission = ChatColor.RED + "You do not have permission.";
-    private final BanDatabase cb;
     private final Data d;
     private final VanishController vc;
     private final Settings s;
-    private final HashMap<CommandSender, Integer> noteList;
+    private final BansController bc;
+    private final PermissionsController pc;
 
     CommandSupplement(final Settings s, final Data d, final MCProfilerPlugin p) {
         this.s = s;
         this.d = d;
-        Plugin cb = Bukkit.getPluginManager().getPlugin("CommandBook");
-        if (cb != null)
-            this.cb = ((CommandBook) cb).getComponentManager().getComponent(BansComponent.class).getBanDatabase();
-        else
-            this.cb = null;
-        Plugin vnp = Bukkit.getPluginManager().getPlugin("VanishNoPacket");
+        bc = new BansController(p);
+        pc = new PermissionsController(p);
+        final Plugin vnp = Bukkit.getPluginManager().getPlugin("VanishNoPacket");
         if (vnp != null)
             vc = new VanishController(d);
         else
             vc = null;
-        noteList = new HashMap<CommandSender, Integer>(256);
     }
 
     /**
@@ -86,7 +76,7 @@ class CommandSupplement {
                 return true;
             }
             // Print a "summary" of the given player
-            pSender.sendMessage("§b* " + getPrefix(a.getUUID()) + a.getName());
+            pSender.sendMessage("§b* " + pc.getPrefix(a.getUUID()) + a.getName());
             if (pSender.hasPermission("mcprofiler.info.basic.uuid"))
                 pSender.sendMessage("§b* [" + a.getUUID().toString() + "]");
             if (pSender.hasPermission("mcprofiler.info.basic.previoususernames"))
@@ -125,9 +115,9 @@ class CommandSupplement {
         if (pSender.hasPermission("mcprofiler.info.ip"))
             // Get the player IP address and notes
             pSender.sendMessage("§c- §fPeer address: §9" + a.getIP());
+        // Notes will never be null. Data.java.293 & 232
         if (pSender.hasPermission("mcprofiler.readnotes"))
-            if (!(a.getNotes() == null))
-                pSender.sendMessage(a.getNotes());
+            pSender.sendMessage(a.getNotes());
         // Get the position of the player
         if (pSender.hasPermission("mcprofiler.info.position"))
             if (isOnline && senderCanSee)
@@ -137,34 +127,6 @@ class CommandSupplement {
             else
                 pSender.sendMessage("§c- §fLocation: §9null");
         return true;
-    }
-
-    /**
-     * Displays paginated notes. This method is just a test
-     * 
-     * @param sender commandsender
-     * @param notes notes
-     * @param pos index
-     * @param playername name of player
-     */
-    @SuppressWarnings("unused")
-    private void displayNotes(CommandSender sender, String[] notes, int pos, String playername) {
-        int size = notes.length;
-        if (size <= 5) {
-            for (int i = size; i < size; i--) {
-                sender.sendMessage(notes[i]);
-            }
-        } else {
-            // Not the first time
-            if (noteList.containsKey(sender)) {
-                size = noteList.get(sender);
-            }
-            for (int i = size; i > size - 5; i--) {
-                sender.sendMessage(notes[i]);
-                sender.sendMessage("§cThis user has additional notes. Use §f/mcprofiler readnotes " + playername + " " + size / 5 + " §c to see more notes.");
-                noteList.put(sender, size - 5);
-            }
-        }
     }
 
     /**
@@ -189,7 +151,7 @@ class CommandSupplement {
                     if (!d.isNull(uuid)) {
                         final Account a = getAccount(uuid, false);
                         if (a != null) {
-                            pSender.sendMessage("§b* " + getPrefix(a.getUUID()) + a.getName());
+                            pSender.sendMessage("§b* " + pc.getPrefix(a.getUUID()) + a.getName());
                             pSender.sendMessage("§b* [" + a.getUUID() + "]");
                         } else
                             throw new NoDataException("UUID " + uuid + " did not return an account even though it should have! Enable stackTraces in the config if you haven't already!");
@@ -212,30 +174,29 @@ class CommandSupplement {
      * @param pSender
      * @param recursive
      */
-    private void displayPossiblePlayerAlts(final Account a, final AltAccount[] altAccounts, final CommandSender pSender, final boolean recursive) {
+    private void displayPossiblePlayerAlts(final Account a, final BaseAccount[] altAccounts, final CommandSender pSender, final boolean recursive) {
         boolean first = true;
         if (altAccounts == null)
             throw new NullPointerException("Account list cannot be null!");
         if (recursive) {
-            for (int i = 0; i < altAccounts.length; i++) {
-                final AltAccount alt = altAccounts[i];
+            for (final BaseAccount alt : altAccounts) {
                 if (first)
-                    pSender.sendMessage("§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
+                    pSender.sendMessage("§cThe player " + pc.getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
                 first = false;
-                pSender.sendMessage("§b* " + getPrefix(alt.uuid) + d.getAccount(alt.uuid, false).getName() + " §c(§f" + alt.ip + "§c)");
+                pSender.sendMessage("§b* " + pc.getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
             }
             if (first)
                 pSender.sendMessage("§cNo known alts of that Account.");
         } else {
-            final ArrayList<AltAccount> alreadypassed = new ArrayList<AltAccount>();
-            for (int i = 0; i < altAccounts.length; i++) {
-                final AltAccount alt = altAccounts[i];
-                if (alt.uuid.equals(a.getUUID()) || alreadypassed.contains(alt))
+            final ArrayList<UUIDAlt> alreadypassed = new ArrayList<UUIDAlt>(altAccounts.length);
+            for (final BaseAccount altAccount : altAccounts) {
+                final UUIDAlt alt = (UUIDAlt) altAccount;
+                if (alt.getUUID().equals(a.getUUID()) || alreadypassed.contains(alt))
                     continue;
                 if (first)
-                    pSender.sendMessage("§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
+                    pSender.sendMessage("§cThe player " + pc.getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
                 first = false;
-                pSender.sendMessage("§b* " + getPrefix(alt.uuid) + d.getAccount(alt.uuid, false).getName() + " §c(§f" + alt.ip + "§c)");
+                pSender.sendMessage("§b* " + pc.getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
                 alreadypassed.add(alt);
             }
             if (first)
@@ -375,7 +336,7 @@ class CommandSupplement {
                 return true;
             }
             if (a != null) {
-                pSender.sendMessage("§b* " + getPrefix(a.getUUID()) + a.getName());
+                pSender.sendMessage("§b* " + pc.getPrefix(a.getUUID()) + a.getName());
                 pSender.sendMessage("§b* [" + a.getUUID().toString() + "]");
                 return true;
             }
@@ -384,35 +345,6 @@ class CommandSupplement {
         }
         pSender.sendMessage(noPermission);
         return true;
-    }
-
-    /**
-     * Worker class for getting a prefix from a permissions plugin. Post a feature or pull request for other permission plugins!
-     * @param uuid player UUID
-     * @return the prefix, or §b if no prefix providing plugin was found.
-     */
-    private String getPrefix(final UUID uuid) {
-        try {
-            return PermissionsEx.getPermissionManager().getUser(uuid).getPrefix().replace('&', '§');
-        } catch (final NullPointerException | NoClassDefFoundError e) {
-            d.error(e);
-            return "§b";
-        }
-    }
-
-    /**
-     * Worker class
-     * @param uuid the player's uuid
-     * @return if the player is banned or not. New plugins must support uuid lookup.
-     */
-    private boolean isBanned(final UUID uuid) {
-        try {
-            if (cb != null)
-                return cb.isBanned(uuid);
-        } catch (final NoClassDefFoundError | NullPointerException e) {
-            d.error(e);
-        }
-        return Bukkit.getOfflinePlayer(uuid).isBanned();
     }
 
     /**
@@ -427,10 +359,11 @@ class CommandSupplement {
                 // They did /MCProfiler args[0].equals("maintenance")
                 sender.sendMessage("§c/MCProfiler maintenance fixnotes <UUID> <name>  §f - Associates a playername with the UUID.");
                 sender.sendMessage("§c/MCProfiler maintenance forcemakeaccount UUID lastKnownName IP §f - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.");
+                sender.sendMessage("§c/MCProfiler maintenance updatename UUID newname §f - Forces an account to be updated with the new name.");
                 sender.sendMessage("§cIf §f-1§c rows are affected, then there was an error performing the query.");
                 return true;
             }
-            if (args[1].equalsIgnoreCase("fixnotes") && args.length >= 4) {
+            if (args[1].equalsIgnoreCase("fixnotes") && args.length == 4) {
                 // MCProfiler maintenance fixnotes UUID name
                 UUID uuid = null;
                 try {
@@ -444,8 +377,8 @@ class CommandSupplement {
                 sender.sendMessage("§aQuery Okay, " + d.maintenance("UPDATE " + s.dbPrefix + "notes SET UUID = \"" + uuid.toString() + "\" where lastKnownName = \"" + args[3] + "\";") + " rows affected.");
                 return true;
             }
-            if (args[1].equalsIgnoreCase("forcemakeaccount") && args.length >= 0) {
-                // MCProfiler forcemakeaccount UUID lastKnownName IP
+            if (args[1].equalsIgnoreCase("forcemakeaccount") && args.length == 5) {
+                // MCProfiler maintenance forcemakeaccount UUID lastKnownName IP
                 UUID uuid = null;
                 try {
                     uuid = UUID.fromString(args[2]);
@@ -458,9 +391,23 @@ class CommandSupplement {
                 sender.sendMessage("§aQuery Okay, " + d.maintenance("INSERT INTO " + s.dbPrefix + "profiles (uuid, lastKnownName, ip) VALUES (\"" + uuid.toString() + "\", \"" + args[3] + "\", \"" + args[4] + "\");") + " rows affected.");
                 return true;
             }
+            if (args[1].equalsIgnoreCase("updatename") && args.length == 4) {
+                // MCProfiler maintenance updatename UUID newname
+                UUID uuid = null;
+                try {
+                    uuid = UUID.fromString(args[2]);
+                } catch (final IllegalArgumentException e) {
+                    // Not a UUID
+                    sender.sendMessage("§cThat is not a UUID.");
+                    d.error(e);
+                    return true;
+                }
+                sender.sendMessage("§aQuery Okay, " + d.maintenance("UPDATE " + s.dbPrefix + "profiles SET lastKnownName = \"" + args[3] + "\" where uuid = \"" + uuid.toString() + "\";") + " rows affected.");
+                return true;
+            }
             sender.sendMessage("§c/MCProfiler maintenance fixnotes <UUID> <name>  §f - Associates a playername with the UUID.");
-            sender.sendMessage("§c/MCProfiler maintenance fixprevnames <UUID> <names...> §f - Sets previous usernames with the UUID.");
             sender.sendMessage("§c/MCProfiler maintenance forcemakeaccount UUID lastKnownName IP §f - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.");
+            sender.sendMessage("§c/MCProfiler maintenance updatename UUID newname §f - Forces an account to be updated with the new name.");
             sender.sendMessage("§cIf §f-1§c rows are affected, then there was an error performing the query.");
             return true;
         }
@@ -473,29 +420,29 @@ class CommandSupplement {
      * @param player the player
      * @param altAccounts their alts
      */
-    void notifyStaffOfPossibleAlts(final Player player, final AltAccount[] altAccounts) {
+    void notifyStaffOfPossibleAlts(final Player player, final BaseAccount[] altAccounts) {
         // Need valid data
         if (d.isNull(player.getName()) || altAccounts == null)
             return;
         // Build the string to display
-        String string = getPrefix(player.getUniqueId()) + player.getName() + " §fmight be ";
-        final ArrayList<AltAccount> alreadyadded = new ArrayList<AltAccount>(altAccounts.length);
-        for (int i = 0; i < altAccounts.length; i++) {
-            final AltAccount alt = altAccounts[i];
+        String string = pc.getPrefix(player.getUniqueId()) + player.getName() + " §fmight be ";
+        final ArrayList<UUIDAlt> alreadyadded = new ArrayList<UUIDAlt>(altAccounts.length);
+        for (final BaseAccount altAccount : altAccounts) {
+            final UUIDAlt alt = (UUIDAlt) altAccount;
             if (alt == null)
                 return;
-            final UUID uuid = alt.uuid;
+            final UUID uuid = alt.getUUID();
             if (uuid.equals(player.getUniqueId()) || alreadyadded.contains(alt))
                 continue;
             final Account a = d.getAccount(uuid, false);
-            if (isBanned(uuid))
-                string += getPrefix(a.getUUID()) + a.getName() + " §7(BANNED) §c";
+            if (bc.isBanned(uuid))
+                string += pc.getPrefix(a.getUUID()) + a.getName() + " §7(BANNED) §c";
             else
-                string += getPrefix(a.getUUID()) + a.getName();
+                string += pc.getPrefix(a.getUUID()) + a.getName();
             string += "§f, ";
             alreadyadded.add(alt);
         }
-        final String compare = getPrefix(player.getUniqueId()) + player.getName() + " §fmight be ";
+        final String compare = pc.getPrefix(player.getUniqueId()) + player.getName() + " §fmight be ";
         MCProfilerPlugin.debug("Initial String: " + string);
         MCProfilerPlugin.debug("String to compare: " + compare);
         // Again, their only alt is themselves.

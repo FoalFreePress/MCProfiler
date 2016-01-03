@@ -15,12 +15,12 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  *
  */
 class VanishController implements Listener {
-    private Data d;
+    private final Data d;
     private final VanishPlugin vnp;
 
-    VanishController(Data d) {
+    VanishController(final Data d) {
         this.d = d;
-        this.vnp = JavaPlugin.getPlugin(VanishPlugin.class);
+        vnp = JavaPlugin.getPlugin(VanishPlugin.class);
     }
 
     /**

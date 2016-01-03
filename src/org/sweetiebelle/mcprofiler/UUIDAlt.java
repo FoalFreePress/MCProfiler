@@ -3,10 +3,10 @@ package org.sweetiebelle.mcprofiler;
 import java.util.UUID;
 
 /**
- * Performs .equals() on both UUID and IP
+ * Performs .equals() based on UUIDs
  *
  */
-class AltAccount implements BaseAccount {
+class UUIDAlt implements BaseAccount {
     /**
      * UUID of the alt.
      */
@@ -16,15 +16,15 @@ class AltAccount implements BaseAccount {
      */
     private final String ip;
 
-    AltAccount(final UUID uuid, final String ip) {
+    UUIDAlt(final UUID uuid, final String ip) {
         this.uuid = uuid;
         this.ip = ip;
     }
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof AltAccount) {
-            if (uuid.equals(((AltAccount) obj).uuid) && ip.equals(((AltAccount) obj).ip))
+        if (obj instanceof UUIDAlt) {
+            if (uuid.equals(((UUIDAlt) obj).uuid))
                 return true;
             return false;
         }
@@ -32,8 +32,8 @@ class AltAccount implements BaseAccount {
     }
 
     @Override
-    public String getIP() {
-        return ip;
+    public String toString() {
+        return "UUID = " + uuid.toString() + ", IP = " + ip;
     }
 
     @Override
@@ -42,7 +42,7 @@ class AltAccount implements BaseAccount {
     }
 
     @Override
-    public String toString() {
-        return "UUID = " + uuid.toString() + ", IP = " + ip;
+    public String getIP() {
+        return ip;
     }
 }

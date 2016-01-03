@@ -70,6 +70,8 @@ general:
   printStackTraces: false
   #If true, prints all the queries being executed.
   showquery: false
+  #If true, prints debug messages.
+  debug: false
 #MySQL Database settings
 database:
   username: username

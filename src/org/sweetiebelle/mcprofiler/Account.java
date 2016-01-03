@@ -8,7 +8,7 @@ import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
  * An Account contains a player's UUID, their name, their last online time, their last Location, their last IP and their notes.
  *
  */
-class Account {
+class Account implements BaseAccount {
     /**
      * The player's last IP.
      */
@@ -76,7 +76,8 @@ class Account {
      *
      * @return Last IP of the player
      */
-    String getIP() {
+    @Override
+    public String getIP() {
         return ip;
     }
 
@@ -124,7 +125,8 @@ class Account {
      *
      * @return {@link UUID} of the player
      */
-    UUID getUUID() {
+    @Override
+    public UUID getUUID() {
         return uuid;
     }
 
