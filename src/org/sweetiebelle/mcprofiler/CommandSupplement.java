@@ -420,15 +420,15 @@ class CommandSupplement {
      * @param player the player
      * @param altAccounts their alts
      */
-    void notifyStaffOfPossibleAlts(final Player player, final BaseAccount[] altAccounts) {
+    void notifyStaffOfPossibleAlts(final Player player, final BaseAccount[] baseAccounts) {
         // Need valid data
-        if (d.isNull(player.getName()) || altAccounts == null)
+        if (d.isNull(player.getName()) || baseAccounts == null)
             return;
         // Build the string to display
         String string = pc.getPrefix(player.getUniqueId()) + player.getName() + " §fmight be ";
-        final ArrayList<UUIDAlt> alreadyadded = new ArrayList<UUIDAlt>(altAccounts.length);
-        for (final BaseAccount altAccount : altAccounts) {
-            final UUIDAlt alt = (UUIDAlt) altAccount;
+        final ArrayList<UUIDAlt> alreadyadded = new ArrayList<UUIDAlt>(baseAccounts.length);
+        for (final BaseAccount altAccount : baseAccounts) {
+            final UUIDAlt alt = BaseAccount.getUUIDFromBase(altAccount);
             if (alt == null)
                 return;
             final UUID uuid = alt.getUUID();

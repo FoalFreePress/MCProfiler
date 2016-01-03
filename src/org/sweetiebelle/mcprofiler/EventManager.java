@@ -17,10 +17,12 @@ import org.bukkit.event.player.PlayerQuitEvent;
 class EventManager implements Listener {
     private final CommandSupplement cs;
     private final Data d;
+    private final Settings s;
 
-    EventManager(final Data d, final CommandSupplement cs) {
+    EventManager(final Data d, final CommandSupplement cs, final Settings s) {
         this.d = d;
         this.cs = cs;
+        this.s = s;
     }
 
     /**
@@ -30,7 +32,7 @@ class EventManager implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(final PlayerJoinEvent pEvent) {
         final Player p = pEvent.getPlayer();
-        cs.notifyStaffOfPossibleAlts(p, d.getAltsOfPlayer(p.getUniqueId(), true));
+        cs.notifyStaffOfPossibleAlts(p, d.getAltsOfPlayer(p.getUniqueId(), s.recOnJoin));
     }
 
     /**

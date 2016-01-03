@@ -13,6 +13,7 @@ class Settings {
     boolean stackTraces;
     boolean showQuery;
     boolean useDebug;
+    boolean recOnJoin;
 
     Settings(final MCProfilerPlugin plugin) {
         this.plugin = plugin;
@@ -29,6 +30,7 @@ class Settings {
         stackTraces = config.getBoolean("general.printStackTraces");
         showQuery = config.getBoolean("general.showquery");
         useDebug = config.getBoolean("general.debug");
+        recOnJoin = config.getBoolean("general.recursivePlayerJoin");
         dbHost = config.getString("database.host");
         dbPort = config.getString("database.port");
         dbUser = config.getString("database.username");

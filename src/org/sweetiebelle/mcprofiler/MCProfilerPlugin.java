@@ -31,7 +31,7 @@ public class MCProfilerPlugin extends JavaPlugin {
         d = new Data(this, s);
         cs = new CommandSupplement(s, d, this);
         ch = new CommandHandler(cs);
-        getServer().getPluginManager().registerEvents(new EventManager(d, cs), this);
+        getServer().getPluginManager().registerEvents(new EventManager(d, cs, s), this);
     }
 
     /**

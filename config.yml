@@ -5,6 +5,8 @@ general:
   showquery: false
   #If true, prints debug messages.
   debug: false
+  #If true, uses recursive searching when players join. This is useful for helping to find more alts of players when they join, but disabling it will save processing time.
+  recursivePlayerJoin: false
 #MySQL Database settings
 database:
   username: username
