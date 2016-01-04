@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler;
+package org.sweetiebelle.mcprofiler.bukkit;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.ChatColor;
@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.sweetiebelle.mcprofiler.CommandSupplement;
 
 import com.google.common.base.Joiner;
 
@@ -21,13 +22,13 @@ class CommandHandler implements CommandExecutor {
     /**
      * Our command supplement
      */
-    private final CommandSupplement cs;
+    private final CommandSupplement<CommandSender> cs;
 
     /**
      * Constructs a new CommandHandler
      * @param cs
      */
-    CommandHandler(final CommandSupplement cs) {
+    CommandHandler(final CommandSupplement<CommandSender> cs) {
         this.cs = cs;
     }
 

@@ -6,7 +6,7 @@ import java.util.UUID;
  * Performs .equals() based on UUIDs
  *
  */
-class UUIDAlt implements BaseAccount {
+public class UUIDAlt implements BaseAccount {
     /**
      * UUID of the alt.
      */
@@ -16,7 +16,7 @@ class UUIDAlt implements BaseAccount {
      */
     private final String ip;
 
-    UUIDAlt(final UUID uuid, final String ip) {
+    public UUIDAlt(final UUID uuid, final String ip) {
         this.uuid = uuid;
         this.ip = ip;
     }

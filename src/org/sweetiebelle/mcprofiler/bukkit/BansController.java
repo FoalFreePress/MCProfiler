@@ -1,7 +1,8 @@
-package org.sweetiebelle.mcprofiler;
+package org.sweetiebelle.mcprofiler.bukkit;
 
 import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
@@ -19,15 +20,15 @@ class BansController {
      */
     private BanDatabase commandbook;
 
-    BansController(MCProfilerPlugin p) {
+    BansController() {
         final Plugin cb = Bukkit.getPluginManager().getPlugin("CommandBook");
         if (cb != null) {
             commandbook = ((CommandBook) cb).getComponentManager().getComponent(BansComponent.class).getBanDatabase();
-            p.getLogger().info("Found CommandBook! Using it for ban lookups.");
+            LogManager.getLogger().info("Found CommandBook! Using it for ban lookups.");
         } else
             commandbook = null;
         if (commandbook == null)
-            p.getLogger().info("No bans plugin found. Using Bukkit's ban system.");
+            LogManager.getLogger().info("No bans plugin found. Using Bukkit's ban system.");
     }
 
     /**

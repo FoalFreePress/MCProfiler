@@ -6,7 +6,7 @@ import java.util.UUID;
  * Performs .equals() on both UUID and IP
  *
  */
-class AltAccount implements BaseAccount {
+public class AltAccount implements BaseAccount {
     /**
      * UUID of the alt.
      */
