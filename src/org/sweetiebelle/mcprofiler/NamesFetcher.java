@@ -14,7 +14,7 @@ import com.google.gson.JsonSyntaxException;
  * Gets the previous usernames from Mojang's API
  * Adapted from https://github.com/LogBlock/LogBlock/blob/master/src/main/java/de/diddiz/util/UUIDFetcher.java
  */
-class NamesFetcher {
+public class NamesFetcher {
     /**
      * The API url
      */
@@ -29,7 +29,7 @@ class NamesFetcher {
      * @throws JsonSyntaxException if an error occurs
      * @throws JsonIOException if an error occurs
      */
-    static Response[] getPreviousNames(final UUID uuid) throws IOException, JsonSyntaxException, JsonIOException {
+    public static Response[] getPreviousNames(final UUID uuid) throws IOException, JsonSyntaxException, JsonIOException {
         return gson.fromJson(new InputStreamReader(createConnection(uuid).getInputStream()), Response[].class);
     }
 
@@ -56,10 +56,10 @@ class NamesFetcher {
         /**
          * The name
          */
-        String name;
+        public String name;
         /**
          * The time they changed to at. This is 0 if it is an original name.
          */
-        long changedToAt;
+        public long changedToAt;
     }
 }

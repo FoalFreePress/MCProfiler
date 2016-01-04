@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.UUID;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.Location;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.simple.parser.ParseException;
 import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
 
@@ -21,24 +22,24 @@ import com.google.common.collect.ObjectArrays;
  * This class handles data transfer to and from the SQL server.
  *
  */
-class Data {
+public class Data {
+    private static final Logger logger = LogManager.getLogger();
     private Connection connection;
-    private final MCProfilerPlugin p;
     private final Settings s;
 
-    Data(final MCProfilerPlugin p, final Settings s) {
+    public Data(final Settings s) {
         this.s = s;
-        this.p = p;
         createTables();
     }
 
     /**
      * Adds the note to the player
+     * 
      * @param pUUID the user
      * @param pStaffName the staff who added it
      * @param pNote the note
      */
-    void addNoteToUser(final UUID pUUID, final String pStaffName, final String pNote) {
+    public void addNoteToUser(final UUID pUUID, final String pStaffName, final String pNote) {
         try {
             executeQuery("INSERT INTO " + s.dbPrefix + "notes (uuid, time, lastKnownStaffName, note) VALUES (\"" + pUUID.toString() + "\", NULL, \"" + pStaffName + "\", \"" + pNote + "\");");
         } catch (final SQLException e) {
@@ -48,6 +49,7 @@ class Data {
 
     /**
      * Creates a new table in the database
+     * 
      * @param pQuery the query
      * @return
      */
@@ -83,73 +85,77 @@ class Data {
      *
      * @param e Exception
      */
-    void error(final Throwable e) {
+    public void error(final Throwable e) {
         if (s.stackTraces) {
             e.printStackTrace();
             return;
         }
         if (e instanceof SQLException) {
-            p.getLogger().severe("SQLException: " + e.getMessage());
+            logger.fatal("SQLException: " + e.getMessage());
             return;
         }
         if (e instanceof IllegalArgumentException)
             // It was probably someone not putting in a valid UUID, so we can ignore.
-            // p.getLogger().severe("IllegalArgumentException: " + e.getMessage());
+            // p.severe("IllegalArgumentException: " + e.getMessage());
             return;
         if (e instanceof NoDataException) {
             // If true, then it was caused by data in Account not being found.
             if (e.getMessage().equalsIgnoreCase("No Account found."))
                 return;
-            p.getLogger().severe("NoDataException: " + e.getMessage());
+            logger.fatal("NoDataException: " + e.getMessage());
             return;
         }
         if (e instanceof NoClassDefFoundError)
             // Handle Plugins not found.
-            // p.getLogger().severe("NoClassDefFoundError: " + e.getMessage());
+            // p.severe("NoClassDefFoundError: " + e.getMessage());
             return;
         if (e instanceof IOException) {
-            p.getLogger().severe("IOException: " + e.getMessage());
+            logger.fatal("IOException: " + e.getMessage());
             return;
         }
         if (e instanceof ParseException) {
-            p.getLogger().severe("ParseException: " + e.getMessage());
+            logger.fatal("ParseException: " + e.getMessage());
             return;
         }
         // Or e.getCause();
-        p.getLogger().severe("Unhandled Exception " + e.getClass().getName() + ": " + e.getMessage());
+        logger.fatal("Unhandled Exception " + e.getClass().getName() + ": " + e.getMessage());
         e.printStackTrace();
     }
 
     /**
-     * Executes an SQL query. Throws an exception to allow for other methods to handle it.
+     * Executes an SQL query. Throws an exception to allow for other methods to
+     * handle it.
+     * 
      * @param query the query to execute
      * @return number of rows affected
      * @throws SQLException if an error occurred
      */
     private int executeQuery(final String query) throws SQLException {
         if (s.showQuery)
-            p.getLogger().info(query);
+            logger.info(query);
         if (connection.isClosed() || connection == null) {
             final String connect = new String("jdbc:mysql://" + s.dbHost + ":" + s.dbPort + "/" + s.dbDatabase);
             connection = DriverManager.getConnection(connect, s.dbUser, s.dbPass);
-            p.getLogger().info("Connecting to " + s.dbUser + "@" + connect + "...");
+            logger.info("Connecting to " + s.dbUser + "@" + connect + "...");
         }
         return connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE).executeUpdate(query);
     }
 
     /**
-     * Private method for getting an SQL connection, then submitting a query. This method throws an SQL Exception to allow another method to handle it.
+     * Private method for getting an SQL connection, then submitting a query.
+     * This method throws an SQL Exception to allow another method to handle it.
+     * 
      * @param query the query to get data from.
      * @return the data
      * @throws SQLException if an error occurs
      */
     private ResultSet getResultSet(final String query) throws SQLException {
         if (s.showQuery)
-            p.getLogger().info(query);
+            logger.info(query);
         if (connection == null || connection.isClosed()) {
             final String connect = new String("jdbc:mysql://" + s.dbHost + ":" + s.dbPort + "/" + s.dbDatabase);
             connection = DriverManager.getConnection(connect, s.dbUser, s.dbPass);
-            p.getLogger().info("Connecting to " + s.dbUser + "@" + connect + "...");
+            logger.info("Connecting to " + s.dbUser + "@" + connect + "...");
         }
         return connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_UPDATABLE).executeQuery(query);
     }
@@ -157,17 +163,17 @@ class Data {
     /**
      * Forces a refresh of the connection object
      */
-    void forceConnectionRefresh() {
+    public void forceConnectionRefresh() {
         try {
             if (connection.isClosed()) {
                 final String connect = new String("jdbc:mysql://" + s.dbHost + ":" + s.dbPort + "/" + s.dbDatabase);
                 connection = DriverManager.getConnection(connect, s.dbUser, s.dbPass);
-                p.getLogger().info("Connecting to " + s.dbUser + "@" + connect + "...");
+                logger.info("Connecting to " + s.dbUser + "@" + connect + "...");
             } else {
                 connection.close();
                 final String connect = new String("jdbc:mysql://" + s.dbHost + ":" + s.dbPort + "/" + s.dbDatabase);
                 connection = DriverManager.getConnection(connect, s.dbUser, s.dbPass);
-                p.getLogger().info("Connecting to " + s.dbUser + "@" + connect + "...");
+                logger.info("Connecting to " + s.dbUser + "@" + connect + "...");
             }
         } catch (final SQLException e) {
             error(e);
@@ -182,7 +188,7 @@ class Data {
      * @throws NoDataException if no such account exists
      *
      */
-    Account getAccount(String name, final boolean needsLastTime) {
+    public Account getAccount(String name, final boolean needsLastTime) {
         UUID uuid = null;
         String laston = null;
         String location = null;
@@ -246,7 +252,7 @@ class Data {
      * @return an {@link Account} if it exists, or null
      * @throws NoDataException if no such account exists
      */
-    Account getAccount(final UUID uuid, final boolean needsLastTime) {
+    public Account getAccount(final UUID uuid, final boolean needsLastTime) {
         String name = null;
         String laston = null;
         String location = null;
@@ -300,13 +306,14 @@ class Data {
     }
 
     /**
-     * Returns a String of all the UUIDs, comma separated, of the player's UUID given.
+     * Returns a String of all the UUIDs, comma separated, of the player's UUID
+     * given.
      *
      * @param pUUID Player UUID
      * @param isRecursive Is the search recursive?
      * @return the alt accounts of the player, or null if an error occurs.
      */
-    BaseAccount[] getAltsOfPlayer(final UUID pUUID, final boolean isRecursive) {
+    public BaseAccount[] getAltsOfPlayer(final UUID pUUID, final boolean isRecursive) {
         ResultSet rs;
         BaseAccount[] array = new BaseAccount[0];
         try {
@@ -332,7 +339,8 @@ class Data {
      *
      * @param uuidToIP A MultiMap associating UUIDs with IPs
      * @return A array of {@link AltAccounts} containing all the alts.
-     * @throws SQLException if an error occurs, to allow the method that calls this function to catch it.
+     * @throws SQLException if an error occurs, to allow the method that calls
+     *             this function to catch it.
      */
     private BaseAccount[] recursivePlayerSearch(BaseAccount[] array) throws SQLException {
         int finalContinue = 0;
@@ -342,7 +350,7 @@ class Data {
         boolean uuidSetComplete = true;
         // The size of the array is the number of times to iterate.
         for (int i = 0; i < array.length; i++) {
-            MCProfilerPlugin.debug("Size of array is now #2 " + array.length);
+            logger.debug("Size of array is now #2 " + array.length);
             final AltAccount a = (AltAccount) array[i];
             final UUID uuid = a.getUUID();
             // Get the IPs where uuid is equal to the account's UUID
@@ -360,7 +368,8 @@ class Data {
                 ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + uuidIP + "\";");
                 while (ipSet.next()) {
                     // Get the UUIDs associated with the IP.
-                    final AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip"));
+                    final AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")),
+                            ipSet.getString("ip"));
                     // If we already have it, continue onto the next.
                     if (ArrayUtils.contains(array, ipAlt))
                         continue;
@@ -384,10 +393,11 @@ class Data {
 
     /**
      * Get a String of IPs from an account
+     * 
      * @param a the account
      * @return the IP string, separated by commas, or null if an error occurs.
      */
-    String getIPsByPlayer(final Account a) {
+    public String getIPsByPlayer(final Account a) {
         try {
             final ResultSet rs = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + a.getUUID().toString() + "\";");
             String ips = "";
@@ -403,10 +413,11 @@ class Data {
 
     /**
      * Gets an IP string of UUIDs separated by commands from one IP.
+     * 
      * @param pIP the IP
      * @return the string or null if an error occurs.
      */
-    String getUsersAssociatedWithIP(final String pIP) {
+    public String getUsersAssociatedWithIP(final String pIP) {
         try {
             final ResultSet rs = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + pIP + "\";");
             String allUUIDs = "";
@@ -423,10 +434,11 @@ class Data {
 
     /**
      * Checks if a string is "null"
+     * 
      * @param string the string to check
      * @return true if the string is equal to null, the string is empty, the string is "null", or if the string is ",", else false.
      */
-    boolean isNull(final String string) {
+    public boolean isNull(final String string) {
         if (string == null || string.isEmpty() || string.equalsIgnoreCase("null") || string.equalsIgnoreCase(","))
             return true;
         return false;
@@ -434,10 +446,11 @@ class Data {
 
     /**
      * Performs the maintenance query from the CommandSupplement.
+     * 
      * @param query the query to execute
      * @return the number of rows affected, or -1 if an error occures.
      */
-    int maintenance(final String query) {
+    public int maintenance(final String query) {
         try {
             return connection.createStatement().executeUpdate(query);
         } catch (final SQLException e) {
@@ -448,18 +461,16 @@ class Data {
 
     /**
      * Sets the player's location
+     * 
      * @param pUUID the player's UUID
      * @param pLocation their location
      */
-    void setPlayerLastPosition(final UUID pUUID, final Location pLocation) {
+    public void setPlayerLastPosition(final UUID pUUID, String world, int x, int y, int z) {
         // Need valid data
-        if (pUUID == null || pLocation == null)
+        if (pUUID == null)
             return;
         // Build a string of the location
-        final int x = pLocation.getBlockX();
-        final int y = pLocation.getBlockY();
-        final int z = pLocation.getBlockZ();
-        final String location = Integer.toString(x) + "," + Integer.toString(y) + "," + Integer.toString(z) + ":" + pLocation.getWorld().getName();
+        final String location = String.format("%d,%d,%d:%s", x, y, z, world);
         // Make sure that the data for the player is valid, if the player has logged on before
         try {
             executeQuery("UPDATE " + s.dbPrefix + "profiles SET lastpos = \"" + location + "\" WHERE uuid = \"" + pUUID.toString() + "\";");
@@ -470,10 +481,11 @@ class Data {
 
     /**
      * Stores the player's IP
+     * 
      * @param pUUID the player's uuid
      * @param pIP their ip
      */
-    void storePlayerIP(final UUID pUUID, final String pIP) {
+    public void storePlayerIP(final UUID pUUID, final String pIP) {
         ResultSet rs;
         try {
             rs = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + pIP + "\" AND uuid = \"" + pUUID.toString() + "\";");
@@ -489,6 +501,7 @@ class Data {
 
     /**
      * checks if a table exists
+     * 
      * @param pTable the table name.
      * @return true if the table exists, or false if either the table does not exists, or another error occurs.
      */
@@ -506,14 +519,16 @@ class Data {
 
     /**
      * Update general player information.
+     * 
      * @param pUUID Their UUID
      * @param pName their Name
      * @param pIP Their IP
      */
-    void updatePlayerInformation(final UUID pUUID, final String pName, final String pIP) {
+    public void updatePlayerInformation(final UUID pUUID, final String pName, final String pIP) {
         ResultSet rs;
         try {
-            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "profiles WHERE uuid = \"" + pUUID.toString() + "\" LIMIT 1;");
+            rs = getResultSet(
+                    "SELECT * FROM " + s.dbPrefix + "profiles WHERE uuid = \"" + pUUID.toString() + "\" LIMIT 1;");
             if (rs.next()) {
                 executeQuery("UPDATE " + s.dbPrefix + "profiles SET lastKnownName = \"" + pName + "\" WHERE uuid = \"" + pUUID.toString() + "\";");
                 executeQuery("UPDATE " + s.dbPrefix + "profiles SET ip = \"" + pIP + "\" WHERE uuid = \"" + pUUID.toString() + "\";");

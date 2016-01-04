@@ -6,7 +6,7 @@ import java.util.UUID;
  * Interface for all other Accounts
  *
  */
-interface BaseAccount {
+public interface BaseAccount {
     /**
      * Returns the UUID of this alt
      * @return the uuid

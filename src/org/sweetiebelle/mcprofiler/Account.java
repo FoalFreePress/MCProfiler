@@ -8,7 +8,7 @@ import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
  * An Account contains a player's UUID, their name, their last online time, their last Location, their last IP and their notes.
  *
  */
-class Account implements BaseAccount {
+public class Account implements BaseAccount {
     /**
      * The player's last IP.
      */
@@ -49,7 +49,7 @@ class Account implements BaseAccount {
      * @param notes
      * @param names
      */
-    Account(final UUID uuid, final String name, final String laston, final String location, final String ip, final String[] notes, final Response[] names) {
+    public Account(final UUID uuid, final String name, final String laston, final String location, final String ip, final String[] notes, final Response[] names) {
         this.uuid = uuid;
         this.name = name;
         this.laston = laston;
@@ -85,7 +85,7 @@ class Account implements BaseAccount {
      *
      * @return Last online time of the player
      */
-    String getLastOn() {
+    public String getLastOn() {
         return laston;
     }
 
@@ -93,7 +93,7 @@ class Account implements BaseAccount {
      *
      * @return Last Location of the player
      */
-    String getLocation() {
+    public String getLocation() {
         return location;
     }
 
@@ -101,7 +101,7 @@ class Account implements BaseAccount {
      *
      * @return Name of the player
      */
-    String getName() {
+    public String getName() {
         return name;
     }
 
@@ -109,7 +109,7 @@ class Account implements BaseAccount {
      *
      * @return Notes of the player
      */
-    String[] getNotes() {
+    public String[] getNotes() {
         return notes;
     }
 
@@ -117,7 +117,7 @@ class Account implements BaseAccount {
      *
      * @return Previous usernames of the Player
      */
-    Response[] getPreviousNames() {
+    public Response[] getPreviousNames() {
         return names;
     }
 

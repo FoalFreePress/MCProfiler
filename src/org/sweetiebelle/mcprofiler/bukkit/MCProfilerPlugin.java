@@ -1,18 +1,18 @@
-package org.sweetiebelle.mcprofiler;
+package org.sweetiebelle.mcprofiler.bukkit;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.sweetiebelle.mcprofiler.Data;
+import org.sweetiebelle.mcprofiler.Settings;
 
 /**
  * The main plugin class.
  */
 public class MCProfilerPlugin extends JavaPlugin {
+
     private CommandHandler ch;
-    private CommandSupplement cs;
-    private Data d;
     private Settings s;
-    static MCProfilerPlugin i;
 
     /**
      * {@inheritDoc}
@@ -26,10 +26,9 @@ public class MCProfilerPlugin extends JavaPlugin {
      */
     @Override
     public void onEnable() {
-        i = this;
-        s = new Settings(this);
-        d = new Data(this, s);
-        cs = new CommandSupplement(s, d, this);
+        s = new BukkitSettings(this);
+        Data d = new Data(s);
+        CommandSupplementBukkit cs = new CommandSupplementBukkit(s, d, this);
         ch = new CommandHandler(cs);
         getServer().getPluginManager().registerEvents(new EventManager(d, cs, s), this);
     }
@@ -40,14 +39,5 @@ public class MCProfilerPlugin extends JavaPlugin {
     @Override
     public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args) {
         return ch.onCommand(sender, command, label, args);
-    }
-
-    /**
-     * Debug message. Static to allow classes that usually wouldn't have an instance of the plugin to access it.
-     * @param message
-     */
-    static void debug(final String message) {
-        if (i.s.useDebug)
-            i.getLogger().info("[DEBUG] " + message);
     }
 }

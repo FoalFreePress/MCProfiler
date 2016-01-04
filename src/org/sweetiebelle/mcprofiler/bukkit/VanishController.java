@@ -1,5 +1,6 @@
-package org.sweetiebelle.mcprofiler;
+package org.sweetiebelle.mcprofiler.bukkit;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -7,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.vanish.VanishPlugin;
 import org.kitteh.vanish.event.VanishStatusChangeEvent;
+import org.sweetiebelle.mcprofiler.Data;
 
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -31,7 +33,8 @@ class VanishController implements Listener {
     public void onVanish(final VanishStatusChangeEvent pEvent) {
         final Player p = pEvent.getPlayer();
         d.updatePlayerInformation(p.getUniqueId(), p.getName(), p.getAddress().toString().split("/")[1].split(":")[0]);
-        d.setPlayerLastPosition(p.getUniqueId(), p.getLocation());
+        Location loc = p.getLocation();
+        d.setPlayerLastPosition(p.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 
     /**
