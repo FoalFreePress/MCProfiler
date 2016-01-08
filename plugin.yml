@@ -1,6 +1,6 @@
 name: MCProfiler
 main: org.sweetiebelle.mcprofiler.bukkit.MCProfilerPlugin
-version: 1.2
+version: 1.3
 authors: [SweetieBelle, Hepolite]
 softdepend: [CommandBook, VanishNoPacket, PermissionsEx]
 description: >
@@ -46,3 +46,5 @@ permissions:
       description: Allows usage of /MCProfiler reload
     mcprofiler.listips:
       description: Allows usage of /MCProfiler listips
+    mcprofiler.maintenance:
+      description: Allows usage of /MCProfiler maintenance

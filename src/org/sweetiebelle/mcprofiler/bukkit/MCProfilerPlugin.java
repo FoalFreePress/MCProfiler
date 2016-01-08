@@ -10,7 +10,6 @@ import org.sweetiebelle.mcprofiler.Settings;
  * The main plugin class.
  */
 public class MCProfilerPlugin extends JavaPlugin {
-
     private CommandHandler ch;
     private Settings s;
 
@@ -27,8 +26,8 @@ public class MCProfilerPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         s = new BukkitSettings(this);
-        Data d = new Data(s);
-        CommandSupplementBukkit cs = new CommandSupplementBukkit(s, d, this);
+        final Data d = new Data(s);
+        final CommandSupplementBukkit cs = new CommandSupplementBukkit(s, d, this);
         ch = new CommandHandler(cs);
         getServer().getPluginManager().registerEvents(new EventManager(d, cs, s), this);
     }

@@ -5,11 +5,13 @@ import org.sweetiebelle.mcprofiler.Settings;
 
 public class BukkitSettings extends Settings {
     private final MCProfilerPlugin plugin;
+    private FileConfiguration config;
 
     BukkitSettings(final MCProfilerPlugin plugin) {
         this.plugin = plugin;
         plugin.saveDefaultConfig();
-        readSettings(plugin.getConfig());
+        config = plugin.getConfig();
+        readSettings();
     }
 
     /**
@@ -17,7 +19,8 @@ public class BukkitSettings extends Settings {
      *
      * @param pConfig the config
      */
-    private void readSettings(final FileConfiguration config) {
+    @Override
+    protected void readSettings() {
         stackTraces = config.getBoolean("general.printStackTraces");
         showQuery = config.getBoolean("general.showquery");
         useDebug = config.getBoolean("general.debug");
@@ -33,8 +36,10 @@ public class BukkitSettings extends Settings {
     /**
      * Reloads settings
      */
+    @Override
     public void reloadSettings() {
         plugin.reloadConfig();
-        readSettings(plugin.getConfig());
+        config = plugin.getConfig();
+        readSettings();
     }
 }

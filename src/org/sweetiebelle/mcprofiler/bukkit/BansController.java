@@ -36,7 +36,7 @@ class BansController {
      * @param uuid the player's uuid
      * @return if the player is banned or not. New plugins must support uuid lookup.
      */
-    boolean isBanned(UUID uuid) {
+    boolean isBanned(final UUID uuid) {
         if (commandbook != null)
             return commandbook.isBanned(uuid);
         return Bukkit.getOfflinePlayer(uuid).isBanned();

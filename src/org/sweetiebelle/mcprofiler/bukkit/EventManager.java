@@ -61,8 +61,8 @@ class EventManager implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerQuit(final PlayerQuitEvent pEvent) {
         final Player player = pEvent.getPlayer();
-        Location loc = player.getLocation();
+        final Location loc = player.getLocation();
         d.setPlayerLastPosition(player.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-        d.updatePlayerInformation(player.getUniqueId(), player.getName(), player.getAddress().toString().split("/")[1].split(":")[0]);
+        d.updatePlayerInformation(player.getUniqueId(), player.getName(), player.getAddress().getAddress().toString().replace("/", ""));
     }
 }

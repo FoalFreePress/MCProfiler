@@ -1,15 +1,9 @@
 package org.sweetiebelle.mcprofiler.bukkit;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.TimeZone;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -28,8 +22,6 @@ import org.sweetiebelle.mcprofiler.UUIDAlt;
  *
  */
 class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
-    final static String noPermission = ChatColor.RED + "You do not have permission.";
-    private static final Logger logger = LogManager.getLogger();
     final Data d;
     final VanishController vc;
     final Settings s;
@@ -50,23 +42,23 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
     }
 
     @Override
-    protected String getPrefix(UUID uuid) {
+    protected String getPrefix(final UUID uuid) {
         return pc.getPrefix(uuid);
     }
 
     @Override
-    protected boolean hasPermission(CommandSender sender, String permission) {
+    protected boolean hasPermission(final CommandSender sender, final String permission) {
         return sender.hasPermission(permission);
     }
 
     @Override
-    protected void sendMessage(CommandSender sender, String... message) {
+    protected void sendMessage(final CommandSender sender, final String... message) {
         sender.sendMessage(message);
     }
 
     /**
      * Worker class for getting an Account from a name or UUID.
-     * 
+     *
      * @param nameoruuid
      * @param needsLastTime
      * @return
@@ -91,27 +83,26 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
 
     /**
      * Handle /mcprofiler listlinks
-     * 
+     *
      * @param a
      * @param altAccounts
      * @param pSender
      * @param recursive
      */
     @Override
-    public void displayPossiblePlayerAlts(final Account a, final BaseAccount[] altAccounts, final CommandSender pSender,
-            final boolean recursive) {
+    public void displayPossiblePlayerAlts(final Account a, final BaseAccount[] altAccounts, final CommandSender pSender, final boolean recursive) {
         boolean first = true;
         if (altAccounts == null)
             throw new NullPointerException("Account list cannot be null!");
         if (recursive) {
             for (final BaseAccount alt : altAccounts) {
                 if (first)
-                    pSender.sendMessage("§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
+                    sendMessage(pSender, "§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
                 first = false;
-                pSender.sendMessage("§b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
+                sendMessage(pSender, "§b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
             }
             if (first)
-                pSender.sendMessage("§cNo known alts of that Account.");
+                sendMessage(pSender, "§cNo known alts of that Account.");
         } else {
             final ArrayList<UUIDAlt> alreadypassed = new ArrayList<UUIDAlt>(altAccounts.length);
             for (final BaseAccount altAccount : altAccounts) {
@@ -119,33 +110,19 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
                 if (alt.getUUID().equals(a.getUUID()) || alreadypassed.contains(alt))
                     continue;
                 if (first)
-                    pSender.sendMessage("§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
+                    sendMessage(pSender, "§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
                 first = false;
-                pSender.sendMessage("§b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
+                sendMessage(pSender, "§b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
                 alreadypassed.add(alt);
             }
             if (first)
-                pSender.sendMessage("§cNo known alts of that Account.");
+                sendMessage(pSender, "§cNo known alts of that Account.");
         }
     }
 
     /**
-     * Gets a timestamp from a unix time.
-     * 
-     * @param time in seconds
-     * @return
-     */
-    private String getTimeStamp(long time) {
-        // SYSTEM TIME IN MILISECONDS
-        time = time * 1000L;
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // the format of your date
-        sdf.setTimeZone(TimeZone.getDefault()); // give a timezone reference for formating
-        return sdf.format(new Date(time));
-    }
-
-    /**
      * Display the previous usernames of an Account
-     * 
+     *
      * @param a
      * @param pSender
      */
@@ -155,23 +132,22 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         try {
             if (previousUsernames == null)
                 throw new NoDataException("Previous Usernames returned null!");
-            pSender.sendMessage("§cPlayer " + a.getName() + " has the known previous usernames:");
+            sendMessage(pSender, "§cPlayer " + a.getName() + " has the known previous usernames:");
             for (final Response response : previousUsernames) {
                 String time = getTimeStamp(response.changedToAt / 1000L);
                 if (response.changedToAt == 0L)
                     time = "Original Name      ";
-                pSender.sendMessage("§b " + time + " " + response.name);
+                sendMessage(pSender, "§b " + time + " " + response.name);
             }
         } catch (final NoDataException e) {
             d.error(e);
-            pSender.sendMessage("§cAn internal error occured while performing this command.");
+            sendMessage(pSender, "§cAn internal error occured while performing this command.");
         }
     }
 
-
     /**
      * Worker class for getting a string from a location
-     * 
+     *
      * @param location
      * @return
      */
@@ -243,7 +219,7 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
     }
 
     @Override
-    public void notifyStaffOfPossibleAlts(UUID puuid, String name, BaseAccount[] baseAccounts) {
+    public void notifyStaffOfPossibleAlts(final UUID puuid, final String name, final BaseAccount[] baseAccounts) {
         // Need valid data
         if (d.isNull(name) || baseAccounts == null)
             return;
@@ -251,7 +227,7 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         String string = getPrefix(puuid) + name + " §fmight be ";
         final ArrayList<UUIDAlt> alreadyadded = new ArrayList<UUIDAlt>(baseAccounts.length);
         for (final BaseAccount altAccount : baseAccounts) {
-            final UUIDAlt alt = BaseAccount.getUUIDFromBase(altAccount);
+            final UUIDAlt alt = BaseAccount.switchType(UUIDAlt.class, altAccount);
             if (alt == null)
                 return;
             final UUID uuid = alt.getUUID();
@@ -266,21 +242,14 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
             alreadyadded.add(alt);
         }
         final String compare = getPrefix(puuid) + name + " §fmight be ";
-        logger.debug("Initial String: " + string);
-        logger.debug("String to compare: " + compare);
         // Again, their only alt is themselves.
-        if (string.equalsIgnoreCase(compare)) {
-            logger.debug("Broken!");
+        if (string.equalsIgnoreCase(compare))
             return;
-        }
         // Fix the tailing comma
-        logger.debug("Valid String: " + string);
         string = string.substring(0, string.length() - 4);
-        logger.debug("No comma : " + string);
         // Find all players that should be notified and notify them
         for (final Player admin : Bukkit.getServer().getOnlinePlayers())
             if (admin.hasPermission("mcprofiler.notifiedofalts"))
                 admin.sendMessage(string);
     }
-
 }

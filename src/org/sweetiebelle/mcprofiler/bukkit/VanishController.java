@@ -33,7 +33,7 @@ class VanishController implements Listener {
     public void onVanish(final VanishStatusChangeEvent pEvent) {
         final Player p = pEvent.getPlayer();
         d.updatePlayerInformation(p.getUniqueId(), p.getName(), p.getAddress().toString().split("/")[1].split(":")[0]);
-        Location loc = p.getLocation();
+        final Location loc = p.getLocation();
         d.setPlayerLastPosition(p.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
     }
 

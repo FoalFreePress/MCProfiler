@@ -1,7 +1,6 @@
 package org.sweetiebelle.mcprofiler;
 
 public abstract class Settings {
-
     public String dbDatabase;
     public String dbHost;
     public String dbPass;
@@ -12,6 +11,8 @@ public abstract class Settings {
     public boolean showQuery;
     public boolean useDebug;
     public boolean recOnJoin;
+
+    protected abstract void readSettings();
 
     public abstract void reloadSettings();
 }

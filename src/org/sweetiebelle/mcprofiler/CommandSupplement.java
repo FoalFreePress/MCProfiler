@@ -1,5 +1,8 @@
 package org.sweetiebelle.mcprofiler;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 import java.util.UUID;
 
 public abstract class CommandSupplement<Sender> {
@@ -7,14 +10,17 @@ public abstract class CommandSupplement<Sender> {
     protected final Data d;
     protected final Settings s;
 
-    public CommandSupplement(Settings settings,Data data) {
+    public CommandSupplement(final Settings settings, final Data data) {
         this.s = settings;
         this.d = data;
     }
 
     protected abstract Account getAccount(String name, boolean needsLastTime);
+
     protected abstract boolean hasPermission(Sender sender, String permission);
+
     protected abstract void sendMessage(Sender sender, String... message);
+
     protected abstract String getPrefix(UUID uuid);
 
     /**
@@ -24,7 +30,9 @@ public abstract class CommandSupplement<Sender> {
      * @return
      */
     public abstract boolean displayPlayerInformation(final String playername, final Sender pSender);
+
     public abstract void displayPreviousUsernames(Account acount, Sender sender);
+
     public abstract void displayPossiblePlayerAlts(Account a, BaseAccount[] altAccounts, Sender pSender, boolean recursive);
 
     /**
@@ -93,6 +101,20 @@ public abstract class CommandSupplement<Sender> {
         }
         sendMessage(pSender, noPermission);
         return true;
+    }
+
+    /**
+     * Gets a timestamp from a unix time.
+     *
+     * @param time in seconds
+     * @return
+     */
+    protected String getTimeStamp(long time) {
+        // SYSTEM TIME IN MILISECONDS
+        time = time * 1000L;
+        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // the format of your date
+        sdf.setTimeZone(TimeZone.getDefault()); // give a timezone reference for formating
+        return sdf.format(new Date(time));
     }
 
     /**
@@ -273,5 +295,4 @@ public abstract class CommandSupplement<Sender> {
         sendMessage(sender, noPermission);
         return true;
     }
-
 }

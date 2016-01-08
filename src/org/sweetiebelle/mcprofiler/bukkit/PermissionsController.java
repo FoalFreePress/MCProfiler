@@ -21,7 +21,7 @@ class PermissionsController {
         if (pex != null) {
             permissionsex = PermissionsEx.getPermissionManager();
             LogManager.getLogger().info("Found PermissionsEx to be used for getting player prefixes.");
-        } else{
+        } else {
             permissionsex = null;
             LogManager.getLogger().info("No permisisons plugin found. Using default prefix.");
         }

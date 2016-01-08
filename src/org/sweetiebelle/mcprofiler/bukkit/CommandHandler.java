@@ -1,7 +1,6 @@
 package org.sweetiebelle.mcprofiler.bukkit;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,7 +17,7 @@ class CommandHandler implements CommandExecutor {
     /**
      * The message to send people with no permission.
      */
-    private final static String noPermission = ChatColor.RED + "You do not have permission.";
+    private final static String noPermission = "§cYou do not have permission.";
     /**
      * Our command supplement
      */

@@ -34,7 +34,7 @@ public class Data {
 
     /**
      * Adds the note to the player
-     * 
+     *
      * @param pUUID the user
      * @param pStaffName the staff who added it
      * @param pNote the note
@@ -49,7 +49,7 @@ public class Data {
 
     /**
      * Creates a new table in the database
-     * 
+     *
      * @param pQuery the query
      * @return
      */
@@ -125,7 +125,7 @@ public class Data {
     /**
      * Executes an SQL query. Throws an exception to allow for other methods to
      * handle it.
-     * 
+     *
      * @param query the query to execute
      * @return number of rows affected
      * @throws SQLException if an error occurred
@@ -133,7 +133,7 @@ public class Data {
     private int executeQuery(final String query) throws SQLException {
         if (s.showQuery)
             logger.info(query);
-        if (connection.isClosed() || connection == null) {
+        if (connection == null || connection.isClosed()) {
             final String connect = new String("jdbc:mysql://" + s.dbHost + ":" + s.dbPort + "/" + s.dbDatabase);
             connection = DriverManager.getConnection(connect, s.dbUser, s.dbPass);
             logger.info("Connecting to " + s.dbUser + "@" + connect + "...");
@@ -144,7 +144,7 @@ public class Data {
     /**
      * Private method for getting an SQL connection, then submitting a query.
      * This method throws an SQL Exception to allow another method to handle it.
-     * 
+     *
      * @param query the query to get data from.
      * @return the data
      * @throws SQLException if an error occurs
@@ -165,7 +165,7 @@ public class Data {
      */
     public void forceConnectionRefresh() {
         try {
-            if (connection.isClosed()) {
+            if (connection == null || connection.isClosed()) {
                 final String connect = new String("jdbc:mysql://" + s.dbHost + ":" + s.dbPort + "/" + s.dbDatabase);
                 connection = DriverManager.getConnection(connect, s.dbUser, s.dbPass);
                 logger.info("Connecting to " + s.dbUser + "@" + connect + "...");
@@ -317,8 +317,6 @@ public class Data {
         ResultSet rs;
         BaseAccount[] array = new BaseAccount[0];
         try {
-            if (isRecursive)
-                return recursivePlayerSearch(ObjectArrays.concat(array, new AltAccount(pUUID, getAccount(pUUID, false).getIP())));
             rs = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + pUUID.toString() + "\";");
             while (rs.next()) {
                 final ResultSet ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + rs.getString("ip") + "\";");
@@ -327,6 +325,8 @@ public class Data {
                 ipSet.close();
             }
             rs.close();
+            if (isRecursive)
+                return recursivePlayerSearch(ObjectArrays.concat(array, new AltAccount(pUUID, getAccount(pUUID, false).getIP())));
             return array;
         } catch (final SQLException e) {
             error(e);
@@ -340,7 +340,7 @@ public class Data {
      * @param uuidToIP A MultiMap associating UUIDs with IPs
      * @return A array of {@link AltAccounts} containing all the alts.
      * @throws SQLException if an error occurs, to allow the method that calls
-     *             this function to catch it.
+     * this function to catch it.
      */
     private BaseAccount[] recursivePlayerSearch(BaseAccount[] array) throws SQLException {
         int finalContinue = 0;
@@ -368,8 +368,7 @@ public class Data {
                 ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + uuidIP + "\";");
                 while (ipSet.next()) {
                     // Get the UUIDs associated with the IP.
-                    final AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")),
-                            ipSet.getString("ip"));
+                    final AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip"));
                     // If we already have it, continue onto the next.
                     if (ArrayUtils.contains(array, ipAlt))
                         continue;
@@ -393,7 +392,7 @@ public class Data {
 
     /**
      * Get a String of IPs from an account
-     * 
+     *
      * @param a the account
      * @return the IP string, separated by commas, or null if an error occurs.
      */
@@ -413,7 +412,7 @@ public class Data {
 
     /**
      * Gets an IP string of UUIDs separated by commands from one IP.
-     * 
+     *
      * @param pIP the IP
      * @return the string or null if an error occurs.
      */
@@ -434,7 +433,7 @@ public class Data {
 
     /**
      * Checks if a string is "null"
-     * 
+     *
      * @param string the string to check
      * @return true if the string is equal to null, the string is empty, the string is "null", or if the string is ",", else false.
      */
@@ -446,7 +445,7 @@ public class Data {
 
     /**
      * Performs the maintenance query from the CommandSupplement.
-     * 
+     *
      * @param query the query to execute
      * @return the number of rows affected, or -1 if an error occures.
      */
@@ -461,11 +460,11 @@ public class Data {
 
     /**
      * Sets the player's location
-     * 
+     *
      * @param pUUID the player's UUID
      * @param pLocation their location
      */
-    public void setPlayerLastPosition(final UUID pUUID, String world, int x, int y, int z) {
+    public void setPlayerLastPosition(final UUID pUUID, final String world, final int x, final int y, final int z) {
         // Need valid data
         if (pUUID == null)
             return;
@@ -481,7 +480,7 @@ public class Data {
 
     /**
      * Stores the player's IP
-     * 
+     *
      * @param pUUID the player's uuid
      * @param pIP their ip
      */
@@ -501,7 +500,7 @@ public class Data {
 
     /**
      * checks if a table exists
-     * 
+     *
      * @param pTable the table name.
      * @return true if the table exists, or false if either the table does not exists, or another error occurs.
      */
@@ -519,7 +518,7 @@ public class Data {
 
     /**
      * Update general player information.
-     * 
+     *
      * @param pUUID Their UUID
      * @param pName their Name
      * @param pIP Their IP
@@ -527,8 +526,7 @@ public class Data {
     public void updatePlayerInformation(final UUID pUUID, final String pName, final String pIP) {
         ResultSet rs;
         try {
-            rs = getResultSet(
-                    "SELECT * FROM " + s.dbPrefix + "profiles WHERE uuid = \"" + pUUID.toString() + "\" LIMIT 1;");
+            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "profiles WHERE uuid = \"" + pUUID.toString() + "\" LIMIT 1;");
             if (rs.next()) {
                 executeQuery("UPDATE " + s.dbPrefix + "profiles SET lastKnownName = \"" + pName + "\" WHERE uuid = \"" + pUUID.toString() + "\";");
                 executeQuery("UPDATE " + s.dbPrefix + "profiles SET ip = \"" + pIP + "\" WHERE uuid = \"" + pUUID.toString() + "\";");
