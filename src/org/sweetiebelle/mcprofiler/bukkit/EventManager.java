@@ -49,7 +49,7 @@ class EventManager implements Listener {
         final Player player = pEvent.getPlayer();
         final UUID uuid = player.getUniqueId();
         final String name = player.getName();
-        final String ip = pEvent.getAddress().toString().replace("/", "");
+        final String ip = pEvent.getAddress().toString().split("/")[1];
         d.storePlayerIP(uuid, ip);
         d.updatePlayerInformation(uuid, name, ip);
     }
@@ -63,6 +63,6 @@ class EventManager implements Listener {
         final Player player = pEvent.getPlayer();
         final Location loc = player.getLocation();
         d.setPlayerLastPosition(player.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-        d.updatePlayerInformation(player.getUniqueId(), player.getName(), player.getAddress().getAddress().toString().replace("/", ""));
+        d.updatePlayerInformation(player.getUniqueId(), player.getName(), player.getAddress().getAddress().toString().split("/")[1]);
     }
 }

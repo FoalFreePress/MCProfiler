@@ -16,7 +16,7 @@ public class AltAccount implements BaseAccount {
      */
     private final String ip;
 
-    AltAccount(final UUID uuid, final String ip) {
+    public AltAccount(final UUID uuid, final String ip) {
         this.uuid = uuid;
         this.ip = ip;
     }

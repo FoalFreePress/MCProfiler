@@ -351,7 +351,7 @@ public class Data {
         // The size of the array is the number of times to iterate.
         for (int i = 0; i < array.length; i++) {
             logger.debug("Size of array is now #2 " + array.length);
-            final AltAccount a = (AltAccount) array[i];
+            final AltAccount a =  BaseAccount.switchType(AltAccount.class, array[i]);
             final UUID uuid = a.getUUID();
             // Get the IPs where uuid is equal to the account's UUID
             uuidSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + uuid.toString() + "\";");
