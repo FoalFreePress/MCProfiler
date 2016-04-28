@@ -24,7 +24,8 @@ public class AltAccount implements BaseAccount {
     @Override
     public boolean equals(final Object obj) {
         if (obj instanceof AltAccount) {
-            if (uuid.equals(((AltAccount) obj).uuid) && ip.equals(((AltAccount) obj).ip))
+            AltAccount alt = (AltAccount) obj;
+            if (uuid.equals(alt.uuid) && ip.equals(alt.ip))
                 return true;
             return false;
         }

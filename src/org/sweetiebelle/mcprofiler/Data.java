@@ -23,7 +23,7 @@ import com.google.common.collect.ObjectArrays;
  *
  */
 public class Data {
-    private static final Logger logger = LogManager.getLogger();
+    private static final Logger logger = LogManager.getLogger("MCProfiler");
     private Connection connection;
     private final Settings s;
 
@@ -326,13 +326,29 @@ public class Data {
             }
             rs.close();
             if (isRecursive)
-                return recursivePlayerSearch(ObjectArrays.concat(array, new AltAccount(pUUID, getAccount(pUUID, false).getIP())));
-            return array;
+                return format(recursivePlayerSearch(array));
+            return format(array);
         } catch (final SQLException e) {
             error(e);
             return null;
         }
     }
+    private BaseAccount[] format(BaseAccount[] array) {
+        return array;
+        /*
+        HashSet<BaseAccount> set = new HashSet<BaseAccount>(array.length);
+        for(int i = 0; i < array.length; i++) {
+            set.add(array[i]);
+        }
+        array = set.toArray(new BaseAccount[0]);
+        Account[] accounts = new Account[array.length];
+        for(int i = 0; i < array.length; i++) {
+            accounts[i] = getAccount(array[i].getUUID(), false);
+        }
+        for(int i = 0; i < accounts.length; i++) {
+            
+        } */
+    } 
 
     /**
      * Does a recursive player search with the given params
@@ -351,7 +367,7 @@ public class Data {
         // The size of the array is the number of times to iterate.
         for (int i = 0; i < array.length; i++) {
             logger.debug("Size of array is now #2 " + array.length);
-            final AltAccount a =  BaseAccount.switchType(AltAccount.class, array[i]);
+            final AltAccount a = BaseAccount.switchType(AltAccount.class, array[i]);
             final UUID uuid = a.getUUID();
             // Get the IPs where uuid is equal to the account's UUID
             uuidSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + uuid.toString() + "\";");

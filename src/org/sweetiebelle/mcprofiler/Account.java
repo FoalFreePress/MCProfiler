@@ -59,6 +59,10 @@ public class Account implements BaseAccount {
         this.names = names;
     }
 
+    public Account(UUID uuid, String ip) {
+        throw new UnsupportedOperationException("Cannot make an " + getClass().getName() + " using only " + UUID.class.getName() + " and " + String.class.getName());
+    }
+
     /**
      * If this Account's uuid equals the argument's {@link UUID}, returns true. Else false
      *
@@ -140,6 +144,21 @@ public class Account implements BaseAccount {
 
     @Override
     public String toString() {
-        return "Account{" + uuid.toString() + ", " + name + "}";
+        String str = getClass().getName() + "@" + hashCode() + "[id=" + uuid.toString() + ",name=" + name + ",properties={";
+        if (names != null) {
+            str += "PreviousNames={";
+            for (Response rs : names)
+                str += rs.name + ":" + rs.changedToAt + ",";
+            str = str.substring(0, str.length() - 1);
+            str += "}";
+        } else {
+            str += "PreviousNames=<null>";
+        }
+        str += "Notes={";
+        for (String note : notes)
+            str += note + ",";
+        str = str.substring(0, str.length() - 1);
+        str += "}}Location=" + location + "LastOn= " + laston + "](/" + ip + ")";
+        return str;
     }
 }
