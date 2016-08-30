@@ -20,7 +20,7 @@ import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
 
-@Plugin(id = "mcprofiler", name = "MCProfiler", version = "1.3")
+@Plugin(id = "mcprofiler", name = "MCProfiler", version = "1.3", description = "Allows the creation of profiles on users. Tracks their IP, and allows creation of notes.")
 public class MCProfilerPlugin {
     public final static Logger logger = LogManager.getLogger();
     private Settings s;

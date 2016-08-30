@@ -110,7 +110,7 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
             sendMessage(pSender, a.getNotes());
         // Get the position of the player
         if (hasPermission(pSender, "mcprofiler.info.position"))
-            if (isOnline && senderCanSee)
+            if (isOnline && senderCanSee && queriedPlayer != null)
                 sendMessage(pSender, "§c- §fLocation: §9" + getLocation(queriedPlayer.getLocation()));
             else if (a.getLocation() != null)
                 sendMessage(pSender, "§c- §fLocation: §9" + a.getLocation());
