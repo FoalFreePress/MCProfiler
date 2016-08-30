@@ -37,7 +37,7 @@ class EventManager implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onPlayerJoin(final PlayerJoinEvent pEvent) {
         final Player p = pEvent.getPlayer();
-        cs.notifyStaffOfPossibleAlts(p.getUniqueId(), p.getName(), d.getAltsOfPlayer(p.getUniqueId(), s.recOnJoin));
+        d.getExecutor().submit(() -> cs.notifyStaffOfPossibleAlts(p.getUniqueId(), p.getName(), d.getAltsOfPlayer(p.getUniqueId(), s.recOnJoin)));
     }
 
     /**
@@ -50,8 +50,10 @@ class EventManager implements Listener {
         final UUID uuid = player.getUniqueId();
         final String name = player.getName();
         final String ip = pEvent.getAddress().toString().split("/")[1];
-        d.storePlayerIP(uuid, ip);
-        d.updatePlayerInformation(uuid, name, ip);
+        d.getExecutor().submit(()->{
+            d.storePlayerIP(uuid, ip);
+            d.updatePlayerInformation(uuid, name, ip);
+        });
     }
 
     /**
@@ -62,7 +64,9 @@ class EventManager implements Listener {
     public void onPlayerQuit(final PlayerQuitEvent pEvent) {
         final Player player = pEvent.getPlayer();
         final Location loc = player.getLocation();
-        d.setPlayerLastPosition(player.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-        d.updatePlayerInformation(player.getUniqueId(), player.getName(), player.getAddress().getAddress().toString().split("/")[1]);
+        d.getExecutor().submit(() -> {
+            d.setPlayerLastPosition(player.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+            d.updatePlayerInformation(player.getUniqueId(), player.getName(), player.getAddress().getAddress().toString().split("/")[1]);
+        });
     }
 }

@@ -35,9 +35,11 @@ class VanishController implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onVanish(final VanishStatusChangeEvent pEvent) {
         final Player p = pEvent.getPlayer();
-        d.updatePlayerInformation(p.getUniqueId(), p.getName(), p.getAddress().toString().split("/")[1].split(":")[0]);
         final Location loc = p.getLocation();
-        d.setPlayerLastPosition(p.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        d.getExecutor().submit(() -> {
+            d.updatePlayerInformation(p.getUniqueId(), p.getName(), p.getAddress().toString().split("/")[1].split(":")[0]);
+            d.setPlayerLastPosition(p.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        });
     }
 
     /**

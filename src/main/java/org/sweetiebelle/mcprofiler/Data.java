@@ -9,6 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
@@ -24,12 +26,19 @@ import com.google.common.collect.ObjectArrays;
  */
 public class Data {
     private static final Logger logger = LogManager.getLogger("MCProfiler");
+
+    private ExecutorService executor = Executors.newSingleThreadExecutor();
+
     private Connection connection;
     private final Settings s;
 
     public Data(final Settings s) {
         this.s = s;
         createTables();
+    }
+
+    public ExecutorService getExecutor() {
+        return executor;
     }
 
     /**
