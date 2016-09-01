@@ -45,3 +45,10 @@ $RECYCLE.BIN/
 
 # Mac crap
 .DS_Store
+
+#############
+## Gradle
+#############
+
+.gradle
+build/

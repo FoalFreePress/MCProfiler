@@ -1,8 +1,8 @@
 name: MCProfiler
 main: org.sweetiebelle.mcprofiler.bukkit.MCProfilerPlugin
-version: 1.3
+version: $version
 authors: [SweetieBelle, Hepolite]
-softdepend: [CommandBook, VanishNoPacket, PermissionsEx]
+softdepend: [CommandBook, VanishNoPacket, Vault]
 description: >
              Allows the creation of profiles on users. Tracks their IP, and allows creation of notes.
 commands:
