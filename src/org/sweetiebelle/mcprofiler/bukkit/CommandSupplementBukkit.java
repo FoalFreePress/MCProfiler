@@ -22,16 +22,12 @@ import org.sweetiebelle.mcprofiler.UUIDAlt;
  *
  */
 class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
-    final Data d;
     final VanishController vc;
-    final Settings s;
     final BansController bc;
     final PermissionsController pc;
 
-    CommandSupplementBukkit(final Settings s, final Data d, final MCProfilerPlugin p) {
-        super(s, d);
-        this.s = s;
-        this.d = d;
+    CommandSupplementBukkit(final Settings set, final Data da, final MCProfilerPlugin p) {
+        super(set, da);
         bc = new BansController();
         pc = new PermissionsController();
         final Plugin vnp = Bukkit.getPluginManager().getPlugin("VanishNoPacket");

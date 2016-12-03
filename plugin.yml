@@ -1,6 +1,6 @@
 name: MCProfiler
 main: org.sweetiebelle.mcprofiler.bukkit.MCProfilerPlugin
-version: $version
+version: 1.4
 authors: [SweetieBelle, Hepolite]
 softdepend: [CommandBook, VanishNoPacket, Vault]
 description: >
