@@ -248,6 +248,6 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         // Find all players that should be notified and notify them
         for (final Player admin : Bukkit.getServer().getOnlinePlayers())
             if (admin.hasPermission("mcprofiler.notifiedofalts"))
-                admin.sendMessage(string);
+                admin.sendMessage(string.replace('&', ChatColor.COLOR_CHAR));
     }
 }
