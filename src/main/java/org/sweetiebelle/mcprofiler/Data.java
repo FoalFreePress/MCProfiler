@@ -239,7 +239,7 @@ public class Data {
 			final List<String> nList = new LinkedList<String>();
 			while (rs.next()) {
 				final String staffName = rs.getString("lastKnownStaffName");
-				nList.add("§c" + rs.getString("time") + " §f" + rs.getString("note") + " §c" + staffName);
+				nList.add("&c" + rs.getString("time") + " &f" + rs.getString("note") + " &c" + staffName);
 			}
 			// Convert the list to an array
 			if (nList.size() == 0)
@@ -251,7 +251,7 @@ public class Data {
 		} catch (SQLException | NoDataException e) {
 			error(e);
 			if (e instanceof NoDataException)
-				notes = new String[] { "§cNo notes were found" };
+				notes = new String[] { "&cNo notes were found" };
 		}
 		// Get their associated names.
 		try {
@@ -302,7 +302,7 @@ public class Data {
 			final List<String> nList = new LinkedList<String>();
 			while (rs.next()) {
 				final String staffName = rs.getString("lastKnownStaffName");
-				nList.add("§c" + rs.getString("time") + " §f" + rs.getString("note") + " §c" + staffName);
+				nList.add("&c" + rs.getString("time") + " &f" + rs.getString("note") + " &c" + staffName);
 			}
 			// Convert the list to an array
 			if (nList.size() == 0)
@@ -314,7 +314,7 @@ public class Data {
 		} catch (SQLException | NoDataException e) {
 			error(e);
 			if (e instanceof NoDataException)
-				notes = new String[] { "§cNo notes were found" };
+				notes = new String[] { "&cNo notes were found" };
 		}
 		try {
 			if (needsLastTime)

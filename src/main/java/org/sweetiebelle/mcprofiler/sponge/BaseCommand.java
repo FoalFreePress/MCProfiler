@@ -14,9 +14,8 @@ public abstract class BaseCommand implements CommandExecutor {
         this.cs = cs;
     }
 
-    @SuppressWarnings("deprecation")
     public void sendMessage(final CommandSource sender, final String... msg) {
         for (final String str : msg)
-            sender.sendMessage(Text.of(TextSerializers.LEGACY_FORMATTING_CODE.deserializeUnchecked(str)));
+            sender.sendMessage(Text.of(TextSerializers.FORMATTING_CODE.deserializeUnchecked(str)));
     }
 }

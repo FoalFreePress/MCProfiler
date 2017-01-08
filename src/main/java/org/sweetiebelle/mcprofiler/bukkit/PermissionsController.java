@@ -3,6 +3,7 @@ package org.sweetiebelle.mcprofiler.bukkit;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -34,7 +35,7 @@ class PermissionsController {
         if (chat != null) {
             Player player = Bukkit.getServer().getPlayer(uuid);
             String pref = chat.getPlayerPrefix(player);
-            return pref.replace('&', '§');
+            return pref.replace('&', ChatColor.COLOR_CHAR);
         }
         return "§b";
     }

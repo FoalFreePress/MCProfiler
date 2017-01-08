@@ -6,7 +6,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 public abstract class CommandSupplement<Sender> {
-    private final static String noPermission = "§cYou do not have permission.";
+    private final static String noPermission = "&cYou do not have permission.";
     protected final Data d;
     protected final Settings s;
 
@@ -55,10 +55,10 @@ public abstract class CommandSupplement<Sender> {
             final Account a = getAccount(pPlayerName, false);
             if (a != null) {
                 d.addNoteToUser(a.getUUID(), pStaffName, pNote);
-                sendMessage(pSender, "§cAdded the note '§f" + pNote + "§c'" + " to player '§f" + a.getName() + "§c'!");
+                sendMessage(pSender, "&cAdded the note '&f" + pNote + "&c'" + " to player '&f" + a.getName() + "&c'!");
                 return true;
             }
-            sendMessage(pSender, "§cCould not find the player '§f" + pPlayerName + "§c' in the database!");
+            sendMessage(pSender, "&cCould not find the player '&f" + pPlayerName + "&c' in the database!");
             return true;
         }
         sendMessage(pSender, noPermission);
@@ -76,19 +76,19 @@ public abstract class CommandSupplement<Sender> {
             // Find the uuids linked to the ip
             final String allUUIDs = d.getUsersAssociatedWithIP(pIP);
             if (d.isNull(allUUIDs)) {
-                sendMessage(pSender, "§cDidn't find any accounts linked to the ip '§f" + pIP + "§c'!");
+                sendMessage(pSender, "&cDidn't find any accounts linked to the ip '&f" + pIP + "&c'!");
                 return true;
             }
             // Get all the uuids and iterate over them
-            sendMessage(pSender, "§cThe player accounts linked to the ip '§f" + pIP + "§c' are:");
+            sendMessage(pSender, "&cThe player accounts linked to the ip '&f" + pIP + "&c' are:");
             final String[] uuids = allUUIDs.split(",");
             try {
                 for (final String uuid : uuids)
                     if (!d.isNull(uuid)) {
                         final Account a = getAccount(uuid, false);
                         if (a != null) {
-                            sendMessage(pSender, "§b* " + getPrefix(a.getUUID()) + a.getName());
-                            sendMessage(pSender, "§b* [" + a.getUUID() + "]");
+                            sendMessage(pSender, "&b* " + getPrefix(a.getUUID()) + a.getName());
+                            sendMessage(pSender, "&b* [" + a.getUUID() + "]");
                         } else
                             throw new NoDataException("UUID " + uuid + " did not return an account even though it should have! Enable stackTraces in the config if you haven't already!");
                     } else
@@ -96,7 +96,7 @@ public abstract class CommandSupplement<Sender> {
                 return true;
             } catch (final NoDataException e) {
                 d.error(e);
-                sendMessage(pSender, "§cAn internal error occurred while attempting to perform this command.");
+                sendMessage(pSender, "&cAn internal error occurred while attempting to perform this command.");
             }
         }
         sendMessage(pSender, noPermission);
@@ -131,7 +131,7 @@ public abstract class CommandSupplement<Sender> {
                 displayPossiblePlayerAlts(a, d.getAltsOfPlayer(a.getUUID(), recursive), pSender, recursive);
                 return true;
             }
-            sendMessage(pSender, "§cCouldn't find the player '§f" + pPlayerName + "§c' in the database!");
+            sendMessage(pSender, "&cCouldn't find the player '&f" + pPlayerName + "&c' in the database!");
             return true;
         }
         sendMessage(pSender, noPermission);
@@ -147,17 +147,17 @@ public abstract class CommandSupplement<Sender> {
     public boolean getIPsByPlayer(final String name, final Sender pSender) {
         final Account a = getAccount(name, false);
         if (a == null) {
-            sendMessage(pSender, "§cCould not find the player '§f" + name + "§c' in the database!");
+            sendMessage(pSender, "&cCould not find the player '&f" + name + "&c' in the database!");
             return true;
         }
         if (hasPermission(pSender, "mcprofiler.listips")) {
             // Find the ips linked to the playernmae
             final String foundIPs = d.getIPsByPlayer(a);
             // Get all the uuids and iterate over them
-            sendMessage(pSender, "§cThe ips linked to the player '§f" + a.getName() + "§c' are:");
+            sendMessage(pSender, "&cThe ips linked to the player '&f" + a.getName() + "&c' are:");
             final String[] ips = foundIPs.split(",");
             for (final String ip : ips)
-                sendMessage(pSender, "§b* " + ip);
+                sendMessage(pSender, "&b* " + ip);
             return true;
         }
         sendMessage(pSender, noPermission);
@@ -177,15 +177,15 @@ public abstract class CommandSupplement<Sender> {
                 a = d.getAccount(UUID.fromString(pUUIDString), false);
             } catch (final IllegalArgumentException e) {
                 d.error(e);
-                sendMessage(pSender, "§cThat is not a UUID.");
+                sendMessage(pSender, "&cThat is not a UUID.");
                 return true;
             }
             if (a != null) {
-                sendMessage(pSender, "§b* " + getPrefix(a.getUUID()) + a.getName());
-                sendMessage(pSender, "§b* [" + a.getUUID().toString() + "]");
+                sendMessage(pSender, "&b* " + getPrefix(a.getUUID()) + a.getName());
+                sendMessage(pSender, "&b* [" + a.getUUID().toString() + "]");
                 return true;
             }
-            sendMessage(pSender, "§cThat is not a UUID.");
+            sendMessage(pSender, "&cThat is not a UUID.");
             return true;
         }
         sendMessage(pSender, noPermission);
@@ -202,10 +202,10 @@ public abstract class CommandSupplement<Sender> {
         if (hasPermission(sender, "mcprofiler.maintenance")) {
             if (args.length == 1) {
                 // They did /MCProfiler args[0].equals("maintenance")
-                sendMessage(sender, "§c/MCProfiler maintenance fixnotes <UUID> <name>  §f - Associates a playername with the UUID.");
-                sendMessage(sender, "§c/MCProfiler maintenance forcemakeaccount UUID lastKnownName IP §f - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.");
-                sendMessage(sender, "§c/MCProfiler maintenance updatename UUID newname §f - Forces an account to be updated with the new name.");
-                sendMessage(sender, "§cIf §f-1§c rows are affected, then there was an error performing the query.");
+                sendMessage(sender, "&c/MCProfiler maintenance fixnotes <UUID> <name>  &f - Associates a playername with the UUID.");
+                sendMessage(sender, "&c/MCProfiler maintenance forcemakeaccount UUID lastKnownName IP &f - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.");
+                sendMessage(sender, "&c/MCProfiler maintenance updatename UUID newname &f - Forces an account to be updated with the new name.");
+                sendMessage(sender, "&cIf &f-1&c rows are affected, then there was an error performing the query.");
                 return true;
             }
             if (args[1].equalsIgnoreCase("fixnotes") && args.length == 4) {
@@ -215,11 +215,11 @@ public abstract class CommandSupplement<Sender> {
                     uuid = UUID.fromString(args[2]);
                 } catch (final IllegalArgumentException e) {
                     // Not a UUID
-                    sendMessage(sender, "§cThat is not a UUID.");
+                    sendMessage(sender, "&cThat is not a UUID.");
                     d.error(e);
                     return true;
                 }
-                sendMessage(sender, "§aQuery Okay, " + d.maintenance("UPDATE " + s.dbPrefix + "notes SET UUID = \"" + uuid.toString() + "\" where lastKnownName = \"" + args[3] + "\";") + " rows affected.");
+                sendMessage(sender, "&aQuery Okay, " + d.maintenance("UPDATE " + s.dbPrefix + "notes SET UUID = \"" + uuid.toString() + "\" where lastKnownName = \"" + args[3] + "\";") + " rows affected.");
                 return true;
             }
             if (args[1].equalsIgnoreCase("forcemakeaccount") && args.length == 5) {
@@ -229,11 +229,11 @@ public abstract class CommandSupplement<Sender> {
                     uuid = UUID.fromString(args[2]);
                 } catch (final IllegalArgumentException e) {
                     // Not a UUID
-                    sendMessage(sender, "§cThat is not a UUID.");
+                    sendMessage(sender, "&cThat is not a UUID.");
                     d.error(e);
                     return true;
                 }
-                sendMessage(sender, "§aQuery Okay, " + d.maintenance("INSERT INTO " + s.dbPrefix + "profiles (uuid, lastKnownName, ip) VALUES (\"" + uuid.toString() + "\", \"" + args[3] + "\", \"" + args[4] + "\");") + " rows affected.");
+                sendMessage(sender, "&aQuery Okay, " + d.maintenance("INSERT INTO " + s.dbPrefix + "profiles (uuid, lastKnownName, ip) VALUES (\"" + uuid.toString() + "\", \"" + args[3] + "\", \"" + args[4] + "\");") + " rows affected.");
                 return true;
             }
             if (args[1].equalsIgnoreCase("updatename") && args.length == 4) {
@@ -243,17 +243,17 @@ public abstract class CommandSupplement<Sender> {
                     uuid = UUID.fromString(args[2]);
                 } catch (final IllegalArgumentException e) {
                     // Not a UUID
-                    sendMessage(sender, "§cThat is not a UUID.");
+                    sendMessage(sender, "&cThat is not a UUID.");
                     d.error(e);
                     return true;
                 }
-                sendMessage(sender, "§aQuery Okay, " + d.maintenance("UPDATE " + s.dbPrefix + "profiles SET lastKnownName = \"" + args[3] + "\" where uuid = \"" + uuid.toString() + "\";") + " rows affected.");
+                sendMessage(sender, "&aQuery Okay, " + d.maintenance("UPDATE " + s.dbPrefix + "profiles SET lastKnownName = \"" + args[3] + "\" where uuid = \"" + uuid.toString() + "\";") + " rows affected.");
                 return true;
             }
-            sendMessage(sender, "§c/MCProfiler maintenance fixnotes <UUID> <name>  §f - Associates a playername with the UUID.");
-            sendMessage(sender, "§c/MCProfiler maintenance forcemakeaccount UUID lastKnownName IP §f - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.");
-            sendMessage(sender, "§c/MCProfiler maintenance updatename UUID newname §f - Forces an account to be updated with the new name.");
-            sendMessage(sender, "§cIf §f-1§c rows are affected, then there was an error performing the query.");
+            sendMessage(sender, "&c/MCProfiler maintenance fixnotes <UUID> <name>  &f - Associates a playername with the UUID.");
+            sendMessage(sender, "&c/MCProfiler maintenance forcemakeaccount UUID lastKnownName IP &f - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.");
+            sendMessage(sender, "&c/MCProfiler maintenance updatename UUID newname &f - Forces an account to be updated with the new name.");
+            sendMessage(sender, "&cIf &f-1&c rows are affected, then there was an error performing the query.");
             return true;
         }
         sendMessage(sender, noPermission);
@@ -273,7 +273,7 @@ public abstract class CommandSupplement<Sender> {
             if (a != null)
                 sendMessage(pSender, a.getNotes());
             else
-                sendMessage(pSender, "§cCouldn't find the player '§f" + pPlayerName + "§c' in the database!");
+                sendMessage(pSender, "&cCouldn't find the player '&f" + pPlayerName + "&c' in the database!");
             return true;
         }
         sendMessage(pSender, noPermission);
@@ -287,7 +287,7 @@ public abstract class CommandSupplement<Sender> {
      */
     public boolean reloadSettings(final Sender sender) {
         if (hasPermission(sender, "mcprofiler.reload")) {
-            sendMessage(sender, "§cReloading plugin...");
+            sendMessage(sender, "&cReloading plugin...");
             s.reloadSettings();
             d.forceConnectionRefresh();
             return true;

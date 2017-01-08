@@ -17,7 +17,7 @@ class CommandHandler implements CommandExecutor {
     /**
      * The message to send people with no permission.
      */
-    private final static String noPermission = "§cYou do not have permission.";
+    private final static String noPermission = "&cYou do not have permission.";
     /**
      * Our command supplement
      */
@@ -65,17 +65,17 @@ class CommandHandler implements CommandExecutor {
         boolean recursive = false;
         if (instruction.equals("help")) {
             if (sender.hasPermission("mcprofiler.help")) {
-                sender.sendMessage("§bMCProfiler help menu:");
-                sender.sendMessage("§c/MCProfiler addnote <playerName> <note> §f - Adds a note to the given player");
-                sender.sendMessage("§c/MCProfiler readnotes <playerName> §f - Displays the notes on the given player");
-                sender.sendMessage("§c/MCProfiler info <playerName|uuid> §f - Displays a summary of the player");
-                sender.sendMessage("§c/status <playername|uuid> §f - short for /MCProfiler info");
-                sender.sendMessage("§c/MCProfiler lookup <ip> §f - Displays all accounts linked to the given IP");
-                sender.sendMessage("§c/MCProfiler listlinks [-r] <playerName> §f - Displays all accounts that might be linked to the given user. Use the -r flag for recursive player searching. This displays all of the alts of the player's alts, and all the alts of those alts....");
-                sender.sendMessage("§c/MCProfiler listips <playerName> §f - Lists all known IPs from a given player");
-                sender.sendMessage("§c/MCProfiler uuid <uuid> §f - Displays a username based on a UUID.");
-                sender.sendMessage("§c/MCProfiler maintenance <fixnotes | forcemakeaccount | updatename> <args> §f - Performs maintence commands See /MCProfiler maintenance with no args for help.");
-                sender.sendMessage("§c/MCProfiler reload§f - Reloads general configuration settings.");
+                sender.sendMessage("&bMCProfiler help menu:");
+                sender.sendMessage("&c/MCProfiler addnote <playerName> <note> &f - Adds a note to the given player");
+                sender.sendMessage("&c/MCProfiler readnotes <playerName> &f - Displays the notes on the given player");
+                sender.sendMessage("&c/MCProfiler info <playerName|uuid> &f - Displays a summary of the player");
+                sender.sendMessage("&c/status <playername|uuid> &f - short for /MCProfiler info");
+                sender.sendMessage("&c/MCProfiler lookup <ip> &f - Displays all accounts linked to the given IP");
+                sender.sendMessage("&c/MCProfiler listlinks [-r] <playerName> &f - Displays all accounts that might be linked to the given user. Use the -r flag for recursive player searching. This displays all of the alts of the player's alts, and all the alts of those alts....");
+                sender.sendMessage("&c/MCProfiler listips <playerName> &f - Lists all known IPs from a given player");
+                sender.sendMessage("&c/MCProfiler uuid <uuid> &f - Displays a username based on a UUID.");
+                sender.sendMessage("&c/MCProfiler maintenance <fixnotes | forcemakeaccount | updatename> <args> &f - Performs maintence commands See /MCProfiler maintenance with no args for help.");
+                sender.sendMessage("&c/MCProfiler reload&f - Reloads general configuration settings.");
                 return true;
             }
             sender.sendMessage(noPermission);
@@ -110,7 +110,7 @@ class CommandHandler implements CommandExecutor {
             return cs.getIPsByPlayer(args[1], sender);
         if (instruction.equalsIgnoreCase("maintenance"))
             return cs.maintenance(args, sender);
-        sender.sendMessage("§cInvalid instruction '" + instruction + "' or invalid number of parameters. Try to use /MCProfiler help");
+        sender.sendMessage("&cInvalid instruction '" + instruction + "' or invalid number of parameters. Try to use /MCProfiler help");
         return true;
     }
 }

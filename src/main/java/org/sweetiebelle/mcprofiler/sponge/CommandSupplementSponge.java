@@ -47,16 +47,15 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
         return sender.hasPermission(permission);
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void sendMessage(final CommandSource sender, final String... msg) {
         for (final String str : msg)
-            sender.sendMessage(Text.of(TextSerializers.LEGACY_FORMATTING_CODE.deserializeUnchecked(str)));
+            sender.sendMessage(Text.of(TextSerializers.FORMATTING_CODE.deserializeUnchecked(str)));
     }
 
     @Override
     protected String getPrefix(final UUID uuid) {
-        return "§b";
+        return "&b";
     }
 
     @Override
@@ -65,13 +64,13 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
         if (hasPermission(pSender, "mcprofiler.info.basic.name")) {
             // Get the UUID for the given player and read the note
             if (a == null) {
-                sendMessage(pSender, "§cCould not find the player '§f" + playername + "§c' in the database!");
+                sendMessage(pSender, "&cCould not find the player '&f" + playername + "&c' in the database!");
                 return true;
             }
             // Print a "summary" of the given player
-            sendMessage(pSender, "§b* " + getPrefix(a.getUUID()) + a.getName());
+            sendMessage(pSender, "&b* " + getPrefix(a.getUUID()) + a.getName());
             if (hasPermission(pSender, "mcprofiler.info.basic.uuid"))
-                sendMessage(pSender, "§b* [" + a.getUUID().toString() + "]");
+                sendMessage(pSender, "&b* [" + a.getUUID().toString() + "]");
             if (hasPermission(pSender, "mcprofiler.info.basic.previoususernames"))
                 displayPreviousUsernames(a, pSender);
         }
@@ -99,23 +98,23 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
         }
         if (hasPermission(pSender, "mcprofiler.info.online"))
             if (isOnline && senderCanSee)
-                sendMessage(pSender, "§c- §fLast on: §aOnline now");
+                sendMessage(pSender, "&c- &fLast on: &aOnline now");
             else
-                sendMessage(pSender, "§c- §fLast on: §9" + a.getLastOn());
+                sendMessage(pSender, "&c- &fLast on: &9" + a.getLastOn());
         if (hasPermission(pSender, "mcprofiler.info.ip"))
             // Get the player IP address and notes
-            sendMessage(pSender, "§c- §fPeer address: §9" + a.getIP());
+            sendMessage(pSender, "&c- &fPeer address: &9" + a.getIP());
         // Notes will never be null. Data.java.293 & 232
         if (hasPermission(pSender, "mcprofiler.readnotes"))
             sendMessage(pSender, a.getNotes());
         // Get the position of the player
         if (hasPermission(pSender, "mcprofiler.info.position"))
             if (isOnline && senderCanSee && queriedPlayer != null)
-                sendMessage(pSender, "§c- §fLocation: §9" + getLocation(queriedPlayer.getLocation()));
+                sendMessage(pSender, "&c- &fLocation: &9" + getLocation(queriedPlayer.getLocation()));
             else if (a.getLocation() != null)
-                sendMessage(pSender, "§c- §fLocation: §9" + a.getLocation());
+                sendMessage(pSender, "&c- &fLocation: &9" + a.getLocation());
             else
-                sendMessage(pSender, "§c- §fLocation: §9null");
+                sendMessage(pSender, "&c- &fLocation: &9null");
         return true;
     }
 
@@ -129,16 +128,16 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
         try {
             if (previousUsernames == null)
                 throw new NoDataException("Previous Usernames returned null!");
-            sendMessage(sender, "§cPlayer " + a.getName() + " has the known previous usernames:");
+            sendMessage(sender, "&cPlayer " + a.getName() + " has the known previous usernames:");
             for (final Response response : previousUsernames) {
                 String time = getTimeStamp(response.changedToAt / 1000L);
                 if (response.changedToAt == 0L)
                     time = "Original Name      ";
-                sendMessage(sender, "§b " + time + " " + response.name);
+                sendMessage(sender, "&b " + time + " " + response.name);
             }
         } catch (final NoDataException e) {
             d.error(e);
-            sendMessage(sender, "§cAn internal error occured while performing this command.");
+            sendMessage(sender, "&cAn internal error occured while performing this command.");
         }
     }
 
@@ -150,12 +149,12 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
         if (recursive) {
             for (final BaseAccount alt : altAccounts) {
                 if (first)
-                    sendMessage(pSender, "§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
+                    sendMessage(pSender, "&cThe player " + getPrefix(a.getUUID()) + a.getName() + " &c(&f" + a.getIP() + "&c) has the following associated accounts:");
                 first = false;
-                sendMessage(pSender, "§b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
+                sendMessage(pSender, "&b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " &c(&f" + alt.getIP() + "&c)");
             }
             if (first)
-                sendMessage(pSender, "§cNo known alts of that Account.");
+                sendMessage(pSender, "&cNo known alts of that Account.");
         } else {
             final ArrayList<UUIDAlt> alreadypassed = new ArrayList<UUIDAlt>(altAccounts.length);
             for (final BaseAccount altAccount : altAccounts) {
@@ -163,13 +162,13 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
                 if (alt.getUUID().equals(a.getUUID()) || alreadypassed.contains(alt))
                     continue;
                 if (first)
-                    sendMessage(pSender, "§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
+                    sendMessage(pSender, "&cThe player " + getPrefix(a.getUUID()) + a.getName() + " &c(&f" + a.getIP() + "&c) has the following associated accounts:");
                 first = false;
-                sendMessage(pSender, "§b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
+                sendMessage(pSender, "&b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " &c(&f" + alt.getIP() + "&c)");
                 alreadypassed.add(alt);
             }
             if (first)
-                sendMessage(pSender, "§cNo known alts of that Account.");
+                sendMessage(pSender, "&cNo known alts of that Account.");
         }
     }
 
@@ -180,7 +179,7 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
         if (d.isNull(name) || baseAccounts == null)
             return;
         // Build the string to display
-        String string = getPrefix(puuid) + name + " §fmight be ";
+        String string = getPrefix(puuid) + name + " &fmight be ";
         final ArrayList<UUIDAlt> alreadyadded = new ArrayList<UUIDAlt>(baseAccounts.length);
         for (final BaseAccount altAccount : baseAccounts) {
             final UUIDAlt alt = BaseAccount.switchType(UUIDAlt.class, altAccount);
@@ -191,13 +190,13 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
                 continue;
             final Account a = d.getAccount(uuid, false);
             // if (bc.isBanned(uuid))
-            // string += getPrefix(a.getUUID()) + a.getName() + " §7(BANNED) §c";
+            // string += getPrefix(a.getUUID()) + a.getName() + " &7(BANNED) &c";
             // else
             string += getPrefix(a.getUUID()) + a.getName();
-            string += "§f, ";
+            string += "&f, ";
             alreadyadded.add(alt);
         }
-        final String compare = getPrefix(puuid) + name + " §fmight be ";
+        final String compare = getPrefix(puuid) + name + " &fmight be ";
         // Again, their only alt is themselves.
         if (string.equalsIgnoreCase(compare))
             return;

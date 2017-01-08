@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -49,7 +50,8 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
 
     @Override
     protected void sendMessage(final CommandSender sender, final String... message) {
-        sender.sendMessage(message);
+        for (String msg : message)
+            sender.sendMessage(msg.replace('&', ChatColor.COLOR_CHAR));
     }
 
     /**
@@ -93,12 +95,12 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         if (recursive) {
             for (final BaseAccount alt : altAccounts) {
                 if (first)
-                    sendMessage(pSender, "§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
+                    sendMessage(pSender, "&cThe player " + getPrefix(a.getUUID()) + a.getName() + " &c(&f" + a.getIP() + "&c) has the following associated accounts:");
                 first = false;
-                sendMessage(pSender, "§b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
+                sendMessage(pSender, "&b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " &c(&f" + alt.getIP() + "&c)");
             }
             if (first)
-                sendMessage(pSender, "§cNo known alts of that Account.");
+                sendMessage(pSender, "&cNo known alts of that Account.");
         } else {
             final ArrayList<UUIDAlt> alreadypassed = new ArrayList<UUIDAlt>(altAccounts.length);
             for (final BaseAccount altAccount : altAccounts) {
@@ -106,13 +108,13 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
                 if (alt.getUUID().equals(a.getUUID()) || alreadypassed.contains(alt))
                     continue;
                 if (first)
-                    sendMessage(pSender, "§cThe player " + getPrefix(a.getUUID()) + a.getName() + " §c(§f" + a.getIP() + "§c) has the following associated accounts:");
+                    sendMessage(pSender, "&cThe player " + getPrefix(a.getUUID()) + a.getName() + " &c(&f" + a.getIP() + "&c) has the following associated accounts:");
                 first = false;
-                sendMessage(pSender, "§b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " §c(§f" + alt.getIP() + "§c)");
+                sendMessage(pSender, "&b* " + getPrefix(alt.getUUID()) + d.getAccount(alt.getUUID(), false).getName() + " &c(&f" + alt.getIP() + "&c)");
                 alreadypassed.add(alt);
             }
             if (first)
-                sendMessage(pSender, "§cNo known alts of that Account.");
+                sendMessage(pSender, "&cNo known alts of that Account.");
         }
     }
 
@@ -128,16 +130,16 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         try {
             if (previousUsernames == null)
                 throw new NoDataException("Previous Usernames returned null!");
-            sendMessage(pSender, "§cPlayer " + a.getName() + " has the known previous usernames:");
+            sendMessage(pSender, "&cPlayer " + a.getName() + " has the known previous usernames:");
             for (final Response response : previousUsernames) {
                 String time = getTimeStamp(response.changedToAt / 1000L);
                 if (response.changedToAt == 0L)
                     time = "Original Name      ";
-                sendMessage(pSender, "§b " + time + " " + response.name);
+                sendMessage(pSender, "&b " + time + " " + response.name);
             }
         } catch (final NoDataException e) {
             d.error(e);
-            sendMessage(pSender, "§cAn internal error occured while performing this command.");
+            sendMessage(pSender, "&cAn internal error occured while performing this command.");
         }
     }
 
@@ -157,13 +159,13 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         if (hasPermission(pSender, "mcprofiler.info.basic.name")) {
             // Get the UUID for the given player and read the note
             if (a == null) {
-                sendMessage(pSender, "§cCould not find the player '§f" + playername + "§c' in the database!");
+                sendMessage(pSender, "&cCould not find the player '&f" + playername + "&c' in the database!");
                 return true;
             }
             // Print a "summary" of the given player
-            sendMessage(pSender, "§b* " + getPrefix(a.getUUID()) + a.getName());
+            sendMessage(pSender, "&b* " + getPrefix(a.getUUID()) + a.getName());
             if (hasPermission(pSender, "mcprofiler.info.basic.uuid"))
-                sendMessage(pSender, "§b* [" + a.getUUID().toString() + "]");
+                sendMessage(pSender, "&b* [" + a.getUUID().toString() + "]");
             if (hasPermission(pSender, "mcprofiler.info.basic.previoususernames"))
                 displayPreviousUsernames(a, pSender);
         }
@@ -194,23 +196,23 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         }
         if (hasPermission(pSender, "mcprofiler.info.online"))
             if (isOnline && senderCanSee)
-                sendMessage(pSender, "§c- §fLast on: §aOnline now");
+                sendMessage(pSender, "&c- &fLast on: &aOnline now");
             else
-                sendMessage(pSender, "§c- §fLast on: §9" + a.getLastOn());
+                sendMessage(pSender, "&c- &fLast on: &9" + a.getLastOn());
         if (hasPermission(pSender, "mcprofiler.info.ip"))
             // Get the player IP address and notes
-            sendMessage(pSender, "§c- §fPeer address: §9" + a.getIP());
+            sendMessage(pSender, "&c- &fPeer address: &9" + a.getIP());
         // Notes will never be null. Data.java.293 & 232
         if (hasPermission(pSender, "mcprofiler.readnotes"))
             sendMessage(pSender, a.getNotes());
         // Get the position of the player
         if (hasPermission(pSender, "mcprofiler.info.position"))
             if (isOnline && senderCanSee && queriedPlayer != null)
-                sendMessage(pSender, "§c- §fLocation: §9" + getLocation(queriedPlayer.getLocation()));
+                sendMessage(pSender, "&c- &fLocation: &9" + getLocation(queriedPlayer.getLocation()));
             else if (a.getLocation() != null)
-                sendMessage(pSender, "§c- §fLocation: §9" + a.getLocation());
+                sendMessage(pSender, "&c- &fLocation: &9" + a.getLocation());
             else
-                sendMessage(pSender, "§c- §fLocation: §9null");
+                sendMessage(pSender, "&c- &fLocation: &9null");
         return true;
     }
 
@@ -220,7 +222,7 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         if (d.isNull(name) || baseAccounts == null)
             return;
         // Build the string to display
-        String string = getPrefix(puuid) + name + " §fmight be ";
+        String string = getPrefix(puuid) + name + " &fmight be ";
         final ArrayList<UUIDAlt> alreadyadded = new ArrayList<UUIDAlt>(baseAccounts.length);
         for (final BaseAccount altAccount : baseAccounts) {
             final UUIDAlt alt = BaseAccount.switchType(UUIDAlt.class, altAccount);
@@ -231,13 +233,13 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
                 continue;
             final Account a = d.getAccount(uuid, false);
             if (bc.isBanned(uuid))
-                string += getPrefix(a.getUUID()) + a.getName() + " §7(BANNED) §c";
+                string += getPrefix(a.getUUID()) + a.getName() + " &7(BANNED) &c";
             else
                 string += getPrefix(a.getUUID()) + a.getName();
-            string += "§f, ";
+            string += "&f, ";
             alreadyadded.add(alt);
         }
-        final String compare = getPrefix(puuid) + name + " §fmight be ";
+        final String compare = getPrefix(puuid) + name + " &fmight be ";
         // Again, their only alt is themselves.
         if (string.equalsIgnoreCase(compare))
             return;

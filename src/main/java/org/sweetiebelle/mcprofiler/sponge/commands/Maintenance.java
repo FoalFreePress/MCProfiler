@@ -16,10 +16,10 @@ public class Maintenance extends BaseCommand {
     @Override
     public CommandResult execute(final CommandSource sender, final CommandContext args) throws CommandException {
         args.checkPermission(sender, "mcprofiler.maintenance");
-        sendMessage(sender, "§c/MCProfiler maintenance fixnotes <UUID> <name>  §f - Associates a playername with the UUID.");
-        sendMessage(sender, "§c/MCProfiler maintenance forcemakeaccount UUID lastKnownName IP §f - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.");
-        sendMessage(sender, "§c/MCProfiler maintenance updatename UUID newname §f - Forces an account to be updated with the new name.");
-        sendMessage(sender, "§cIf §f-1§c rows are affected, then there was an error performing the query.");
+        sendMessage(sender, "&c/MCProfiler maintenance fixnotes <UUID> <name>  &f - Associates a playername with the UUID.");
+        sendMessage(sender, "&c/MCProfiler maintenance forcemakeaccount UUID lastKnownName IP &f - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.");
+        sendMessage(sender, "&c/MCProfiler maintenance updatename UUID newname &f - Forces an account to be updated with the new name.");
+        sendMessage(sender, "&cIf &f-1&c rows are affected, then there was an error performing the query.");
         return CommandResult.success();
     }
 }
