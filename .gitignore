@@ -51,4 +51,7 @@ $RECYCLE.BIN/
 #############
 
 .gradle
+gradle/
 build/
+gradlew
+gradlew.bat
