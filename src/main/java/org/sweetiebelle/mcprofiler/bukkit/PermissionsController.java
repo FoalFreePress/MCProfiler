@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
 import net.milkbowl.vault.chat.Chat;
@@ -26,17 +26,17 @@ class PermissionsController {
 
     /**
      * Worker class for getting a prefix from a permissions plugin.
-     * 
+     *
      * @param uuid player UUID
-     * @return the prefix, or §b if no prefix providing plugin was found.
+     * @return the prefix, or &b if no prefix providing plugin was found.
      */
     public String getPrefix(final UUID uuid) {
 
         if (chat != null) {
-            Player player = Bukkit.getServer().getPlayer(uuid);
-            String pref = chat.getPlayerPrefix(player);
+            OfflinePlayer player = Bukkit.getServer().getOfflinePlayer(uuid);
+            String pref = chat.getPlayerPrefix((String) null, player);
             return pref.replace('&', ChatColor.COLOR_CHAR);
         }
-        return "§b";
+        return ChatColor.AQUA + "";
     }
 }
