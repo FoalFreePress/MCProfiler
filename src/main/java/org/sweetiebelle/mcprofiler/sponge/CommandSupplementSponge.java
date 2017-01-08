@@ -172,7 +172,6 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void notifyStaffOfPossibleAlts(final UUID puuid, final String name, final BaseAccount[] baseAccounts) {
         // Need valid data
@@ -205,6 +204,6 @@ public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
         // Find all players that should be notified and notify them
         for (final Player admin : Sponge.getServer().getOnlinePlayers())
             if (admin.hasPermission("mcprofiler.notifiedofalts"))
-                admin.sendMessage(Text.of(TextSerializers.LEGACY_FORMATTING_CODE.deserializeUnchecked(string)));
+                admin.sendMessage(Text.of(TextSerializers.FORMATTING_CODE.deserializeUnchecked(string)));
     }
 }
