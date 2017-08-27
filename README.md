@@ -64,7 +64,7 @@ This plugin gives staff members the ability to keep accounts on players, place s
     mcprofiler.listips:
       description: Allows usage of /MCProfiler listips
 
-#Config:
+# Config:
 ```YAML
 general:
   #If true, will print debug stack traces. By default, only unexpected exceptions will be printed. If this is true, all handled exceptions will be printed.
