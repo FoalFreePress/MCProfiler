@@ -8,7 +8,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.sweetiebelle.mcprofiler.Account;
 import org.sweetiebelle.mcprofiler.BaseAccount;
 import org.sweetiebelle.mcprofiler.CommandSupplement;
@@ -31,11 +30,7 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
         super(set, da);
         bc = new BansController();
         pc = new PermissionsController();
-        final Plugin vnp = Bukkit.getPluginManager().getPlugin("VanishNoPacket");
-        if (vnp != null)
-            vc = new VanishController(d);
-        else
-            vc = null;
+        vc = new VanishController(p, d);
     }
 
     @Override
@@ -178,10 +173,7 @@ class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
             for (final Player player : Bukkit.getServer().getOnlinePlayers())
                 if (player.getName().equals(a.getName())) {
                     isOnline = true;
-                    if (vc != null)
-                        senderCanSee = vc.canSee(player, (Player) pSender);
-                    else
-                        senderCanSee = true;
+                    senderCanSee = vc.canSee(player, (Player) pSender);
                     queriedPlayer = player;
                     break;
                 }
