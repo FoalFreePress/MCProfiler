@@ -2,37 +2,37 @@ This plugin was based off of McftProfiler http://dev.bukkit.org/bukkit-plugins/m
 
 This plugin gives staff members the ability to keep accounts on players, place sticky notes on them, see their previous usernames, and much more!
 
-#Requirements:
+# Requirements:
 - MySQL database
 
-#Features
+# Features
 - Add notes to a players
 - View online and offline player locations
 - Track players' IPs and be notified of their possible alts! (This is all IP based, similar names will never be taken into account)
 - Contact Mojang's API to look up the previous usernames of the players!
 - Display a list of assocaited player accounts when a player joins, and if they are banned or not! (Tries to find CommandBook, if not found, uses Bukkit's ban system. Post a feature request if you'd like another ban plugin to be included!)
 
-#Optional dependencies
+# Optional dependencies
 - VanishNoPacket http://dev.bukkit.org/bukkit-plugins/vanish/
      - Users who are vanished will have their "online time" displayed to people who cannot see them as the time they vanished.
 - CommandBook http://dev.bukkit.org/bukkit-plugins/commandbook/
      - Hooks into CommandBook to display alts if they are banned according to it.
 
-#Commands:
-    /status <playername | uuid> - Short for /MCProfiler info
-    /MCProfiler addnote <playerName> <note>  - Adds a note to the given player
-    /MCProfiler readnotes <playerName>  - Displays the notes on the given player
-    /MCProfiler info <playerName|uuid>  - Displays a summary of the player
-    /MCProfiler lookup <ip>  - Displays all accounts linked to the given IP
-    /MCProfiler listlinks -r <playerName>  - Displays all accounts that might be linked to the given user. Use the -r flag for recursive player searching. This displays all of the alts of the player's alts, and all the alts of those alts....
-    /MCProfiler listips <playerName>  - Lists all known IPs from a given player
-    /MCProfiler uuid <uuid>  - Displays a username based on a UUID.
-    /MCProfiler maintenance <fixnotes | forcemakeaccount | updatename> <args>  - Performs maintence.
-    /MCProfiler maintenance fixnotes <UUID> <name>   - Associates a playername with the UUID.
-    /MCProfiler maintenance forcemakeaccount UUID lastKnownName IP  - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.
-    /MCProfiler maintenance updatename UUID newname - Forces an account to be updated with the new name.
-    /MCProfiler reload - Reloads general configuration settings.
-#Permissions:
+# Commands:
+   - /status <playername | uuid> - Short for /MCProfiler info
+   - /MCProfiler addnote <playerName> <note>  - Adds a note to the given player
+   - /MCProfiler readnotes <playerName>  - Displays the notes on the given player
+   - /MCProfiler info <playerName|uuid>  - Displays a summary of the player
+   - /MCProfiler lookup <ip>  - Displays all accounts linked to the given IP
+   - /MCProfiler listlinks -r <playerName>  - Displays all accounts that might be linked to the given user. Use the -r flag for recursive player searching. This displays all of the alts of the player's alts, and all the alts of those alts....
+   - /MCProfiler listips <playerName>  - Lists all known IPs from a given player
+   - /MCProfiler uuid <uuid>  - Displays a username based on a UUID.
+   - /MCProfiler maintenance <fixnotes | forcemakeaccount | updatename> <args>  - Performs maintence.
+   - /MCProfiler maintenance fixnotes <UUID> <name>   - Associates a playername with the UUID.
+   - /MCProfiler maintenance forcemakeaccount UUID lastKnownName IP  - Forces an account to be made for /MCProfiler info. If you don't know the IP, type in NULL.
+   - /MCProfiler maintenance updatename UUID newname - Forces an account to be updated with the new name.
+   - /MCProfiler reload - Reloads general configuration settings.
+# Permissions:
     mcprofiler.help:
       description: Allows usage of /MCProfiler help
     mcprofiler.addnote:
@@ -75,7 +75,7 @@ general:
   debug: false
   #If true, uses recursive searching when players join. This is useful for helping to find more alts of players when they join, but disabling it will save processing time.
   recursivePlayerJoin: false
-#MySQL Database settings
+# MySQL Database settings
 database:
   username: username
   password: password
@@ -86,7 +86,7 @@ database:
   prefix: MCProfiler_
 ```
 
-#Installation:
+# Installation:
 - Make a config.yml and have it look like the config above.
 - Configure the config to set the database settings to your settings.
 - Drop the .jar in your plugins folder, and run!
