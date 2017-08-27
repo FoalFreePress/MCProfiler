@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'org.sweetiebelle'
-version = '1.5'
+version = '1.6'
 
 repositories {
 	jcenter()
@@ -29,14 +29,15 @@ repositories {
 		url 'http://pex-repo.aoeu.xyz'
 	}
 }
+
+
 dependencies {
-	compile 'org.bukkit:bukkit:1.11.2-R0.1-SNAPSHOT'
-	compile 'org.spongepowered:spongeapi:5.0.0'
-	compile 'org.apache.logging.log4j:log4j-api:2.0-beta9'
+	compile 'org.spigotmc:spigot-api:1.12.1-R0.1-SNAPSHOT'
+	compile 'org.spongepowered:spongeapi:5.1.0'
+	compile 'org.apache.logging.log4j:log4j-api:2.8'
 	compile ('com.sk89q:commandbook:2.4'){transitive=false}
 	compile 'net.milkbowl.vault:VaultAPI:1.6'
 	compile 'ru.tehkode:PermissionsEx:1.23.1'
-	compile ('org.kitteh:VanishNoPacket:3.9'){transitive=false}
 	compile fileTree(dir: 'libs', include: '*.jar')
 
 }
