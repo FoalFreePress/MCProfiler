@@ -13,6 +13,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class Note extends BaseCommand {
+
     public Note(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
     }
@@ -22,13 +23,13 @@ public class Note extends BaseCommand {
         args.checkPermission(sender, "mcprofiler.addnote");
         Optional<String> op = null;
         String playername = null;
-        op = args.<String> getOne("player");
+        op = args.<String>getOne("player");
         if (op.isPresent())
             playername = op.get();
         if (playername == null)
             throw new CommandException(Text.of("Paramater player is empty."));
         String note = null;
-        op = args.<String> getOne("note");
+        op = args.<String>getOne("note");
         if (op.isPresent())
             note = op.get();
         if (note == null)

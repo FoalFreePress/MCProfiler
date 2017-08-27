@@ -18,6 +18,7 @@ import org.sweetiebelle.mcprofiler.Settings;
  *
  */
 public class EventManager {
+
     private final CommandSupplement<CommandSource> cs;
     private final Data d;
     private final Settings s;
@@ -30,6 +31,7 @@ public class EventManager {
 
     /**
      * Sends staff possible alt information
+     * 
      * @param pEvent
      */
     @Listener
@@ -40,6 +42,7 @@ public class EventManager {
 
     /**
      * Store player IP and information.
+     * 
      * @param pEvent
      */
     @Listener
@@ -54,6 +57,7 @@ public class EventManager {
 
     /**
      * Store player information and last position
+     * 
      * @param pEvent
      */
     @Listener

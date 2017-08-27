@@ -6,6 +6,7 @@ import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
 public abstract class BaseCommand implements CommandExecutor {
+
     public CommandSupplementSponge cs;
     public MCProfilerPlugin p;
 

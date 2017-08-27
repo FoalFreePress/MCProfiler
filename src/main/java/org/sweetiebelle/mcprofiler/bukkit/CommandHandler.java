@@ -14,6 +14,7 @@ import com.google.common.base.Joiner;
  *
  */
 class CommandHandler implements CommandExecutor {
+
     /**
      * The message to send people with no permission.
      */
@@ -25,6 +26,7 @@ class CommandHandler implements CommandExecutor {
 
     /**
      * Constructs a new CommandHandler
+     * 
      * @param cs
      */
     CommandHandler(final CommandSupplement<CommandSender> cs) {

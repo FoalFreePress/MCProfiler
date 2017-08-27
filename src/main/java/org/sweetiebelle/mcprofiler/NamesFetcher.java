@@ -11,10 +11,10 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Gets the previous usernames from Mojang's API
- * Adapted from https://github.com/LogBlock/LogBlock/blob/master/src/main/java/de/diddiz/util/UUIDFetcher.java
+ * Gets the previous usernames from Mojang's API Adapted from https://github.com/LogBlock/LogBlock/blob/master/src/main/java/de/diddiz/util/UUIDFetcher.java
  */
 public class NamesFetcher {
+
     /**
      * The API url
      */
@@ -23,11 +23,15 @@ public class NamesFetcher {
 
     /**
      * Gets previous names from the UUID
+     * 
      * @param uuid
      * @return An Array of {@link Response}s
-     * @throws IOException if an error occurs
-     * @throws JsonSyntaxException if an error occurs
-     * @throws JsonIOException if an error occurs
+     * @throws IOException
+     *             if an error occurs
+     * @throws JsonSyntaxException
+     *             if an error occurs
+     * @throws JsonIOException
+     *             if an error occurs
      */
     public static Response[] getPreviousNames(final UUID uuid) throws IOException, JsonSyntaxException, JsonIOException {
         return gson.fromJson(new InputStreamReader(createConnection(uuid).getInputStream()), Response[].class);
@@ -35,9 +39,12 @@ public class NamesFetcher {
 
     /**
      * Gets an {@link HttpURLConnection} from a UUID.
-     * @param uuid the UUID
+     * 
+     * @param uuid
+     *            the UUID
      * @return the connection
-     * @throws IOException if an error occurs.
+     * @throws IOException
+     *             if an error occurs.
      */
     private static HttpURLConnection createConnection(final UUID uuid) throws IOException {
         final HttpURLConnection connection = (HttpURLConnection) new URL(String.format(PROFILE_URL, uuid.toString().replaceAll("-", ""))).openConnection();
@@ -48,11 +55,13 @@ public class NamesFetcher {
         connection.setDoOutput(true);
         return connection;
     }
+
     /**
      * The response class used to handle the data gotten.
      *
      */
     public class Response {
+
         /**
          * The name
          */

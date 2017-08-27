@@ -10,6 +10,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class ForceMakeAccount extends Maintenance {
+
     public ForceMakeAccount(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
     }
@@ -24,13 +25,13 @@ public class ForceMakeAccount extends Maintenance {
         String playerName = null;
         String ip = null;
         Optional<String> op;
-        op = args.<String> getOne("uuid");
+        op = args.<String>getOne("uuid");
         if (op.isPresent())
             uuid = op.get();
-        op = args.<String> getOne("lastKnownName");
+        op = args.<String>getOne("lastKnownName");
         if (op.isPresent())
             playerName = op.get();
-        op = args.<String> getOne("ip");
+        op = args.<String>getOne("ip");
         if (op.isPresent())
             ip = op.get();
         str[2] = uuid;

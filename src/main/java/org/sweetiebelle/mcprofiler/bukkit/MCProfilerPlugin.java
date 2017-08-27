@@ -10,6 +10,7 @@ import org.sweetiebelle.mcprofiler.Settings;
  * The main plugin class.
  */
 public class MCProfilerPlugin extends JavaPlugin {
+
     private CommandHandler ch;
     private Settings s;
 

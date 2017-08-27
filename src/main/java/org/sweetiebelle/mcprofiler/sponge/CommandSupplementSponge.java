@@ -20,6 +20,7 @@ import org.sweetiebelle.mcprofiler.Settings;
 import org.sweetiebelle.mcprofiler.UUIDAlt;
 
 public class CommandSupplementSponge extends CommandSupplement<CommandSource> {
+
     public CommandSupplementSponge(final Settings settings, final Data data, final MCProfilerPlugin mcProfilerPlugin) {
         super(settings, data);
     }

@@ -12,6 +12,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class ListLinks extends BaseCommand {
+
     public ListLinks(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
         // TODO Auto-generated constructor stub
@@ -22,14 +23,14 @@ public class ListLinks extends BaseCommand {
         args.checkPermission(sender, "mcprofiler.listlinks");
         boolean recursive = false;
         String player = null;
-        Optional<String> op = args.<String> getOne("isRecursive");
+        Optional<String> op = args.<String>getOne("isRecursive");
         if (op.isPresent())
             if (op.get().equalsIgnoreCase("-r"))
                 recursive = true;
             else
                 player = op.get();
         if (recursive) {
-            op = args.<String> getOne("player");
+            op = args.<String>getOne("player");
             if (op.isPresent())
                 player = op.get();
         }

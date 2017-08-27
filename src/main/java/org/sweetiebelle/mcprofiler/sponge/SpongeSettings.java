@@ -8,6 +8,7 @@ import org.sweetiebelle.mcprofiler.Settings;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 
 public class SpongeSettings extends Settings {
+
     private final MCProfilerPlugin p;
 
     public SpongeSettings(final MCProfilerPlugin p) {

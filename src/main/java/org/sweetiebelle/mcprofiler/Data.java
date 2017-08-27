@@ -27,10 +27,9 @@ import com.google.common.collect.ObjectArrays;
  *
  */
 public class Data {
+
     private static final Logger logger = LogManager.getLogger("MCProfiler");
-
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-
     private Connection connection;
     private final Settings s;
 

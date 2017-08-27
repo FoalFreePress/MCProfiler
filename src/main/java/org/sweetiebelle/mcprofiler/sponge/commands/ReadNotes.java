@@ -12,6 +12,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class ReadNotes extends BaseCommand {
+
     public ReadNotes(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
     }
@@ -20,7 +21,7 @@ public class ReadNotes extends BaseCommand {
     public CommandResult execute(final CommandSource sender, final CommandContext args) throws CommandException {
         String playername = null;
         Optional<String> op = null;
-        op = args.<String> getOne("player");
+        op = args.<String>getOne("player");
         if (op.isPresent())
             playername = op.get();
         if (playername == null)

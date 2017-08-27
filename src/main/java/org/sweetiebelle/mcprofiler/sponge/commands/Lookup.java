@@ -12,6 +12,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class Lookup extends BaseCommand {
+
     public Lookup(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
     }
@@ -20,7 +21,7 @@ public class Lookup extends BaseCommand {
     public CommandResult execute(final CommandSource sender, final CommandContext args) throws CommandException {
         args.checkPermission(sender, "mcprofiler.lookup");
         String ip = null;
-        final Optional<String> op = args.<String> getOne("ip");
+        final Optional<String> op = args.<String>getOne("ip");
         if (op.isPresent())
             ip = op.get();
         if (ip == null)

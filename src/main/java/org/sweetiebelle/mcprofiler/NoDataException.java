@@ -5,6 +5,7 @@ package org.sweetiebelle.mcprofiler;
  *
  */
 public class NoDataException extends Exception {
+
     private static final long serialVersionUID = 3422799336114476332L;
 
     /**
@@ -16,7 +17,9 @@ public class NoDataException extends Exception {
 
     /**
      * Creates an Exception with the specified reason
-     * @param string the reason
+     * 
+     * @param string
+     *            the reason
      */
     public NoDataException(final String string) {
         super(string);

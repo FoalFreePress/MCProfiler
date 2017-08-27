@@ -10,6 +10,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class NewName extends Maintenance {
+
     public NewName(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
     }
@@ -23,10 +24,10 @@ public class NewName extends Maintenance {
         String uuid = null;
         String newname = null;
         Optional<String> op;
-        op = args.<String> getOne("uuid");
+        op = args.<String>getOne("uuid");
         if (op.isPresent())
             uuid = op.get();
-        op = args.<String> getOne("newname");
+        op = args.<String>getOne("newname");
         if (op.isPresent())
             newname = op.get();
         str[2] = uuid;

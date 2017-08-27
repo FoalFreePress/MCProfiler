@@ -1,6 +1,7 @@
 package org.sweetiebelle.mcprofiler;
 
 public abstract class Settings {
+
     public String dbDatabase;
     public String dbHost;
     public String dbPass;

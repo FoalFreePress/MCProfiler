@@ -10,6 +10,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class FixNotes extends Maintenance {
+
     public FixNotes(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
     }
@@ -23,10 +24,10 @@ public class FixNotes extends Maintenance {
         String uuid = null;
         String playerName = null;
         Optional<String> op;
-        op = args.<String> getOne("uuid");
+        op = args.<String>getOne("uuid");
         if (op.isPresent())
             uuid = op.get();
-        op = args.<String> getOne("name");
+        op = args.<String>getOne("name");
         if (op.isPresent())
             playerName = op.get();
         str[2] = uuid;

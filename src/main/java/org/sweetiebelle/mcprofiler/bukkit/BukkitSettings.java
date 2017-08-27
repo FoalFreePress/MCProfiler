@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.sweetiebelle.mcprofiler.Settings;
 
 public class BukkitSettings extends Settings {
+
     private final MCProfilerPlugin plugin;
     private FileConfiguration config;
 
@@ -17,7 +18,8 @@ public class BukkitSettings extends Settings {
     /**
      * Reads settings
      *
-     * @param pConfig the config
+     * @param pConfig
+     *            the config
      */
     @Override
     protected void readSettings() {

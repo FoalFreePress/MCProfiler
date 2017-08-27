@@ -22,6 +22,7 @@ import org.sweetiebelle.mcprofiler.UUIDAlt;
  *
  */
 class CommandSupplementBukkit extends CommandSupplement<CommandSender> {
+
     final VanishController vc;
     final BansController bc;
     final PermissionsController pc;

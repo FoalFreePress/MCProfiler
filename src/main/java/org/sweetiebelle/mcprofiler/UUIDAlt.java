@@ -7,6 +7,7 @@ import java.util.UUID;
  *
  */
 public class UUIDAlt implements BaseAccount {
+
     /**
      * UUID of the alt.
      */

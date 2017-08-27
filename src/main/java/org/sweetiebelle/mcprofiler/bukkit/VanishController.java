@@ -20,6 +20,7 @@ import net.milkbowl.vault.permission.Permission;
  *
  */
 class VanishController implements Listener {
+
     private final Permission perm;
     private final boolean vnp;
     private final boolean spv;
@@ -29,6 +30,7 @@ class VanishController implements Listener {
         if (Bukkit.getPluginManager().isPluginEnabled("VanishNoPacket")) {
             vnp = true;
             Bukkit.getPluginManager().registerEvents(new Listener() {
+
                 /**
                  * Updates player information from a VanishStatusChangeEvent
                  * 
@@ -47,16 +49,17 @@ class VanishController implements Listener {
         } else {
             vnp = false;
         }
-        if(Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
+        if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             spv = true;
             Bukkit.getPluginManager().registerEvents(new Listener() {
+
                 /**
                  * Updates player information from a PlayerHideEvent
                  * 
                  * @param pEvent
                  */
                 @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-                public void onVanish(final PlayerHideEvent  pEvent) {
+                public void onVanish(final PlayerHideEvent pEvent) {
                     final Player p = pEvent.getPlayer();
                     final Location loc = p.getLocation();
                     d.getExecutor().submit(() -> {
@@ -85,7 +88,7 @@ class VanishController implements Listener {
                 return perm.has(sender, "vanish.see");
             }
         }
-        if(spv) {
+        if (spv) {
             return VanishAPI.canSee(sender, admin);
         }
         return true;

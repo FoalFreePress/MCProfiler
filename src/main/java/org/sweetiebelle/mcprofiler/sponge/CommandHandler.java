@@ -25,6 +25,7 @@ import org.sweetiebelle.mcprofiler.sponge.commands.Status;
 import org.sweetiebelle.mcprofiler.sponge.commands.UUID;
 
 public class CommandHandler extends BaseCommand {
+
     // @formatter:off
     CommandHandler(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);

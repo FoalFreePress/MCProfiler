@@ -20,6 +20,7 @@ import org.sweetiebelle.mcprofiler.Settings;
  *
  */
 class EventManager implements Listener {
+
     private final CommandSupplement<CommandSender> cs;
     private final Data d;
     private final Settings s;
@@ -32,6 +33,7 @@ class EventManager implements Listener {
 
     /**
      * Sends staff possible alt information
+     * 
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -42,6 +44,7 @@ class EventManager implements Listener {
 
     /**
      * Store player IP and information.
+     * 
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
@@ -50,7 +53,7 @@ class EventManager implements Listener {
         final UUID uuid = player.getUniqueId();
         final String name = player.getName();
         final String ip = pEvent.getAddress().toString().split("/")[1];
-        d.getExecutor().submit(()->{
+        d.getExecutor().submit(() -> {
             d.storePlayerIP(uuid, ip);
             d.updatePlayerInformation(uuid, name, ip);
         });
@@ -58,6 +61,7 @@ class EventManager implements Listener {
 
     /**
      * Store player information and last position
+     * 
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

@@ -6,6 +6,7 @@ import java.util.TimeZone;
 import java.util.UUID;
 
 public abstract class CommandSupplement<Sender> {
+
     private final static String noPermission = "&cYou do not have permission.";
     protected final Data d;
     protected final Settings s;
@@ -25,6 +26,7 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * Called on a /MCProfiler info
+     * 
      * @param playername
      * @param pSender
      * @return
@@ -37,13 +39,17 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * Handle the displaying of alts to people with a permission node.
-     * @param player the player
-     * @param altAccounts their alts
+     * 
+     * @param player
+     *            the player
+     * @param altAccounts
+     *            their alts
      */
     public abstract void notifyStaffOfPossibleAlts(UUID uuid, String name, final BaseAccount[] baseAccounts);
 
     /**
      * Adds the note to the player.
+     * 
      * @param pPlayerName
      * @param pStaffName
      * @param pNote
@@ -67,6 +73,7 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * Handle /mcprofiler lookup <ip>
+     * 
      * @param pIP
      * @param pSender
      * @return
@@ -106,7 +113,8 @@ public abstract class CommandSupplement<Sender> {
     /**
      * Gets a timestamp from a unix time.
      *
-     * @param time in seconds
+     * @param time
+     *            in seconds
      * @return
      */
     protected String getTimeStamp(long time) {
@@ -119,6 +127,7 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * handle /mcprofiler listlinks
+     * 
      * @param pPlayerName
      * @param pSender
      * @param recursive
@@ -140,6 +149,7 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * handle /MCProfiler listips
+     * 
      * @param name
      * @param pSender
      * @return
@@ -166,6 +176,7 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * Gets a playername from a UUID.
+     * 
      * @param pUUIDString
      * @param pSender
      * @return
@@ -194,6 +205,7 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * Handle /mcprofiler maintenance
+     * 
      * @param args
      * @param sender
      * @return
@@ -262,7 +274,9 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * Read the notes of the player.
-     * @param pPlayerName The player's name
+     * 
+     * @param pPlayerName
+     *            The player's name
      * @param pSender
      * @return
      */
@@ -282,6 +296,7 @@ public abstract class CommandSupplement<Sender> {
 
     /**
      * Handle /MCProfiler reload
+     * 
      * @param sender
      * @return
      */

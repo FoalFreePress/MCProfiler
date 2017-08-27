@@ -9,6 +9,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class Maintenance extends BaseCommand {
+
     public Maintenance(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
     }

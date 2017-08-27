@@ -9,6 +9,7 @@ import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
  *
  */
 public class Account implements BaseAccount {
+
     /**
      * The player's last IP.
      */

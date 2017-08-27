@@ -12,6 +12,7 @@ import org.sweetiebelle.mcprofiler.sponge.CommandSupplementSponge;
 import org.sweetiebelle.mcprofiler.sponge.MCProfilerPlugin;
 
 public class ListIPs extends BaseCommand {
+
     public ListIPs(final MCProfilerPlugin p, final CommandSupplementSponge cs) {
         super(p, cs);
     }
@@ -20,7 +21,7 @@ public class ListIPs extends BaseCommand {
     public CommandResult execute(final CommandSource sender, final CommandContext args) throws CommandException {
         args.checkPermission(sender, "mcprofiler.listips");
         String player = null;
-        final Optional<String> op = args.<String> getOne("player");
+        final Optional<String> op = args.<String>getOne("player");
         if (op.isPresent())
             player = op.get();
         if (player == null)

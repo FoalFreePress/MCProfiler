@@ -15,6 +15,7 @@ import com.sk89q.commandbook.bans.BansComponent;
  *
  */
 class BansController {
+
     /**
      * CommandBook's ban database
      */
@@ -33,7 +34,9 @@ class BansController {
 
     /**
      * Worker class
-     * @param uuid the player's uuid
+     * 
+     * @param uuid
+     *            the player's uuid
      * @return if the player is banned or not. New plugins must support uuid lookup.
      */
     boolean isBanned(final UUID uuid) {
