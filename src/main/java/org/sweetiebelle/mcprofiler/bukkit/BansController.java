@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 
+import com.brohoof.brohoofbans.BrohoofBansPlugin;
 import com.sk89q.commandbook.CommandBook;
 import com.sk89q.commandbook.bans.BanDatabase;
 import com.sk89q.commandbook.bans.BansComponent;
@@ -20,6 +21,7 @@ class BansController {
      * CommandBook's ban database
      */
     private BanDatabase commandbook;
+    private BrohoofBansPlugin brohoofBans;
 
     BansController() {
         final Plugin cb = Bukkit.getPluginManager().getPlugin("CommandBook");
@@ -28,7 +30,11 @@ class BansController {
             LogManager.getLogger().info("Found CommandBook! Using it for ban lookups.");
         } else
             commandbook = null;
-        if (commandbook == null)
+        final Plugin bb = Bukkit.getPluginManager().getPlugin("BrohoofBans");
+        if (bb != null) {
+            brohoofBans = ((BrohoofBansPlugin) bb);
+        }
+        if (commandbook == null || bb == null)
             LogManager.getLogger().info("No bans plugin found. Using Bukkit's ban system.");
     }
 
@@ -42,6 +48,8 @@ class BansController {
     boolean isBanned(final UUID uuid) {
         if (commandbook != null)
             return commandbook.isBanned(uuid);
+        if (brohoofBans != null)
+            return brohoofBans.getData().isBanned(uuid);
         return Bukkit.getOfflinePlayer(uuid).isBanned();
     }
 }
