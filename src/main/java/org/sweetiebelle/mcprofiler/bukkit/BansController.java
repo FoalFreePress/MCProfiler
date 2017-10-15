@@ -33,7 +33,9 @@ class BansController {
         final Plugin bb = Bukkit.getPluginManager().getPlugin("BrohoofBans");
         if (bb != null) {
             brohoofBans = ((BrohoofBansPlugin) bb);
-        }
+            LogManager.getLogger().info("Found BrohoofBans! Using it for ban lookups.");
+        } else
+            brohoofBans = null;
         if (commandbook == null || bb == null)
             LogManager.getLogger().info("No bans plugin found. Using Bukkit's ban system.");
     }
@@ -46,10 +48,11 @@ class BansController {
      * @return if the player is banned or not. New plugins must support uuid lookup.
      */
     boolean isBanned(final UUID uuid) {
+        boolean isBanned = false;
         if (commandbook != null)
-            return commandbook.isBanned(uuid);
-        if (brohoofBans != null)
-            return brohoofBans.getData().isBanned(uuid);
-        return Bukkit.getOfflinePlayer(uuid).isBanned();
+            isBanned = commandbook.isBanned(uuid);
+        if (!isBanned && brohoofBans != null)
+            isBanned =  brohoofBans.getData().isBanned(uuid);
+        return isBanned || Bukkit.getOfflinePlayer(uuid).isBanned();
     }
 }

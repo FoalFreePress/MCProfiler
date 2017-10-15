@@ -519,7 +519,7 @@ public class Data {
             PreparedStatement statement = connection.prepareStatement(String.format("UPDATE %sprofiles SET lastpos = ? WHERE uuid = ?;", s.dbPrefix));
             statement.setString(1, location);
             statement.setString(2, pUUID.toString());
-            statement.executeQuery();
+            statement.executeUpdate();
             statement.close();
         } catch (final SQLException e) {
             error(e);
