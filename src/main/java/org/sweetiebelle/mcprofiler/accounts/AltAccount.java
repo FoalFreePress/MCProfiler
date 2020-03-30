@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler;
+package org.sweetiebelle.mcprofiler.accounts;
 
 import java.util.UUID;
 
@@ -6,20 +6,10 @@ import java.util.UUID;
  * Performs .equals() on both UUID and IP
  *
  */
-public class AltAccount implements BaseAccount {
-
-    /**
-     * UUID of the alt.
-     */
-    private final UUID uuid;
-    /**
-     * IP of the alt.
-     */
-    private final String ip;
+public class AltAccount extends BaseAccount {
 
     public AltAccount(final UUID uuid, final String ip) {
-        this.uuid = uuid;
-        this.ip = ip;
+        super(uuid, ip);
     }
 
     @Override

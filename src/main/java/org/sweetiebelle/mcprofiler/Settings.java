@@ -1,6 +1,8 @@
 package org.sweetiebelle.mcprofiler;
 
-public abstract class Settings {
+import org.bukkit.configuration.file.FileConfiguration;
+
+public class Settings {
 
     public String dbDatabase;
     public String dbHost;
@@ -12,8 +14,41 @@ public abstract class Settings {
     public boolean showQuery;
     public boolean useDebug;
     public boolean recOnJoin;
+    private final MCProfilerPlugin plugin;
+    private FileConfiguration config;
 
-    protected abstract void readSettings();
+    Settings(final MCProfilerPlugin plugin) {
+        this.plugin = plugin;
+        plugin.saveDefaultConfig();
+        config = plugin.getConfig();
+        readSettings();
+    }
 
-    public abstract void reloadSettings();
+    /**
+     * Reads settings
+     *
+     * @param pConfig
+     *            the config
+     */
+    protected void readSettings() {
+        stackTraces = config.getBoolean("general.printStackTraces");
+        showQuery = config.getBoolean("general.showquery");
+        useDebug = config.getBoolean("general.debug");
+        recOnJoin = config.getBoolean("general.recursivePlayerJoin");
+        dbHost = config.getString("database.host");
+        dbPort = config.getString("database.port");
+        dbUser = config.getString("database.username");
+        dbPass = config.getString("database.password");
+        dbDatabase = config.getString("database.database");
+        dbPrefix = config.getString("database.prefix");
+    }
+
+    /**
+     * Reloads settings
+     */
+    public void reloadSettings() {
+        plugin.reloadConfig();
+        config = plugin.getConfig();
+        readSettings();
+    }
 }

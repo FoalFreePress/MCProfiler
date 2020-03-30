@@ -4,40 +4,25 @@ plugins {
 }
 
 group = 'org.sweetiebelle'
-version = '1.6'
+version = '1.8'
 
 repositories {
 	jcenter()
-	maven {
-		name 'sponge'
-		url 'https://repo.spongepowered.org/maven'
-	}
 	maven {
 		name 'spigot'
 		url 'https://hub.spigotmc.org/nexus/content/groups/public/'
 	}
 	maven {
-		name 'sk89q'
-		url 'https://maven.sk89q.com/repo'
-	}
-	maven {
 		name 'vault-repo'
-		url 'http://nexus.hc.to/content/repositories/pub_releases'
+		url 'https://jitpack.io'
 	}
-	maven {
-		name 'pex-repo'
-		url 'http://pex-repo.aoeu.xyz'
-	}
+
 }
 
 
 dependencies {
-	compile 'org.spigotmc:spigot-api:1.12.2-R0.1-SNAPSHOT'
-	compile 'org.spongepowered:spongeapi:5.1.0'
-	compile 'org.apache.logging.log4j:log4j-api:2.8'
-	compile ('com.sk89q:commandbook:2.4'){transitive=false}
-	compile 'net.milkbowl.vault:VaultAPI:1.6'
-	compile 'ru.tehkode:PermissionsEx:1.23.1'
+	compile 'org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT'
+	compile 'com.github.MilkBowl:VaultAPI:1.7'
 	compile fileTree(dir: 'libs', include: '*.jar')
 
 }

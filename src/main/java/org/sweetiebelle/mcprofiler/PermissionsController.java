@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler.bukkit;
+package org.sweetiebelle.mcprofiler;
 
 import java.util.UUID;
 

@@ -6,19 +6,20 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.json.simple.parser.ParseException;
+import org.bukkit.Bukkit;
 import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
+import org.sweetiebelle.mcprofiler.accounts.Account;
+import org.sweetiebelle.mcprofiler.accounts.AltAccount;
+import org.sweetiebelle.mcprofiler.accounts.BaseAccount;
+import org.sweetiebelle.mcprofiler.accounts.UUIDAlt;
 
 import com.google.common.collect.ObjectArrays;
 
@@ -28,19 +29,16 @@ import com.google.common.collect.ObjectArrays;
  */
 public class Data {
 
-    private static final Logger logger = LogManager.getLogger("MCProfiler");
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
     private Connection connection;
     private final Settings s;
+    private Logger logger;
 
-    public Data(final Settings s) {
+    public Data(final MCProfilerPlugin p, final Settings s) {
+        logger = p.getLogger();
         this.s = s;
         createTables();
     }
 
-    public ExecutorService getExecutor() {
-        return executor;
-    }
 
     /**
      * Adds the note to the player
@@ -52,13 +50,12 @@ public class Data {
      * @param pNote
      *            the note
      */
-    public void addNoteToUser(final UUID pUUID, final String pStaffName, final String pNote) {
+    public void addNoteToUser(final UUID pPlayer, final UUID pStaff, final String pNote) {
         try {
-            PreparedStatement statement = connection.prepareStatement(String.format("INSERT INTO %snotes (uuid, time, lastKnownStaffName, note) VALUES (?, ?, ?, ?);", s.dbPrefix));
-            statement.setString(1, pUUID.toString());
-            statement.setNull(2, Types.TIMESTAMP);
-            statement.setString(3, pStaffName);
-            statement.setString(4, pNote);
+            PreparedStatement statement = connection.prepareStatement(String.format("INSERT INTO %snotes (uuid, time, staffuuid, note) VALUES (?, NOW(), ?, ?);", s.dbPrefix));
+            statement.setString(1, pPlayer.toString());
+            statement.setString(2, pStaff.toString());
+            statement.setString(3, pNote);
             statement.executeUpdate();
             statement.close();
         } catch (final SQLException e) {
@@ -88,7 +85,7 @@ public class Data {
      */
     private final void createTables() {
         // Generate the information about the various tables
-        final String notes = "CREATE TABLE " + s.dbPrefix + "notes (noteid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(36) NOT NULL, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP, lastKnownStaffName VARCHAR(16) NOT NULL, note VARCHAR(255) NOT NULL)";
+        final String notes = "CREATE TABLE " + s.dbPrefix + "notes (noteid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(36) NOT NULL, time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, staffuuid VARCHAR(36) NOT NULL, note VARCHAR(255) NOT NULL)";
         final String profiles = "CREATE TABLE " + s.dbPrefix + "profiles (profileid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(36) NOT NULL, lastKnownName VARCHAR(16) NOT NULL, ip VARCHAR(39), laston TIMESTAMP, lastpos VARCHAR(75))";
         final String iplog = "CREATE TABLE " + s.dbPrefix + "iplog (ipid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ip VARCHAR(36) NOT NULL, uuid VARCHAR(36) NOT NULL)";
         // Generate the database tables
@@ -112,7 +109,7 @@ public class Data {
             return;
         }
         if (e instanceof SQLException) {
-            logger.fatal("SQLException: " + e.getMessage());
+            logger.severe("SQLException: " + e.getMessage());
             return;
         }
         if (e instanceof IllegalArgumentException)
@@ -123,7 +120,7 @@ public class Data {
             // If true, then it was caused by data in Account not being found.
             if (e.getMessage().equalsIgnoreCase("No Account found."))
                 return;
-            logger.fatal("NoDataException: " + e.getMessage());
+            logger.severe("NoDataException: " + e.getMessage());
             return;
         }
         if (e instanceof NoClassDefFoundError)
@@ -131,15 +128,11 @@ public class Data {
             // p.severe("NoClassDefFoundError: " + e.getMessage());
             return;
         if (e instanceof IOException) {
-            logger.fatal("IOException: " + e.getMessage());
-            return;
-        }
-        if (e instanceof ParseException) {
-            logger.fatal("ParseException: " + e.getMessage());
+            logger.severe("IOException: " + e.getMessage());
             return;
         }
         // Or e.getCause();
-        logger.fatal("Unhandled Exception " + e.getClass().getName() + ": " + e.getMessage());
+        logger.severe("Unhandled Exception " + e.getClass().getName() + ": " + e.getMessage());
         e.printStackTrace();
     }
 
@@ -213,7 +206,7 @@ public class Data {
      *             if no such account exists
      *
      */
-    public Account getAccount(String name, final boolean needsLastTime) {
+    public Optional<Account> getAccount(String name, final boolean needsLastTime) {
         UUID uuid = null;
         String laston = null;
         String location = null;
@@ -228,7 +221,7 @@ public class Data {
             if (rs.next()) {
                 final String stringuuuid = rs.getString("uuid");
                 if (stringuuuid == null || stringuuuid.equals("") || stringuuuid.equalsIgnoreCase("null"))
-                    return null;
+                    return Optional.<Account>empty();
                 uuid = UUID.fromString(rs.getString("uuid"));
                 name = rs.getString("lastKnownName");
                 laston = rs.getString("laston");
@@ -238,15 +231,15 @@ public class Data {
                 throw new NoDataException();
         } catch (SQLException | IllegalArgumentException | NoDataException e) {
             error(e);
-            return null;
+            return Optional.<Account>empty();
         }
         // Get the notes
         try {
             rs = getResultSet("SELECT * FROM " + s.dbPrefix + "notes where UUID = \"" + uuid.toString() + "\";");
             final List<String> nList = new LinkedList<String>();
             while (rs.next()) {
-                final String staffName = rs.getString("lastKnownStaffName");
-                nList.add("&c" + rs.getString("time") + " &f" + rs.getString("note") + " &c" + staffName);
+                final UUID staffUUID = UUID.fromString(rs.getString("staffuuid"));
+                nList.add("&c" + rs.getString("time") + " &f" + rs.getString("note") + " &c" + Bukkit.getOfflinePlayer(staffUUID).getName());
             }
             // Convert the list to an array
             if (nList.size() == 0)
@@ -267,7 +260,7 @@ public class Data {
         } catch (final IOException e) {
             error(e);
         }
-        return new Account(uuid, name, laston, location, ip, notes, names);
+        return Optional.<Account>of(new Account(uuid, name, laston, location, ip, notes, names));
     }
 
     /**
@@ -279,7 +272,7 @@ public class Data {
      * @throws NoDataException
      *             if no such account exists
      */
-    public Account getAccount(final UUID uuid, final boolean needsLastTime) {
+    public Optional<Account> getAccount(final UUID uuid, final boolean needsLastTime) {
         String name = null;
         String laston = null;
         String location = null;
@@ -302,14 +295,14 @@ public class Data {
         } catch (SQLException | NoDataException e) {
             error(e);
             if (e instanceof NoDataException)
-                return null;
+                return Optional.<Account>empty();
         }
         try {
             rs = getResultSet("SELECT * FROM " + s.dbPrefix + "notes where UUID = \"" + uuid.toString() + "\";");
             final List<String> nList = new LinkedList<String>();
             while (rs.next()) {
-                final String staffName = rs.getString("lastKnownStaffName");
-                nList.add("&c" + rs.getString("time") + " &f" + rs.getString("note") + " &c" + staffName);
+                final UUID staffUUID = UUID.fromString(rs.getString("staffuuid"));
+                nList.add("&c" + rs.getString("time") + " &f" + rs.getString("note") + " &c" + Bukkit.getOfflinePlayer(staffUUID).getName());
             }
             // Convert the list to an array
             if (nList.size() == 0)
@@ -329,7 +322,7 @@ public class Data {
         } catch (final IOException e) {
             error(e);
         }
-        return new Account(uuid, name, laston, location, ip, notes, names);
+        return Optional.<Account>of(new Account(uuid, name, laston, location, ip, notes, names));
     }
 
     /**
@@ -388,8 +381,7 @@ public class Data {
         boolean uuidSetComplete = true;
         // The size of the array is the number of times to iterate.
         for (int i = 0; i < array.length; i++) {
-            logger.debug("Size of array is now #2 " + array.length);
-            final AltAccount a = BaseAccount.switchType(AltAccount.class, array[i]);
+            final AltAccount a = new AltAccount(array[i].getUUID(), array[i].getIP());
             final UUID uuid = a.getUUID();
             // Get the IPs where uuid is equal to the account's UUID
             uuidSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + uuid.toString() + "\";");

@@ -1,6 +1,7 @@
 name: MCProfiler
-main: org.sweetiebelle.mcprofiler.bukkit.MCProfilerPlugin
+main: org.sweetiebelle.mcprofiler.MCProfilerPlugin
 version: $version
+api-version: 1.15
 authors: [SweetieBelle, Hepolite]
 softdepend: [CommandBook, VanishNoPacket, Vault, SuperVanish, PremiumVanish, BrohoofBans]
 description: >

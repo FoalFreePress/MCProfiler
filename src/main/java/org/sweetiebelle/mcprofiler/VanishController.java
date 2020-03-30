@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler.bukkit;
+package org.sweetiebelle.mcprofiler;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -9,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.vanish.VanishPlugin;
 import org.kitteh.vanish.event.VanishStatusChangeEvent;
-import org.sweetiebelle.mcprofiler.Data;
 
 import de.myzelyam.api.vanish.PlayerHideEvent;
 import de.myzelyam.api.vanish.VanishAPI;
@@ -40,10 +39,8 @@ class VanishController implements Listener {
                 public void onVanish(final VanishStatusChangeEvent pEvent) {
                     final Player p = pEvent.getPlayer();
                     final Location loc = p.getLocation();
-                    d.getExecutor().submit(() -> {
-                        d.updatePlayerInformation(p.getUniqueId(), p.getName(), p.getAddress().toString().split("/")[1].split(":")[0]);
-                        d.setPlayerLastPosition(p.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                    });
+                    d.updatePlayerInformation(p.getUniqueId(), p.getName(), p.getAddress().toString().split("/")[1].split(":")[0]);
+                    d.setPlayerLastPosition(p.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 }
             }, pl);
         } else {
@@ -62,10 +59,8 @@ class VanishController implements Listener {
                 public void onVanish(final PlayerHideEvent pEvent) {
                     final Player p = pEvent.getPlayer();
                     final Location loc = p.getLocation();
-                    d.getExecutor().submit(() -> {
-                        d.updatePlayerInformation(p.getUniqueId(), p.getName(), p.getAddress().toString().split("/")[1].split(":")[0]);
-                        d.setPlayerLastPosition(p.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-                    });
+                    d.updatePlayerInformation(p.getUniqueId(), p.getName(), p.getAddress().toString().split("/")[1].split(":")[0]);
+                    d.setPlayerLastPosition(p.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
                 }
             }, pl);
         } else {

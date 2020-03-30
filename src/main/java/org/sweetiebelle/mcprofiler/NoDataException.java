@@ -1,5 +1,7 @@
 package org.sweetiebelle.mcprofiler;
 
+import org.sweetiebelle.mcprofiler.accounts.Account;
+
 /**
  * Throw to indicate either no {@link Account} was found, or if something is null when it shouldn't be.
  *

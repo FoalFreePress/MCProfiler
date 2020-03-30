@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler;
+package org.sweetiebelle.mcprofiler.accounts;
 
 import java.util.UUID;
 
@@ -8,7 +8,7 @@ import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
  * An Account contains a player's UUID, their name, their last online time, their last Location, their last IP and their notes.
  *
  */
-public class Account implements BaseAccount {
+public class Account {
 
     /**
      * The player's last IP.
@@ -60,10 +60,6 @@ public class Account implements BaseAccount {
         this.names = names;
     }
 
-    public Account(UUID uuid, String ip) {
-        throw new UnsupportedOperationException("Cannot make an " + getClass().getName() + " using only " + UUID.class.getName() + " and " + String.class.getName());
-    }
-
     /**
      * If this Account's uuid equals the argument's {@link UUID}, returns true. Else false
      *
@@ -81,7 +77,6 @@ public class Account implements BaseAccount {
      *
      * @return Last IP of the player
      */
-    @Override
     public String getIP() {
         return ip;
     }
@@ -130,7 +125,6 @@ public class Account implements BaseAccount {
      *
      * @return {@link UUID} of the player
      */
-    @Override
     public UUID getUUID() {
         return uuid;
     }
