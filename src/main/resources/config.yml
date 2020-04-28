@@ -1,18 +1,9 @@
 general:
   #If true, will print debug stack traces. By default, only unexpected exceptions will be printed. If this is true, all handled exceptions will be printed.
-  printStackTraces: false
-  #If true, prints all the queries being executed.
-  showquery: false
-  #If true, prints debug messages.
-  debug: false
+  printStackTraces: true
   #If true, uses recursive searching when players join. This is useful for helping to find more alts of players when they join, but disabling it will save processing time.
   recursivePlayerJoin: false
 #MySQL Database settings
 database:
-  username: username
-  password: password
-  host: localhost
-  port: 3306
-  database: schema
   #table prefix
   prefix: MCProfiler_

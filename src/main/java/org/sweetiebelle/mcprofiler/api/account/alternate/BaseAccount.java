@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler.accounts;
+package org.sweetiebelle.mcprofiler.api.account.alternate;
 
 import java.util.UUID;
 

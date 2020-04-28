@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler.accounts;
+package org.sweetiebelle.mcprofiler.api.account.alternate;
 
 import java.util.UUID;
 
@@ -14,10 +14,9 @@ public class UUIDAlt extends BaseAccount {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj instanceof UUIDAlt) {
-            if (uuid.equals(((UUIDAlt) obj).uuid))
+        if (obj instanceof BaseAccount) {
+            if (uuid.equals(((BaseAccount) obj).uuid))
                 return true;
-            return false;
         }
         return false;
     }

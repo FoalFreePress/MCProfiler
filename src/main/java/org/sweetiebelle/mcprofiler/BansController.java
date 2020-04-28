@@ -35,7 +35,7 @@ public class BansController {
      */
     public boolean isBanned(final UUID uuid) {
         if(brohoofBans != null)
-            return brohoofBans.getData().isBanned(uuid);
+            return brohoofBans.getAPI().isBanned(uuid);
         return Bukkit.getOfflinePlayer(uuid).isBanned();
     }
 }

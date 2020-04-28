@@ -60,8 +60,16 @@ public class NamesFetcher {
      * The response class used to handle the data gotten.
      *
      */
-    public class Response {
+    public static class Response {
+        
+        public Response() {
+            
+        }
 
+        public Response(String string, long i) {
+            this.name = string;
+            this.changedToAt = i;
+        }
         /**
          * The name
          */

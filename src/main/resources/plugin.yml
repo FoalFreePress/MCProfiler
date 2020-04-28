@@ -1,9 +1,10 @@
 name: MCProfiler
-main: org.sweetiebelle.mcprofiler.MCProfilerPlugin
+main: org.sweetiebelle.mcprofiler.MCProfiler
 version: $version
 api-version: 1.15
 authors: [SweetieBelle, Hepolite]
 softdepend: [CommandBook, VanishNoPacket, Vault, SuperVanish, PremiumVanish, BrohoofBans]
+depend: [SweetieLib]
 description: >
              Allows the creation of profiles on users. Tracks their IP, and allows creation of notes.
 commands:

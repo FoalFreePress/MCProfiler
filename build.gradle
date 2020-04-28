@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'org.sweetiebelle'
-version = '1.8'
+version = '2.0'
 
 repositories {
 	jcenter()
@@ -12,19 +12,12 @@ repositories {
 		name 'spigot'
 		url 'https://hub.spigotmc.org/nexus/content/groups/public/'
 	}
-	maven {
-		name 'vault-repo'
-		url 'https://jitpack.io'
-	}
-
 }
 
 
 dependencies {
-	compile 'org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT'
-	compile 'com.github.MilkBowl:VaultAPI:1.7'
-	compile fileTree(dir: 'libs', include: '*.jar')
-
+	implementation 'org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT'
+	implementation fileTree(dir: 'libs', include: '*.jar')
 }
 
 processResources {

@@ -1,5 +1,6 @@
-package org.sweetiebelle.mcprofiler.accounts;
+package org.sweetiebelle.mcprofiler.api.account;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
@@ -38,6 +39,11 @@ public class Account {
      * The UUID of the player.
      */
     private final UUID uuid;
+    
+    /**
+     * Does this account exist in the database?
+     */
+    private final boolean exists;
 
     /**
      * Constructs a new Account.
@@ -50,14 +56,15 @@ public class Account {
      * @param notes
      * @param names
      */
-    public Account(final UUID uuid, final String name, final String laston, final String location, final String ip, final String[] notes, final Response[] names) {
-        this.uuid = uuid;
-        this.name = name;
-        this.laston = laston;
+    public Account(final UUID uuid, final String name, final String laston, final String location, final String ip, final String[] notes, final Response[] names, final boolean exists) {
+        this.uuid = Objects.requireNonNull(uuid);
+        this.name = Objects.requireNonNull(name);
+        this.laston = laston == null ? "null" : laston;
         this.location = location;
-        this.ip = ip;
-        this.notes = notes;
+        this.ip = ip == null ? "null" : ip;
+        this.notes = Objects.requireNonNull(notes);
         this.names = names;
+        this.exists = exists;
     }
 
     /**
@@ -127,6 +134,10 @@ public class Account {
      */
     public UUID getUUID() {
         return uuid;
+    }
+    
+    public boolean exists() {
+        return exists;
     }
 
     /**

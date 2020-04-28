@@ -1,8 +1,8 @@
 package org.sweetiebelle.mcprofiler;
 
+import java.util.Optional;
 import java.util.UUID;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -10,6 +10,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.sweetiebelle.lib.LuckPermsManager;
+import org.sweetiebelle.mcprofiler.api.account.Account;
+import org.sweetiebelle.mcprofiler.command.NotifyStaffCommand;
 
 /**
  * Handles events
@@ -17,14 +20,14 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class EventManager implements Listener {
 
-    private final CommandHandler cs;
-    private final Data d;
-    private final Settings s;
+    private Settings s;
+    private API api;
+    private NotifyStaffCommand notifyStaff;
 
-    public EventManager(final Data d, final CommandHandler ch, final Settings s) {
-        this.d = d;
-        this.cs = ch;
+    public EventManager(LuckPermsManager chat, API api, Settings s) {
+        this.api = api;
         this.s = s;
+        this.notifyStaff = new NotifyStaffCommand(api, chat);
     }
 
     /**
@@ -33,9 +36,9 @@ public class EventManager implements Listener {
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerJoin(final PlayerJoinEvent pEvent) {
-        final Player p = pEvent.getPlayer();
-        cs.notifyStaffOfPossibleAlts(p.getUniqueId(), p.getName(), d.getAltsOfPlayer(p.getUniqueId(), s.recOnJoin));
+    public void onPlayerJoin(PlayerJoinEvent pEvent) {
+        Player p = pEvent.getPlayer();
+        notifyStaff.execute(api.getAccount(pEvent.getPlayer().getUniqueId()).get(), api.getAccounts(p.getUniqueId(), s.recOnJoin));
     }
 
     /**
@@ -44,13 +47,16 @@ public class EventManager implements Listener {
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onPlayerLogin(final PlayerLoginEvent pEvent) {
-        final Player player = pEvent.getPlayer();
-        final UUID uuid = player.getUniqueId();
-        final String name = player.getName();
-        final String ip = pEvent.getAddress().toString().split("/")[1];
-        d.storePlayerIP(uuid, ip);
-        d.updatePlayerInformation(uuid, name, ip);
+    public void onPlayerLogin(PlayerLoginEvent pEvent) {
+        Player player = pEvent.getPlayer();
+        UUID uuid = player.getUniqueId();
+        String name = player.getName();
+        String ip = pEvent.getAddress().toString().split("/")[1];
+        Optional<Account> oAccount = api.getAccount(uuid);
+        if (oAccount.isPresent())
+            api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true));
+        else
+            api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false));
     }
 
     /**
@@ -59,10 +65,15 @@ public class EventManager implements Listener {
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void onPlayerQuit(final PlayerQuitEvent pEvent) {
-        final Player player = pEvent.getPlayer();
-        final Location loc = player.getLocation();
-        d.setPlayerLastPosition(player.getUniqueId(), loc.getWorld().getName(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
-        d.updatePlayerInformation(player.getUniqueId(), player.getName(), player.getAddress().getAddress().toString().split("/")[1]);
+    public void onPlayerQuit(PlayerQuitEvent pEvent) {
+        Player player = pEvent.getPlayer();
+        UUID uuid = player.getUniqueId();
+        String ip = player.getAddress().getAddress().toString().split("/")[1];
+        String name = player.getName();
+        Optional<Account> oAccount = api.getAccount(player.getUniqueId());
+        if (oAccount.isPresent())
+            api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true));
+        else
+            api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false));
     }
 }
