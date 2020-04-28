@@ -20,19 +20,19 @@ import org.sweetiebelle.mcprofiler.command.NotifyStaffCommand;
  */
 public class EventManager implements Listener {
 
-    private Settings s;
     private API api;
     private NotifyStaffCommand notifyStaff;
+    private Settings s;
 
     public EventManager(LuckPermsManager chat, API api, Settings s) {
         this.api = api;
         this.s = s;
-        this.notifyStaff = new NotifyStaffCommand(api, chat);
+        notifyStaff = new NotifyStaffCommand(api, chat);
     }
 
     /**
      * Sends staff possible alt information
-     * 
+     *
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
@@ -43,7 +43,7 @@ public class EventManager implements Listener {
 
     /**
      * Store player IP and information.
-     * 
+     *
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
@@ -61,7 +61,7 @@ public class EventManager implements Listener {
 
     /**
      * Store player information and last position
-     * 
+     *
      * @param pEvent
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

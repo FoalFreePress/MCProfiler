@@ -19,13 +19,12 @@ public class NoteCommandHandler extends AbstractCommandHandler {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equalsIgnoreCase("note")) {
+        if (command.getName().equalsIgnoreCase("note"))
             if (args.length >= 2) {
                 String targetPlayer = args[0];
                 String note = Joiner.on(' ').join(ArrayUtils.subarray(args, 1, args.length));
                 return noteCommand.execute(sender, targetPlayer, note);
             }
-        }
         return false;
     }
 }

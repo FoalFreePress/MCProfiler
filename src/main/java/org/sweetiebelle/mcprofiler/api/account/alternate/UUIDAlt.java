@@ -8,22 +8,21 @@ import java.util.UUID;
  */
 public class UUIDAlt extends BaseAccount {
 
-    public UUIDAlt(final UUID uuid, final String ip) {
+    public UUIDAlt(UUID uuid, String ip) {
         super(uuid, ip);
     }
 
     @Override
-    public boolean equals(final Object obj) {
-        if (obj instanceof BaseAccount) {
+    public boolean equals(Object obj) {
+        if (obj instanceof BaseAccount)
             if (uuid.equals(((BaseAccount) obj).uuid))
                 return true;
-        }
         return false;
     }
 
     @Override
-    public String toString() {
-        return "UUID = " + uuid.toString() + ", IP = " + ip;
+    public String getIP() {
+        return ip;
     }
 
     @Override
@@ -32,7 +31,7 @@ public class UUIDAlt extends BaseAccount {
     }
 
     @Override
-    public String getIP() {
-        return ip;
+    public String toString() {
+        return "UUID = " + uuid.toString() + ", IP = " + ip;
     }
 }

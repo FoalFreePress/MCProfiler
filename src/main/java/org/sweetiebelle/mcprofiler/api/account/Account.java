@@ -12,38 +12,37 @@ import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
 public class Account {
 
     /**
+     * Does this account exist in the database?
+     */
+    private boolean exists;
+    /**
      * The player's last IP.
      */
-    private final String ip;
+    private String ip;
     /**
      * The player's last online time.
      */
-    private final String laston;
+    private String laston;
     /**
      * The player's last location.
      */
-    private final String location;
+    private String location;
     /**
      * The player's last known name.
      */
-    private final String name;
+    private String name;
     /**
      * The player's previous usernames. Key is the name, String is when they changed at.
      */
-    private final Response[] names;
+    private Response[] names;
     /**
      * The player's notes.
      */
-    private final String[] notes;
+    private String[] notes;
     /**
      * The UUID of the player.
      */
-    private final UUID uuid;
-    
-    /**
-     * Does this account exist in the database?
-     */
-    private final boolean exists;
+    private UUID uuid;
 
     /**
      * Constructs a new Account.
@@ -56,7 +55,7 @@ public class Account {
      * @param notes
      * @param names
      */
-    public Account(final UUID uuid, final String name, final String laston, final String location, final String ip, final String[] notes, final Response[] names, final boolean exists) {
+    public Account(UUID uuid, String name, String laston, String location, String ip, String[] notes, Response[] names, boolean exists) {
         this.uuid = Objects.requireNonNull(uuid);
         this.name = Objects.requireNonNull(name);
         this.laston = laston == null ? "null" : laston;
@@ -73,11 +72,15 @@ public class Account {
      * @return true if this account's {@link UUID} is equal to the argument
      */
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (obj instanceof Account)
             if (uuid.equals(((Account) obj).uuid))
                 return true;
         return false;
+    }
+
+    public boolean exists() {
+        return exists;
     }
 
     /**
@@ -135,10 +138,6 @@ public class Account {
     public UUID getUUID() {
         return uuid;
     }
-    
-    public boolean exists() {
-        return exists;
-    }
 
     /**
      * @return The {@link UUID}'s hashcode.
@@ -157,9 +156,8 @@ public class Account {
                 str += rs.name + ":" + rs.changedToAt + ",";
             str = str.substring(0, str.length() - 1);
             str += "}";
-        } else {
+        } else
             str += "PreviousNames=<null>";
-        }
         str += "Notes={";
         for (String note : notes)
             str += note + ",";

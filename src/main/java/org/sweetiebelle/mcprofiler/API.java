@@ -24,7 +24,7 @@ public class API {
     }
 
     public static final Location stringToLocation(String location) {
-        if(location == null)
+        if (location == null)
             return new Location(null, 0, 0, 0);
         String[] parts = location.split(":");
         String[] coords = parts[1].split(",");
@@ -73,8 +73,10 @@ public class API {
         }
         return accounts.toArray(new Account[0]);
     }
+
     /**
      * If isRecursive is true, it retruns {@link org.sweetiebelle.mcprofiler.api.account.alternate.AltAccount}. If it is false, then it returns {@link org.sweetiebelle.mcprofiler.api.account.alternate.UUIDAlt}
+     *
      * @param uuid
      * @param isRecursive
      * @return
@@ -83,9 +85,9 @@ public class API {
         UUIDAlt thisUUID = new UUIDAlt(uuid, null);
         ArrayList<? extends BaseAccount> accounts = data.getAltsOfPlayer(uuid, isRecursive);
         ArrayList<UUIDAlt> alts = new ArrayList<UUIDAlt>(accounts.size());
-        for(BaseAccount object : accounts) {
+        for (BaseAccount object : accounts) {
             UUIDAlt newAlt = new UUIDAlt(object.getUUID(), object.getIP());
-            if(!alts.contains(newAlt) || thisUUID.equals(object))
+            if (!alts.contains(newAlt) || thisUUID.equals(object))
                 alts.add(newAlt);
         }
         return alts.toArray(new UUIDAlt[alts.size()]);
@@ -102,8 +104,7 @@ public class API {
         if (account.exists()) {
             data.updatePlayerInformation(account);
             data.setPlayerLastPosition(account.getUUID(), API.stringToLocation(account.getLocation()));
-        } else {
+        } else
             data.createProfile(account);
-        }
     }
 }

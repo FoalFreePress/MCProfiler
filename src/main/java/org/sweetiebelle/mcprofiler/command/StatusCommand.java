@@ -11,11 +11,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.sweetiebelle.lib.LuckPermsManager;
 import org.sweetiebelle.lib.SweetieLib;
-import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
-import org.sweetiebelle.mcprofiler.api.account.Account;
 import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
+import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
 import org.sweetiebelle.mcprofiler.VanishController;
+import org.sweetiebelle.mcprofiler.api.account.Account;
 
 public class StatusCommand extends AbstractCommand {
 
@@ -95,7 +95,7 @@ public class StatusCommand extends AbstractCommand {
     }
 
     private String getTimeStamp(long time) {
-        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // the format of your date
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // the format of your date
         sdf.setTimeZone(TimeZone.getDefault()); // give a timezone reference for formating
         return sdf.format(new Date(time));
     }

@@ -19,23 +19,23 @@ public class BansController {
     private BrohoofBansPlugin brohoofBans;
 
     public BansController() {
-        final Plugin bb = Bukkit.getPluginManager().getPlugin("BrohoofBans");
-        if (bb != null) {
-            brohoofBans = ((BrohoofBansPlugin) bb);
-        } else
+        Plugin bb = Bukkit.getPluginManager().getPlugin("BrohoofBans");
+        if (bb != null)
+            brohoofBans = (BrohoofBansPlugin) bb;
+        else
             brohoofBans = null;
     }
 
     /**
      * Worker class
-     * 
+     *
      * @param uuid
      *            the player's uuid
      * @return if the player is banned or not. New plugins must support uuid lookup.
      */
-    public boolean isBanned(final UUID uuid) {
-        if(brohoofBans != null)
-            return brohoofBans.getAPI().isBanned(uuid);
+    public boolean isBanned(UUID uuid) {
+        if (brohoofBans != null)
+            return BrohoofBansPlugin.getAPI().isBanned(uuid);
         return Bukkit.getOfflinePlayer(uuid).isBanned();
     }
 }

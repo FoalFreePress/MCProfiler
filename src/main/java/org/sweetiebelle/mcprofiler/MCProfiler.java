@@ -13,12 +13,12 @@ import org.sweetiebelle.mcprofiler.command.handlers.StatusCommandHandler;
  */
 public class MCProfiler extends JavaPlugin {
 
-    private Settings s;
-    private EventManager em;
-    private Data d;
-    private LuckPermsManager lpManager;
-    private ConnectionManager connectionManager;
     private API api;
+    private ConnectionManager connectionManager;
+    private Data d;
+    private EventManager em;
+    private LuckPermsManager lpManager;
+    private Settings s;
 
     /**
      * {@inheritDoc}

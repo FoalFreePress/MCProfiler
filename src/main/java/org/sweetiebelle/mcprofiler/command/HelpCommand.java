@@ -7,8 +7,7 @@ import org.sweetiebelle.lib.SweetieLib;
 import org.sweetiebelle.mcprofiler.API;
 
 public class HelpCommand extends AbstractCommand {
-    
-    
+
     public HelpCommand(API api, LuckPermsManager manager) {
         super(api, manager);
     }

@@ -31,9 +31,9 @@ import org.sweetiebelle.mcprofiler.api.account.alternate.UUIDAlt;
  */
 class Data {
 
-    private Settings s;
-    private Logger logger;
     private ConnectionManager connection;
+    private Logger logger;
+    private Settings s;
 
     Data(MCProfiler p, ConnectionManager connection, Settings s) {
         logger = p.getLogger();
@@ -65,103 +65,17 @@ class Data {
         }
     }
 
-    /**
-     * Creates a new table in the database
-     *
-     * @param pQuery
-     *            the query
-     * @return
-     */
-    private boolean createTable(String pQuery) {
+    void createProfile(Account account) {
         try {
-            executeQuery(pQuery);
-            return true;
+            PreparedStatement statement = connection.getStatement("INSERT INTO " + s.dbPrefix + "profiles (uuid, lastKnownName, ip, laston, lastpos) VALUES (?, ?, ?, ?, ?);");
+            statement.setString(1, account.getUUID().toString());
+            statement.setString(2, account.getName());
+            statement.setString(3, account.getIP());
+            statement.setNull(4, Types.TIMESTAMP);
+            statement.setString(5, account.getLocation());
         } catch (SQLException e) {
             error(e);
         }
-        return false;
-    }
-
-    /**
-     * Create tables if needed
-     */
-    private void createTables() {
-        // Generate the information about the various tables
-        String notes = "CREATE TABLE " + s.dbPrefix + "notes (noteid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(36) NOT NULL, time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, staffuuid VARCHAR(36) NOT NULL, note VARCHAR(255) NOT NULL)";
-        String profiles = "CREATE TABLE " + s.dbPrefix + "profiles (profileid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(36) NOT NULL, lastKnownName VARCHAR(16) NOT NULL, ip VARCHAR(39), laston TIMESTAMP, lastpos VARCHAR(75))";
-        String iplog = "CREATE TABLE " + s.dbPrefix + "iplog (ipid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ip VARCHAR(36) NOT NULL, uuid VARCHAR(36) NOT NULL)";
-        // Generate the database tables
-        if (!tableExists(s.dbPrefix + "profiles"))
-            createTable(profiles);
-        if (!tableExists(s.dbPrefix + "iplog"))
-            createTable(iplog);
-        if (!tableExists(s.dbPrefix + "notes"))
-            createTable(notes);
-    }
-
-    /**
-     * Method used to handle errors
-     *
-     * @param e
-     *            Exception
-     */
-    private void error(Throwable e) {
-        if (s.printStackTraces) {
-            e.printStackTrace();
-            return;
-        }
-        if (e instanceof SQLException) {
-            logger.severe("SQLException: " + e.getMessage());
-            return;
-        }
-        if (e instanceof IllegalArgumentException)
-            // It was probably someone not putting in a valid UUID, so we can ignore.
-            // p.severe("IllegalArgumentException: " + e.getMessage());
-            return;
-        if (e instanceof NoDataException) {
-            // If true, then it was caused by data in Account not being found.
-            if (e.getMessage().equalsIgnoreCase("No Account found."))
-                return;
-            logger.severe("NoDataException: " + e.getMessage());
-            return;
-        }
-        if (e instanceof NoClassDefFoundError)
-            // Handle Plugins not found.
-            // p.severe("NoClassDefFoundError: " + e.getMessage());
-            return;
-        if (e instanceof IOException) {
-            logger.severe("IOException: " + e.getMessage());
-            return;
-        }
-        // Or e.getCause();
-        logger.severe("Unhandled Exception " + e.getClass().getName() + ": " + e.getMessage());
-        e.printStackTrace();
-    }
-
-    /**
-     * Executes an SQL query. Throws an exception to allow for other methods to handle it.
-     *
-     * @param query
-     *            the query to execute
-     * @return number of rows affected
-     * @throws SQLException
-     *             if an error occurred
-     */
-    private int executeQuery(String query) throws SQLException {
-        return connection.executeUpdate(query);
-    }
-
-    /**
-     * Private method for getting an SQL connection, then submitting a query. This method throws an SQL Exception to allow another method to handle it.
-     *
-     * @param query
-     *            the query to get data from.
-     * @return the data
-     * @throws SQLException
-     *             if an error occurs
-     */
-    private ResultSet getResultSet(String query) throws SQLException {
-        return connection.executeQuery(query);
     }
 
     /**
@@ -226,25 +140,6 @@ class Data {
             error(e);
         }
         return Optional.<Account>of(new Account(uuid, name, laston, location, ip, notes, names, true));
-    }
-
-    private String getNameFromUUID(UUID uuid) {
-        if (uuid.equals(SweetieLib.CONSOLE_UUID))
-            return ConsoleAccount.getInstance().getName();
-        ResultSet rs;
-        try {
-            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "profiles where UUID = \"" + uuid.toString() + "\";");
-            if (rs.next()) {
-                String name = rs.getString("lastKnownName");
-                rs.close();
-                return name;
-            }
-            rs.close();
-            throw new NoDataException("No Account found.");
-        } catch (SQLException | NoDataException e) {
-            error(e);
-            return null;
-        }
     }
 
     /**
@@ -350,64 +245,6 @@ class Data {
     }
 
     /**
-     * Does a recursive player search with the given params
-     *
-     * @param uuidToIP
-     *            A MultiMap associating UUIDs with IPs
-     * @return A array of {@link AltAccounts} containing all the alts.
-     * @throws SQLException
-     *             if an error occurs, to allow the method that calls this function to catch it.
-     */
-    private ArrayList<AltAccount> recursivePlayerSearch(ArrayList<AltAccount> array) throws SQLException {
-        int finalContinue = 0;
-        ResultSet uuidSet;
-        ResultSet ipSet;
-        boolean ipSetComplete = true;
-        boolean uuidSetComplete = true;
-        // The size of the array is the number of times to iterate.
-        for (int i = 0; i < array.size(); i++) {
-            AltAccount a = new AltAccount(array.get(i).getUUID(), array.get(i).getIP());
-            UUID uuid = a.getUUID();
-            // Get the IPs where uuid is equal to the account's UUID
-            uuidSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + uuid.toString() + "\";");
-            while (uuidSet.next()) {
-                UUID uuidUUID = UUID.fromString(uuidSet.getString("uuid"));
-                String uuidIP = uuidSet.getString("ip");
-                AltAccount uuidAlt = new AltAccount(uuidUUID, uuidIP);
-                // If the map already contains the alt account, continue onto the next one.
-                if (array.contains(uuidAlt))
-                    continue;
-                // If we got to this point, then there are ips with uuids we haven't found yet.
-                uuidSetComplete = false;
-                array.add(uuidAlt);
-                ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + uuidIP + "\";");
-                while (ipSet.next()) {
-                    // Get the UUIDs associated with the IP.
-                    AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip"));
-                    // If we already have it, continue onto the next.
-                    if (array.contains(ipAlt))
-                        continue;
-                    // If we reached this point, it means there were uuids with ips we haven't found yet.
-                    ipSetComplete = false;
-                    array.add(ipAlt);
-                }
-            }
-            if (uuidSetComplete && ipSetComplete) {
-                // Number of total times to iterate.
-                finalContinue++;
-                // If the number of times we've iterated equals the number of elements in the Array, it means we've found all the data. It's time to get out of here.
-                if (finalContinue == array.size())
-                    return array;
-                continue;
-            }
-        }
-        // There's still more stuff to find.
-        // return ObjectArrays.concat(array, recursivePlayerSearch(array), AltAccount.class);
-        array.addAll(recursivePlayerSearch(array));
-        return array;
-    }
-
-    /**
      * Get a String of IPs from an account
      *
      * @param a
@@ -498,21 +335,6 @@ class Data {
     }
 
     /**
-     * checks if a table exists
-     *
-     * @param pTable
-     *            the table name.
-     * @return true if the table exists, or false if either the table does not exists, or another error occurs.
-     */
-    private boolean tableExists(String pTable) {
-        try {
-            return getResultSet("SELECT * FROM " + pTable) != null;
-        } catch (SQLException e) {
-            return false;
-        }
-    }
-
-    /**
      * Update general player information.
      *
      * @param pUUID
@@ -539,16 +361,194 @@ class Data {
         }
     }
 
-    void createProfile(Account account) {
+    /**
+     * Creates a new table in the database
+     *
+     * @param pQuery
+     *            the query
+     * @return
+     */
+    private boolean createTable(String pQuery) {
         try {
-            PreparedStatement statement = connection.getStatement("INSERT INTO " + s.dbPrefix + "profiles (uuid, lastKnownName, ip, laston, lastpos) VALUES (?, ?, ?, ?, ?);");
-            statement.setString(1, account.getUUID().toString());
-            statement.setString(2, account.getName());
-            statement.setString(3, account.getIP());
-            statement.setNull(4, Types.TIMESTAMP);
-            statement.setString(5, account.getLocation());
+            executeQuery(pQuery);
+            return true;
         } catch (SQLException e) {
             error(e);
+        }
+        return false;
+    }
+
+    /**
+     * Create tables if needed
+     */
+    private void createTables() {
+        // Generate the information about the various tables
+        String notes = "CREATE TABLE " + s.dbPrefix + "notes (noteid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(36) NOT NULL, time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, staffuuid VARCHAR(36) NOT NULL, note VARCHAR(255) NOT NULL)";
+        String profiles = "CREATE TABLE " + s.dbPrefix + "profiles (profileid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(36) NOT NULL, lastKnownName VARCHAR(16) NOT NULL, ip VARCHAR(39), laston TIMESTAMP, lastpos VARCHAR(75))";
+        String iplog = "CREATE TABLE " + s.dbPrefix + "iplog (ipid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ip VARCHAR(36) NOT NULL, uuid VARCHAR(36) NOT NULL)";
+        // Generate the database tables
+        if (!tableExists(s.dbPrefix + "profiles"))
+            createTable(profiles);
+        if (!tableExists(s.dbPrefix + "iplog"))
+            createTable(iplog);
+        if (!tableExists(s.dbPrefix + "notes"))
+            createTable(notes);
+    }
+
+    /**
+     * Method used to handle errors
+     *
+     * @param e
+     *            Exception
+     */
+    private void error(Throwable e) {
+        if (s.printStackTraces) {
+            e.printStackTrace();
+            return;
+        }
+        if (e instanceof SQLException) {
+            logger.severe("SQLException: " + e.getMessage());
+            return;
+        }
+        if (e instanceof IllegalArgumentException)
+            // It was probably someone not putting in a valid UUID, so we can ignore.
+            // p.severe("IllegalArgumentException: " + e.getMessage());
+            return;
+        if (e instanceof NoDataException) {
+            // If true, then it was caused by data in Account not being found.
+            if (e.getMessage().equalsIgnoreCase("No Account found."))
+                return;
+            logger.severe("NoDataException: " + e.getMessage());
+            return;
+        }
+        if (e instanceof NoClassDefFoundError)
+            // Handle Plugins not found.
+            // p.severe("NoClassDefFoundError: " + e.getMessage());
+            return;
+        if (e instanceof IOException) {
+            logger.severe("IOException: " + e.getMessage());
+            return;
+        }
+        // Or e.getCause();
+        logger.severe("Unhandled Exception " + e.getClass().getName() + ": " + e.getMessage());
+        e.printStackTrace();
+    }
+
+    /**
+     * Executes an SQL query. Throws an exception to allow for other methods to handle it.
+     *
+     * @param query
+     *            the query to execute
+     * @return number of rows affected
+     * @throws SQLException
+     *             if an error occurred
+     */
+    private int executeQuery(String query) throws SQLException {
+        return connection.executeUpdate(query);
+    }
+
+    private String getNameFromUUID(UUID uuid) {
+        if (uuid.equals(SweetieLib.CONSOLE_UUID))
+            return ConsoleAccount.getInstance().getName();
+        ResultSet rs;
+        try {
+            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "profiles where UUID = \"" + uuid.toString() + "\";");
+            if (rs.next()) {
+                String name = rs.getString("lastKnownName");
+                rs.close();
+                return name;
+            }
+            rs.close();
+            throw new NoDataException("No Account found.");
+        } catch (SQLException | NoDataException e) {
+            error(e);
+            return null;
+        }
+    }
+
+    /**
+     * Private method for getting an SQL connection, then submitting a query. This method throws an SQL Exception to allow another method to handle it.
+     *
+     * @param query
+     *            the query to get data from.
+     * @return the data
+     * @throws SQLException
+     *             if an error occurs
+     */
+    private ResultSet getResultSet(String query) throws SQLException {
+        return connection.executeQuery(query);
+    }
+
+    /**
+     * Does a recursive player search with the given params
+     *
+     * @param uuidToIP
+     *            A MultiMap associating UUIDs with IPs
+     * @return A array of {@link AltAccounts} containing all the alts.
+     * @throws SQLException
+     *             if an error occurs, to allow the method that calls this function to catch it.
+     */
+    private ArrayList<AltAccount> recursivePlayerSearch(ArrayList<AltAccount> array) throws SQLException {
+        int finalContinue = 0;
+        ResultSet uuidSet;
+        ResultSet ipSet;
+        boolean ipSetComplete = true;
+        boolean uuidSetComplete = true;
+        // The size of the array is the number of times to iterate.
+        for (int i = 0; i < array.size(); i++) {
+            AltAccount a = new AltAccount(array.get(i).getUUID(), array.get(i).getIP());
+            UUID uuid = a.getUUID();
+            // Get the IPs where uuid is equal to the account's UUID
+            uuidSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE uuid = \"" + uuid.toString() + "\";");
+            while (uuidSet.next()) {
+                UUID uuidUUID = UUID.fromString(uuidSet.getString("uuid"));
+                String uuidIP = uuidSet.getString("ip");
+                AltAccount uuidAlt = new AltAccount(uuidUUID, uuidIP);
+                // If the map already contains the alt account, continue onto the next one.
+                if (array.contains(uuidAlt))
+                    continue;
+                // If we got to this point, then there are ips with uuids we haven't found yet.
+                uuidSetComplete = false;
+                array.add(uuidAlt);
+                ipSet = getResultSet("SELECT * FROM " + s.dbPrefix + "iplog WHERE ip = \"" + uuidIP + "\";");
+                while (ipSet.next()) {
+                    // Get the UUIDs associated with the IP.
+                    AltAccount ipAlt = new AltAccount(UUID.fromString(ipSet.getString("uuid")), ipSet.getString("ip"));
+                    // If we already have it, continue onto the next.
+                    if (array.contains(ipAlt))
+                        continue;
+                    // If we reached this point, it means there were uuids with ips we haven't found yet.
+                    ipSetComplete = false;
+                    array.add(ipAlt);
+                }
+            }
+            if (uuidSetComplete && ipSetComplete) {
+                // Number of total times to iterate.
+                finalContinue++;
+                // If the number of times we've iterated equals the number of elements in the Array, it means we've found all the data. It's time to get out of here.
+                if (finalContinue == array.size())
+                    return array;
+                continue;
+            }
+        }
+        // There's still more stuff to find.
+        // return ObjectArrays.concat(array, recursivePlayerSearch(array), AltAccount.class);
+        array.addAll(recursivePlayerSearch(array));
+        return array;
+    }
+
+    /**
+     * checks if a table exists
+     *
+     * @param pTable
+     *            the table name.
+     * @return true if the table exists, or false if either the table does not exists, or another error occurs.
+     */
+    private boolean tableExists(String pTable) {
+        try {
+            return getResultSet("SELECT * FROM " + pTable) != null;
+        } catch (SQLException e) {
+            return false;
         }
     }
 }

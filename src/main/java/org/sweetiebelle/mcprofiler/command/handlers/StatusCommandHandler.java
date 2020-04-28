@@ -7,7 +7,6 @@ import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
 import org.sweetiebelle.mcprofiler.command.StatusCommand;
 
-
 public class StatusCommandHandler extends AbstractCommandHandler {
 
     private StatusCommand statusCommand;

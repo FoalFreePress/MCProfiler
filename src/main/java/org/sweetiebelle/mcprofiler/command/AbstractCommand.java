@@ -11,8 +11,7 @@ public abstract class AbstractCommand {
 
     protected API api;
     protected LuckPermsManager chat;
-    
-    
+
     public AbstractCommand(API api, LuckPermsManager chat) {
         this.api = api;
         this.chat = chat;

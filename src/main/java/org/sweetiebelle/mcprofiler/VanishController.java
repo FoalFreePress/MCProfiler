@@ -22,24 +22,25 @@ import de.myzelyam.api.vanish.VanishAPI;
  */
 public class VanishController implements Listener {
 
-    private final boolean vnp;
-    private final boolean spv;
-    public VanishController(final MCProfiler pl, final API api) {
+    private boolean spv;
+    private boolean vnp;
+
+    public VanishController(MCProfiler pl, API api) {
         if (Bukkit.getPluginManager().isPluginEnabled("VanishNoPacket")) {
             vnp = true;
             Bukkit.getPluginManager().registerEvents(new Listener() {
 
                 /**
                  * Updates player information from a VanishStatusChangeEvent
-                 * 
+                 *
                  * @param pEvent
                  */
                 @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-                public void onVanish(final VanishStatusChangeEvent pEvent) {
-                    final Player player = pEvent.getPlayer();
-                    final UUID uuid = player.getUniqueId();
-                    final String name = player.getName();
-                    final String ip =  player.getAddress().getAddress().toString().split("/")[1];
+                public void onVanish(VanishStatusChangeEvent pEvent) {
+                    Player player = pEvent.getPlayer();
+                    UUID uuid = player.getUniqueId();
+                    String name = player.getName();
+                    String ip = player.getAddress().getAddress().toString().split("/")[1];
                     Optional<Account> oAccount = api.getAccount(uuid);
                     if (oAccount.isPresent())
                         api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true));
@@ -47,24 +48,23 @@ public class VanishController implements Listener {
                         api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false));
                 }
             }, pl);
-        } else {
+        } else
             vnp = false;
-        }
         if (Bukkit.getPluginManager().isPluginEnabled("SuperVanish") || Bukkit.getPluginManager().isPluginEnabled("PremiumVanish")) {
             spv = true;
             Bukkit.getPluginManager().registerEvents(new Listener() {
 
                 /**
                  * Updates player information from a PlayerHideEvent
-                 * 
+                 *
                  * @param pEvent
                  */
                 @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-                public void onVanish(final PlayerHideEvent pEvent) {
-                    final Player player = pEvent.getPlayer();
-                    final UUID uuid = player.getUniqueId();
-                    final String name = player.getName();
-                    final String ip = player.getAddress().getAddress().toString().split("/")[1];
+                public void onVanish(PlayerHideEvent pEvent) {
+                    Player player = pEvent.getPlayer();
+                    UUID uuid = player.getUniqueId();
+                    String name = player.getName();
+                    String ip = player.getAddress().getAddress().toString().split("/")[1];
                     Optional<Account> oAccount = api.getAccount(uuid);
                     if (oAccount.isPresent())
                         api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true));
@@ -72,29 +72,25 @@ public class VanishController implements Listener {
                         api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false));
                 }
             }, pl);
-        } else {
+        } else
             spv = false;
-        }
     }
 
     /**
      * Checks if the sender can see the admin
-     * 
+     *
      * @param admin
      *            the player to check if they are vanished
      * @param sender
      *            the player
      * @return true if they can see them, else false
      */
-    public boolean canSee(final Player admin, final Player sender) {
-        if (vnp) {
-            if (JavaPlugin.getPlugin(VanishPlugin.class).getManager().isVanished(admin)) {
+    public boolean canSee(Player admin, Player sender) {
+        if (vnp)
+            if (JavaPlugin.getPlugin(VanishPlugin.class).getManager().isVanished(admin))
                 return sender.hasPermission("vanish.see");
-            }
-        }
-        if (spv) {
+        if (spv)
             return VanishAPI.canSee(sender, admin);
-        }
         return true;
     }
 }

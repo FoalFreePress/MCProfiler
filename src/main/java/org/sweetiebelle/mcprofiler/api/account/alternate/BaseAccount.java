@@ -9,13 +9,13 @@ import java.util.UUID;
 public abstract class BaseAccount {
 
     /**
-     * UUID of the alt.
-     */
-    protected final UUID uuid;
-    /**
      * IP of the alt.
      */
-    protected final String ip;
+    protected String ip;
+    /**
+     * UUID of the alt.
+     */
+    protected UUID uuid;
 
     BaseAccount(UUID uuid, String ip) {
         this.uuid = uuid;
@@ -23,16 +23,16 @@ public abstract class BaseAccount {
     }
 
     /**
-     * Returns the UUID of this alt
-     * 
-     * @return the uuid
-     */
-    public abstract UUID getUUID();
-
-    /**
      * Returns the IP of this alt.
-     * 
+     *
      * @return the ip
      */
     public abstract String getIP();
+
+    /**
+     * Returns the UUID of this alt
+     *
+     * @return the uuid
+     */
+    public abstract UUID getUUID();
 }

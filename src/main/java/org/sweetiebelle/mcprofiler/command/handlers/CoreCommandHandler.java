@@ -22,14 +22,14 @@ import com.google.common.base.Joiner;
 public class CoreCommandHandler extends AbstractCommandHandler {
 
     private HelpCommand helpCommand;
-    private NoteCommand noteCommand;
-    private LookupIPCommand lookupCommand;
-    private ReadNotesCommand readNotesCommand;
-    private StatusCommand statusCommand;
-    private ShowAltsCommand showAltsCommand;
-    private UUIDLookupCommand uuidCommand;
-    private ReloadCommand reloadCommand;
     private ListIPsCommand listIPsCommand;
+    private LookupIPCommand lookupCommand;
+    private NoteCommand noteCommand;
+    private ReadNotesCommand readNotesCommand;
+    private ReloadCommand reloadCommand;
+    private ShowAltsCommand showAltsCommand;
+    private StatusCommand statusCommand;
+    private UUIDLookupCommand uuidCommand;
 
     public CoreCommandHandler(MCProfiler plugin, Settings settings, API api, LuckPermsManager chat) {
         helpCommand = new HelpCommand(api, chat);
@@ -45,9 +45,8 @@ public class CoreCommandHandler extends AbstractCommandHandler {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (args.length == 0) {
+        if (args.length == 0)
             return false;
-        }
         switch (args[0].toLowerCase()) {
             case "help": {
                 return helpCommand.execute(sender);
@@ -61,21 +60,18 @@ public class CoreCommandHandler extends AbstractCommandHandler {
                 return false;
             }
             case "lookup": {
-                if (args.length == 2) {
+                if (args.length == 2)
                     return lookupCommand.execute(sender, args[1]);
-                }
                 return false;
             }
             case "readnotes": {
-                if (args.length == 2) {
+                if (args.length == 2)
                     return readNotesCommand.execute(sender, args[1]);
-                }
                 return false;
             }
             case "info": {
-                if (args.length == 2) {
+                if (args.length == 2)
                     return statusCommand.execute(sender, args[1]);
-                }
                 return false;
             }
             case "listlinks": {
@@ -86,9 +82,8 @@ public class CoreCommandHandler extends AbstractCommandHandler {
                 return false;
             }
             case "uuid": {
-                if (args.length == 2) {
+                if (args.length == 2)
                     return uuidCommand.execute(sender, args[1]);
-                }
                 return false;
             }
             case "reload": {

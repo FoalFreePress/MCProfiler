@@ -8,12 +8,12 @@ import java.util.UUID;
  */
 public class AltAccount extends BaseAccount {
 
-    public AltAccount(final UUID uuid, final String ip) {
+    public AltAccount(UUID uuid, String ip) {
         super(uuid, ip);
     }
 
     @Override
-    public boolean equals(final Object obj) {
+    public boolean equals(Object obj) {
         if (obj instanceof AltAccount) {
             AltAccount alt = (AltAccount) obj;
             if (uuid.equals(alt.uuid) && ip.equals(alt.ip))
