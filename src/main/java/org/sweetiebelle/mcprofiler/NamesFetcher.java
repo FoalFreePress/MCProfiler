@@ -11,7 +11,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
 /**
- * Gets the previous usernames from Mojang's API Adapted from https://github.com/LogBlock/LogBlock/blob/master/src/main/java/de/diddiz/util/UUIDFetcher.java
+ * Gets the previous usernames from Mojang's API Adapted from https://github.com/LogBlock/LogBlock/blob/cd38ac986685f7af6085a6163083d13618c61578/src/main/java/de/diddiz/util/UUIDFetcher.java
  */
 public class NamesFetcher {
 
