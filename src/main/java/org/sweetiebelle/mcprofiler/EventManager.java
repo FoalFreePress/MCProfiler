@@ -56,7 +56,7 @@ public class EventManager implements Listener {
         if (oAccount.isPresent())
             api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true));
         else
-            api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false));
+            api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, new String[] {}, null, false));
     }
 
     /**
@@ -74,6 +74,6 @@ public class EventManager implements Listener {
         if (oAccount.isPresent())
             api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true));
         else
-            api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false));
+            api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, new String[] {}, null, false));
     }
 }

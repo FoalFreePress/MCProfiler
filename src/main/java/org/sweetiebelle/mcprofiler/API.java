@@ -20,7 +20,7 @@ public class API {
     public static final String locationToString(Location location) {
         Objects.requireNonNull(location);
         World world = location.getWorld();
-        return String.format("%s:%d,%d%d", world == null ? "%UNLOADED_WORLD%" : world.getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
+        return String.format("%s:%d,%d,%d", world == null ? "%UNLOADED_WORLD%" : world.getName(), location.getBlockX(), location.getBlockY(), location.getBlockZ());
     }
 
     public static final Location stringToLocation(String location) {
