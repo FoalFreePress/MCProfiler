@@ -82,12 +82,13 @@ public class API {
      * @return
      */
     public UUIDAlt[] getAccounts(UUID uuid, boolean isRecursive) {
+        Objects.requireNonNull(uuid);
         UUIDAlt thisUUID = new UUIDAlt(uuid, null);
         ArrayList<? extends BaseAccount> accounts = data.getAltsOfPlayer(uuid, isRecursive);
         ArrayList<UUIDAlt> alts = new ArrayList<UUIDAlt>(accounts.size());
         for (BaseAccount object : accounts) {
             UUIDAlt newAlt = new UUIDAlt(object.getUUID(), object.getIP());
-            if (!alts.contains(newAlt) || thisUUID.equals(object))
+            if (!alts.contains(newAlt) && !thisUUID.equals(newAlt))
                 alts.add(newAlt);
         }
         return alts.toArray(new UUIDAlt[alts.size()]);

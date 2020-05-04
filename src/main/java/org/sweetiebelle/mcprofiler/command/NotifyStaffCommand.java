@@ -20,13 +20,13 @@ public class NotifyStaffCommand extends AbstractCommand {
     }
 
     public void execute(Account account, UUIDAlt[] baseAccounts) {
+        // No Accounts
+        if(baseAccounts.length == 0)
+            return;
         // Build the string to display
         String string = chat.getCompletePlayerPrefix(account.getUUID()) + account.getName() + " " + ChatColor.RESET + "might be ";
-        UUIDAlt thisPlayer = new UUIDAlt(account.getUUID(), account.getIP());
         for (BaseAccount altAccount : baseAccounts) {
             UUIDAlt alt = new UUIDAlt(altAccount.getUUID(), altAccount.getIP());
-            if (alt.equals(thisPlayer))
-                continue;
             Account other = api.getAccount(alt.getUUID()).get();
             if (bc.isBanned(alt.getUUID()))
                 string += chat.getCompletePlayerPrefix(other.getUUID()) + other.getName() + " " + ChatColor.GRAY + "(BANNED) " + ChatColor.RED + "";

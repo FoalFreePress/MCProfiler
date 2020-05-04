@@ -22,6 +22,10 @@ public class ShowAltsCommand extends AbstractCommand {
             if (ao.isPresent()) {
                 Account a = ao.get();
                 UUIDAlt[] altAccounts = api.getAccounts(a.getUUID(), recursive);
+                if(altAccounts.length == 0) {
+                    sender.sendMessage(ChatColor.RED + "No known alts of " + chat.getCompletePlayerPrefix(a.getUUID()) + a.getName());
+                    return true;
+                }
                 sender.sendMessage(ChatColor.RED + "The player " + chat.getCompletePlayerPrefix(a.getUUID()) + a.getName() + " " + ChatColor.RED + "(" + ChatColor.RESET + a.getIP() + ChatColor.RED + ") has the following associated accounts:");
                 for (UUIDAlt alt : altAccounts) {
                     Account fullAlt = api.getAccount(alt.getUUID()).get();
