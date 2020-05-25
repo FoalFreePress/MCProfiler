@@ -12,7 +12,7 @@ import org.sweetiebelle.mcprofiler.command.handlers.StatusCommandHandler;
  * The main plugin class.
  */
 public class MCProfiler extends JavaPlugin {
-
+    
     public static final String VERSION = "2.0";
     private API api;
     private ConnectionManager connectionManager;
@@ -37,11 +37,13 @@ public class MCProfiler extends JavaPlugin {
         try {
             lpManager = SweetieLib.getLuckPerms();
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            getLogger().warning("Couldn't find LuckPerms! Using a default implementation.");
+            lpManager = new DefaultLuckPermsImpl();
         }
         try {
             connectionManager = SweetieLib.getConnection();
         } catch (Exception e) {
+            // We can't load without this...
             throw new RuntimeException(e);
         }
         d = new Data(this, connectionManager, s);
