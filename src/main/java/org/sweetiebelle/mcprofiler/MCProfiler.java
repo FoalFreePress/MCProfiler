@@ -13,6 +13,7 @@ import org.sweetiebelle.mcprofiler.command.handlers.StatusCommandHandler;
  */
 public class MCProfiler extends JavaPlugin {
 
+    public static final String VERSION = "2.0";
     private API api;
     private ConnectionManager connectionManager;
     private Data d;
