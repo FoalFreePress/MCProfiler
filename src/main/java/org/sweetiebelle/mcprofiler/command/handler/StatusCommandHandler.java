@@ -1,18 +1,19 @@
-package org.sweetiebelle.mcprofiler.command.handlers;
+package org.sweetiebelle.mcprofiler.command.handler;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.sweetiebelle.lib.LuckPermsManager;
+import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
+import org.sweetiebelle.mcprofiler.Settings;
 import org.sweetiebelle.mcprofiler.command.StatusCommand;
 
 public class StatusCommandHandler extends AbstractCommandHandler {
 
     private StatusCommand statusCommand;
 
-    public StatusCommandHandler(MCProfiler plugin, API api, LuckPermsManager chat) {
-        statusCommand = new StatusCommand(plugin, api, chat);
+    public StatusCommandHandler(MCProfiler plugin, Settings settings, API api, PermissionManager chat) {
+        statusCommand = new StatusCommand(plugin, settings, api, chat);
     }
 
     @Override

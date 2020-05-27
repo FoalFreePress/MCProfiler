@@ -3,7 +3,7 @@ package org.sweetiebelle.mcprofiler.api.account;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
+import org.sweetiebelle.mcprofiler.api.response.NameResponse;
 
 /**
  * An Account contains a player's UUID, their name, their last online time, their last Location, their last IP and their notes.
@@ -34,11 +34,11 @@ public class Account {
     /**
      * The player's previous usernames. Key is the name, String is when they changed at.
      */
-    private Response[] names;
+    private NameResponse[] names;
     /**
      * The player's notes.
      */
-    private String[] notes;
+    private Note[] notes;
     /**
      * The UUID of the player.
      */
@@ -55,13 +55,13 @@ public class Account {
      * @param notes
      * @param names
      */
-    public Account(UUID uuid, String name, String laston, String location, String ip, String[] notes, Response[] names, boolean exists) {
+    public Account(UUID uuid, String name, String laston, String location, String ip, Note[] notes, NameResponse[] names, boolean exists) {
         this.uuid = Objects.requireNonNull(uuid);
         this.name = Objects.requireNonNull(name);
         this.laston = laston == null ? "null" : laston;
         this.location = location;
         this.ip = ip == null ? "null" : ip;
-        this.notes = Objects.requireNonNull(notes);
+        this.notes = notes;
         this.names = names;
         this.exists = exists;
     }
@@ -119,7 +119,7 @@ public class Account {
      *
      * @return Notes of the player
      */
-    public String[] getNotes() {
+    public Note[] getNotes() {
         return notes;
     }
 
@@ -127,7 +127,7 @@ public class Account {
      *
      * @return Previous usernames of the Player
      */
-    public Response[] getPreviousNames() {
+    public NameResponse[] getPreviousNames() {
         return names;
     }
 
@@ -152,15 +152,15 @@ public class Account {
         String str = getClass().getName() + "@" + hashCode() + "[id=" + uuid.toString() + ",name=" + name + ",properties={";
         if (names != null) {
             str += "PreviousNames={";
-            for (Response rs : names)
+            for (NameResponse rs : names)
                 str += rs.name + ":" + rs.changedToAt + ",";
             str = str.substring(0, str.length() - 1);
             str += "}";
         } else
             str += "PreviousNames=<null>";
         str += "Notes={";
-        for (String note : notes)
-            str += note + ",";
+        for (Note note : notes)
+            str += note.toString() + ",";
         str = str.substring(0, str.length() - 1);
         str += "}}Location=" + location + "LastOn= " + laston + "](/" + ip + ")";
         return str;

@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler.command.handlers;
+package org.sweetiebelle.mcprofiler.command.handler;
 
 import org.bukkit.command.CommandExecutor;
 

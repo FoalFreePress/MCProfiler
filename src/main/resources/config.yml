@@ -3,6 +3,8 @@ general:
   printStackTraces: true
   #If true, uses recursive searching when players join. This is useful for helping to find more alts of players when they join, but disabling it will save processing time.
   recursivePlayerJoin: false
+  #If true, logs additional debug messages.
+  additionalMessages: true
 #MySQL Database settings
 database:
   #table prefix

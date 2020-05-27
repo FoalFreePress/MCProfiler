@@ -6,24 +6,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.sweetiebelle.lib.ConnectionManager;
 import org.sweetiebelle.lib.SweetieLib;
+import org.sweetiebelle.lib.connection.ConnectionManager;
 import org.sweetiebelle.lib.exceptions.NoDataException;
-import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
 import org.sweetiebelle.mcprofiler.api.account.Account;
 import org.sweetiebelle.mcprofiler.api.account.ConsoleAccount;
+import org.sweetiebelle.mcprofiler.api.account.Note;
 import org.sweetiebelle.mcprofiler.api.account.alternate.AltAccount;
 import org.sweetiebelle.mcprofiler.api.account.alternate.BaseAccount;
 import org.sweetiebelle.mcprofiler.api.account.alternate.UUIDAlt;
+import org.sweetiebelle.mcprofiler.api.response.NameResponse;
 
 /**
  * This class handles data transfer to and from the SQL server.
@@ -88,13 +84,13 @@ class Data {
      *             if no such account exists
      *
      */
-    Optional<Account> getAccount(String name, boolean needsLastTime) {
+    Optional<Account> getAccount(String name, boolean needsLastNames) {
         UUID uuid = null;
         String laston = null;
         String location = null;
         String ip = null;
-        String[] notes = null;
-        Response[] names = null;
+        Note[] notes = null;
+        NameResponse[] names = null;
         ResultSet rs;
         String query = "SELECT * FROM " + s.dbPrefix + "profiles where lastKnownName = \"" + name + "\";";
         // Get Basic player information.
@@ -103,7 +99,7 @@ class Data {
             if (rs.next()) {
                 String stringuuuid = rs.getString("uuid");
                 if (stringuuuid == null || stringuuuid.equals("") || stringuuuid.equalsIgnoreCase("null"))
-                    return Optional.<Account>empty();
+                    throw new NoDataException("Null or missing UUID in the table.");
                 uuid = UUID.fromString(rs.getString("uuid"));
                 name = rs.getString("lastKnownName");
                 laston = rs.getString("laston");
@@ -111,30 +107,20 @@ class Data {
                 location = rs.getString("lastpos");
             } else
                 throw new NoDataException("No Account found.");
-        } catch (SQLException | IllegalArgumentException | NoDataException e) {
+            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "notes where UUID = \"" + uuid.toString() + "\";");
+            ArrayList<Note> nList = new ArrayList<Note>();
+            while (rs.next()) {
+                nList.add(new Note(rs.getString("staffuuid"), rs.getString("time"), rs.getString("note")));
+            }
+            notes = nList.toArray(new Note[nList.size()]);
+            rs.close();
+        } catch (SQLException | NoDataException e) {
             error(e);
             return Optional.<Account>empty();
         }
-        // Get the notes
-        try {
-            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "notes where UUID = \"" + uuid.toString() + "\";");
-            LinkedList<String> nList = new LinkedList<String>();
-            while (rs.next()) {
-                UUID staffUUID = UUID.fromString(rs.getString("staffuuid"));
-                nList.add(ChatColor.RED + rs.getString("time") + " " + ChatColor.RESET + rs.getString("note") + " " + ChatColor.RED + getNameFromUUID(staffUUID));
-            }
-            // Convert the list to an array
-            if (nList.size() == 0)
-                throw new NoDataException("No Account found.");
-            notes = nList.toArray(new String[0]);
-        } catch (SQLException | NoDataException e) {
-            error(e);
-            if (e instanceof NoDataException)
-                notes = new String[] { ChatColor.RED + "No notes were found" };
-        }
         // Get their associated names.
         try {
-            if (needsLastTime)
+            if (needsLastNames)
                 names = NamesFetcher.getPreviousNames(uuid);
         } catch (IOException e) {
             error(e);
@@ -151,15 +137,15 @@ class Data {
      * @throws NoDataException
      *             if no such account exists
      */
-    Optional<Account> getAccount(UUID uuid, boolean needsLastTime) {
+    Optional<Account> getAccount(UUID uuid, boolean needsLastNames) {
         if (uuid.equals(SweetieLib.CONSOLE_UUID))
             return Optional.of(ConsoleAccount.getInstance());
         String name = null;
         String laston = null;
         String location = null;
         String ip = null;
-        String[] notes = null;
-        Response[] names = null;
+        Note[] notes = null;
+        NameResponse[] names = null;
         ResultSet rs;
         try {
             rs = getResultSet("SELECT * FROM " + s.dbPrefix + "profiles where UUID = \"" + uuid.toString() + "\";");
@@ -173,29 +159,19 @@ class Data {
                 throw new NoDataException("No Account found.");
             }
             rs.close();
-        } catch (SQLException | NoDataException e) {
-            error(e);
-            if (e instanceof NoDataException)
-                return Optional.<Account>empty();
-        }
-        try {
             rs = getResultSet("SELECT * FROM " + s.dbPrefix + "notes where UUID = \"" + uuid.toString() + "\";");
-            List<String> nList = new LinkedList<String>();
+            ArrayList<Note> nList = new ArrayList<Note>();
             while (rs.next()) {
-                UUID staffUUID = UUID.fromString(rs.getString("staffuuid"));
-                nList.add(ChatColor.RED + rs.getString("time") + " " + ChatColor.RESET + rs.getString("note") + " " + ChatColor.RED + Bukkit.getOfflinePlayer(staffUUID).getName());
+                nList.add(new Note(rs.getString("staffuuid"), rs.getString("time"), rs.getString("note")));
             }
-            // Convert the list to an array
-            if (nList.size() == 0)
-                throw new NoDataException("No Account found.");
-            notes = nList.toArray(new String[0]);
+            notes = nList.toArray(new Note[nList.size()]);
+            rs.close();
         } catch (SQLException | NoDataException e) {
             error(e);
-            if (e instanceof NoDataException)
-                notes = new String[] { ChatColor.RED + "No notes were found" };
+            return Optional.<Account>empty();
         }
         try {
-            if (needsLastTime)
+            if (needsLastNames)
                 names = NamesFetcher.getPreviousNames(uuid);
         } catch (IOException e) {
             error(e);
@@ -295,11 +271,11 @@ class Data {
      * @param pLocation
      *            their location
      */
-    void setPlayerLastPosition(UUID pUUID, Location location) {
+    void setPlayerLastPosition(UUID pUUID, String location) {
         // Make sure that the data for the player is valid, if the player has logged on before
         try {
             PreparedStatement statement = connection.getStatement(String.format("UPDATE %sprofiles SET lastpos = ? WHERE uuid = ?;", s.dbPrefix));
-            statement.setString(1, API.locationToString(location));
+            statement.setString(1, location);
             statement.setString(2, pUUID.toString());
             statement.executeUpdate();
             statement.close();
@@ -445,25 +421,6 @@ class Data {
      */
     private int executeQuery(String query) throws SQLException {
         return connection.executeUpdate(query);
-    }
-
-    private String getNameFromUUID(UUID uuid) {
-        if (uuid.equals(SweetieLib.CONSOLE_UUID))
-            return ConsoleAccount.getInstance().getName();
-        ResultSet rs;
-        try {
-            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "profiles where UUID = \"" + uuid.toString() + "\";");
-            if (rs.next()) {
-                String name = rs.getString("lastKnownName");
-                rs.close();
-                return name;
-            }
-            rs.close();
-            throw new NoDataException("No Account found.");
-        } catch (SQLException | NoDataException e) {
-            error(e);
-            return null;
-        }
     }
 
     /**

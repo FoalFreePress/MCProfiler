@@ -1,9 +1,9 @@
-package org.sweetiebelle.mcprofiler.command.handlers;
+package org.sweetiebelle.mcprofiler.command.handler;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.sweetiebelle.lib.LuckPermsManager;
+import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
 import org.sweetiebelle.mcprofiler.Settings;
@@ -31,16 +31,16 @@ public class CoreCommandHandler extends AbstractCommandHandler {
     private StatusCommand statusCommand;
     private UUIDLookupCommand uuidCommand;
 
-    public CoreCommandHandler(MCProfiler plugin, Settings settings, API api, LuckPermsManager chat) {
-        helpCommand = new HelpCommand(api, chat);
-        noteCommand = new NoteCommand(api, chat);
-        lookupCommand = new LookupIPCommand(api, chat);
-        readNotesCommand = new ReadNotesCommand(api, chat);
-        statusCommand = new StatusCommand(plugin, api, chat);
-        showAltsCommand = new ShowAltsCommand(api, chat);
-        uuidCommand = new UUIDLookupCommand(api, chat);
-        reloadCommand = new ReloadCommand(settings, api, chat);
-        listIPsCommand = new ListIPsCommand(api, chat);
+    public CoreCommandHandler(MCProfiler plugin, Settings settings, API api, PermissionManager chat) {
+        helpCommand = new HelpCommand(plugin, api, chat);
+        noteCommand = new NoteCommand(plugin, api, chat);
+        lookupCommand = new LookupIPCommand(plugin, api, chat);
+        readNotesCommand = new ReadNotesCommand(plugin, api, chat);
+        statusCommand = new StatusCommand(plugin, settings, api, chat);
+        showAltsCommand = new ShowAltsCommand(plugin, api, chat);
+        uuidCommand = new UUIDLookupCommand(plugin, api, chat);
+        reloadCommand = new ReloadCommand(plugin, settings, api, chat);
+        listIPsCommand = new ListIPsCommand(plugin, api, chat);
     }
 
     @Override

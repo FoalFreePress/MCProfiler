@@ -1,7 +1,8 @@
-package org.sweetiebelle.mcprofiler;
+package org.sweetiebelle.mcprofiler.controller;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -11,6 +12,9 @@ import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.kitteh.vanish.VanishPlugin;
 import org.kitteh.vanish.event.VanishStatusChangeEvent;
+import org.sweetiebelle.mcprofiler.API;
+import org.sweetiebelle.mcprofiler.MCProfiler;
+import org.sweetiebelle.mcprofiler.Settings;
 import org.sweetiebelle.mcprofiler.api.account.Account;
 
 import de.myzelyam.api.vanish.PlayerHideEvent;
@@ -25,7 +29,7 @@ public class VanishController implements Listener {
     private boolean spv;
     private boolean vnp;
 
-    public VanishController(MCProfiler pl, API api) {
+    public VanishController(MCProfiler pl, Settings s, API api) {
         if (Bukkit.getPluginManager().isPluginEnabled("VanishNoPacket")) {
             vnp = true;
             Bukkit.getPluginManager().registerEvents(new Listener() {
@@ -41,11 +45,19 @@ public class VanishController implements Listener {
                     UUID uuid = player.getUniqueId();
                     String name = player.getName();
                     String ip = player.getAddress().getAddress().toString().split("/")[1];
-                    Optional<Account> oAccount = api.getAccount(uuid);
-                    if (oAccount.isPresent())
-                        api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true));
-                    else
-                        api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false));
+                    CompletableFuture<Optional<Account>> future = api.getAccount(uuid);
+                    future.thenAccept((oAccount) -> {
+                        if (oAccount.isPresent())
+                            api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true)).thenAccept((object) -> {
+                                if (s.additionalMessages)
+                                    pl.getLogger().info("Updated player information for " + name);
+                            });
+                        else
+                            api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false)).thenAccept((object) -> {
+                                if (s.additionalMessages)
+                                    pl.getLogger().info("Created player information for " + name);
+                            });
+                    });
                 }
             }, pl);
         } else
@@ -65,11 +77,19 @@ public class VanishController implements Listener {
                     UUID uuid = player.getUniqueId();
                     String name = player.getName();
                     String ip = player.getAddress().getAddress().toString().split("/")[1];
-                    Optional<Account> oAccount = api.getAccount(uuid);
-                    if (oAccount.isPresent())
-                        api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true));
-                    else
-                        api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false));
+                    CompletableFuture<Optional<Account>> future = api.getAccount(uuid);
+                    future.thenAccept((oAccount) -> {
+                        if (oAccount.isPresent())
+                            api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true)).thenAccept((object) -> {
+                                if (s.additionalMessages)
+                                    pl.getLogger().info("Updated player information for " + name);
+                            });
+                        else
+                            api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, null, null, false)).thenAccept((object) -> {
+                                if (s.additionalMessages)
+                                    pl.getLogger().info("Created player information for " + name);
+                            });
+                    });
                 }
             }, pl);
         } else

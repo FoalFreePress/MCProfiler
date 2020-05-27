@@ -18,8 +18,6 @@ commands:
       description: Short command for /MCProfiler addnote
       usage: /<command> <playername | uuid> <note>
 permissions:
-    mcprofiler.help:
-      description: Allows usage of /MCProfiler help
     mcprofiler.addnote:
       description: Allows usage of /MCProfiler addnote
     mcprofiler.notifiedofalts:

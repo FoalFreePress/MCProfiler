@@ -1,4 +1,4 @@
-package org.sweetiebelle.mcprofiler;
+package org.sweetiebelle.mcprofiler.controller;
 
 import java.util.UUID;
 

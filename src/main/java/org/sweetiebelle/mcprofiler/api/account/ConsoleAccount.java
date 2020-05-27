@@ -1,8 +1,7 @@
 package org.sweetiebelle.mcprofiler.api.account;
 
-import org.bukkit.ChatColor;
 import org.sweetiebelle.lib.SweetieLib;
-import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
+import org.sweetiebelle.mcprofiler.api.response.NameResponse;
 
 public class ConsoleAccount extends Account {
 
@@ -13,6 +12,6 @@ public class ConsoleAccount extends Account {
     }
 
     private ConsoleAccount() {
-        super(SweetieLib.CONSOLE_UUID, "CONSOLE", "NEVER", "EVERYWHERE", "127.0.0.1", new String[] { ChatColor.RED + "Console has no notes" }, new Response[] { new Response("CONSOLE", 0) }, false);
+        super(SweetieLib.CONSOLE_UUID, "CONSOLE", "NEVER", "EVERYWHERE", "127.0.0.1", new Note[0], new NameResponse[] { new NameResponse("CONSOLE", 0) }, false);
     }
 }

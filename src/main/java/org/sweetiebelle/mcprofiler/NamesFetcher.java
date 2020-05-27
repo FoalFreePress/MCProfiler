@@ -6,6 +6,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
 
+import org.sweetiebelle.mcprofiler.api.response.NameResponse;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
@@ -15,31 +17,7 @@ import com.google.gson.JsonSyntaxException;
  */
 public class NamesFetcher {
 
-    /**
-     * The response class used to handle the data gotten.
-     *
-     */
-    public static class Response {
-
-        /**
-         * The time they changed to at. This is 0 if it is an original name.
-         */
-        public long changedToAt;
-
-        /**
-         * The name
-         */
-        public String name;
-
-        public Response() {
-        }
-        public Response(String string, long i) {
-            name = string;
-            changedToAt = i;
-        }
-    }
     private static final Gson gson = new Gson();
-
     /**
      * The API url
      */
@@ -49,7 +27,7 @@ public class NamesFetcher {
      * Gets previous names from the UUID
      *
      * @param uuid
-     * @return An Array of {@link Response}s
+     * @return An Array of {@link NameResponse}s
      * @throws IOException
      *             if an error occurs
      * @throws JsonSyntaxException
@@ -57,8 +35,8 @@ public class NamesFetcher {
      * @throws JsonIOException
      *             if an error occurs
      */
-    public static Response[] getPreviousNames(UUID uuid) throws IOException, JsonSyntaxException, JsonIOException {
-        return gson.fromJson(new InputStreamReader(createConnection(uuid).getInputStream()), Response[].class);
+    public static NameResponse[] getPreviousNames(UUID uuid) throws IOException, JsonSyntaxException, JsonIOException {
+        return gson.fromJson(new InputStreamReader(createConnection(uuid).getInputStream()), NameResponse[].class);
     }
 
     /**

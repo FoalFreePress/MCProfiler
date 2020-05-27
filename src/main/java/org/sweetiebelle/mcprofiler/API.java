@@ -1,15 +1,15 @@
 package org.sweetiebelle.mcprofiler;
 
 import java.util.ArrayList;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-
+import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.sweetiebelle.lib.SweetieLib;
-import org.sweetiebelle.lib.exceptions.NoDataException;
 import org.sweetiebelle.mcprofiler.api.account.Account;
 import org.sweetiebelle.mcprofiler.api.account.ConsoleAccount;
 import org.sweetiebelle.mcprofiler.api.account.alternate.BaseAccount;
@@ -33,45 +33,71 @@ public class API {
 
     private Data data;
 
-    API(Data data) {
+    API(Data data ) {
         this.data = data;
     }
 
-    public void addNote(Account sender, Account target, String note) {
-        data.addNoteToUser(target.getUUID(), sender.getUUID(), note);
+    public CompletableFuture<Void> addNote(Account sender, Account target, String note) {
+        return MCProfiler.makeFuture(() -> {
+            data.addNoteToUser(target.getUUID(), sender.getUUID(), note);
+        });
     }
 
-    public Optional<Account> getAccount(String playerName) {
+    public CompletableFuture<Optional<Account>> getAccount(String playerName) {
         return getAccount(playerName, false);
     }
 
-    public Optional<Account> getAccount(String playerName, boolean needsLastNames) {
-        Objects.requireNonNull(playerName);
-        return data.getAccount(playerName, needsLastNames);
+    public CompletableFuture<Optional<Account>> getAccount(String playerName, boolean needsLastNames) {
+        return MCProfiler.makeFuture(() -> {
+            Objects.requireNonNull(playerName);
+            return data.getAccount(playerName, needsLastNames);
+        });
     }
 
-    public Optional<Account> getAccount(UUID playerUUID) {
+    public CompletableFuture<Optional<Account>> getAccount(UUID playerUUID) {
         return getAccount(playerUUID, false);
     }
 
-    public Optional<Account> getAccount(UUID playerUUID, boolean needsLastNames) {
-        Objects.requireNonNull(playerUUID);
-        if (playerUUID.equals(SweetieLib.CONSOLE_UUID))
-            return Optional.of(ConsoleAccount.getInstance());
-        return data.getAccount(playerUUID, needsLastNames);
+    public CompletableFuture<Optional<Account>> getAccount(UUID playerUUID, boolean needsLastNames) {
+        return MCProfiler.makeFuture(() -> {
+            Objects.requireNonNull(playerUUID);
+            if (playerUUID.equals(SweetieLib.CONSOLE_UUID))
+                return Optional.of(ConsoleAccount.getInstance());
+            return data.getAccount(playerUUID, needsLastNames);
+        });
     }
 
-    public Account[] getAccounts(String ip) {
-        ArrayList<String> uuids = data.getUsersAssociatedWithIP(ip);
-        ArrayList<Account> accounts = new ArrayList<Account>(uuids.size());
-        for (String uuid : uuids) {
-            Optional<Account> a = getAccount(UUID.fromString(uuid));
-            if (a.isPresent())
-                accounts.add(a.get());
-            else
-                throw new RuntimeException(new NoDataException("UUID " + uuid + " did not an account, but it appeard in the ip table."));
-        }
-        return accounts.toArray(new Account[0]);
+    public CompletableFuture<Account[]> getAccounts(String ip) {
+        return MCProfiler.makeFuture(() -> {
+            ArrayList<String> uuids = data.getUsersAssociatedWithIP(ip);
+            ArrayList<Account> accounts = new ArrayList<Account>(uuids.size());
+            for (String uuid : uuids) {
+                accounts.add(getAccountNoFuture(UUID.fromString(uuid)));
+            }
+            return accounts.toArray(new Account[0]);
+        });
+    }
+
+    /**
+     * This method returns an Account without being wrapped in a CompletableFuture.
+     * <p>
+     * This will run on the same thread the moment this function is called.
+     * </p>
+     * <p>
+     * In addition, it will also automatically call the {@link Optional#get()} method on the Optional that normally return.
+     * </p>
+     * 
+     * @deprecated this method is dangerous and bypasses sanity checks. You should only use this if you know what you're doing.
+     * @param uuid
+     *            the player's UUID
+     * @return the Account
+     * @throws NoSuchElementException
+     *             if the player's UUID doesn't actually have an account.
+     * 
+     */
+    @Deprecated
+    public Account getAccountNoFuture(UUID uuid) throws NoSuchElementException {
+        return data.getAccount(uuid, false).get();
     }
 
     /**
@@ -81,31 +107,36 @@ public class API {
      * @param isRecursive
      * @return
      */
-    public UUIDAlt[] getAccounts(UUID uuid, boolean isRecursive) {
-        Objects.requireNonNull(uuid);
-        UUIDAlt thisUUID = new UUIDAlt(uuid, null);
-        ArrayList<? extends BaseAccount> accounts = data.getAltsOfPlayer(uuid, isRecursive);
-        ArrayList<UUIDAlt> alts = new ArrayList<UUIDAlt>(accounts.size());
-        for (BaseAccount object : accounts) {
-            UUIDAlt newAlt = new UUIDAlt(object.getUUID(), object.getIP());
-            if (!alts.contains(newAlt) && !thisUUID.equals(newAlt))
-                alts.add(newAlt);
-        }
-        return alts.toArray(new UUIDAlt[alts.size()]);
+    public CompletableFuture<UUIDAlt[]> getAccounts(UUID uuid, boolean isRecursive) {
+        return MCProfiler.makeFuture(() -> {
+            Objects.requireNonNull(uuid);
+            UUIDAlt thisUUID = new UUIDAlt(uuid, null);
+            ArrayList<? extends BaseAccount> accounts = data.getAltsOfPlayer(uuid, isRecursive);
+            ArrayList<UUIDAlt> alts = new ArrayList<UUIDAlt>(accounts.size());
+            for (BaseAccount object : accounts) {
+                UUIDAlt newAlt = new UUIDAlt(object.getUUID(), object.getIP());
+                if (!alts.contains(newAlt) && !thisUUID.equals(newAlt))
+                    alts.add(newAlt);
+            }
+            return alts.toArray(new UUIDAlt[alts.size()]);
+        });
     }
 
-    public String[] getIPs(Account account) {
-        Objects.requireNonNull(account);
-        return data.getIPsByPlayer(account).toArray(new String[0]);
+    public CompletableFuture<String[]> getIPs(Account account) {
+        return MCProfiler.makeFuture(() -> {
+            Objects.requireNonNull(account);
+            return data.getIPsByPlayer(account).toArray(new String[0]);
+        });
     }
 
-    void updatePlayerInformation(Account account) {
-        Objects.requireNonNull(account);
-        data.storePlayerIP(account.getUUID(), account.getIP());
-        if (account.exists()) {
-            data.updatePlayerInformation(account);
-            data.setPlayerLastPosition(account.getUUID(), API.stringToLocation(account.getLocation()));
-        } else
-            data.createProfile(account);
+    public CompletableFuture<Void> updatePlayerInformation(Account account) {
+        return MCProfiler.makeFuture(() -> {
+            data.storePlayerIP(account.getUUID(), account.getIP());
+            if (account.exists()) {
+                data.updatePlayerInformation(account);
+                data.setPlayerLastPosition(account.getUUID(), account.getLocation());
+            } else
+                data.createProfile(account);
+        });
     }
 }

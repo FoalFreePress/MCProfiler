@@ -4,93 +4,91 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Optional;
 import java.util.TimeZone;
-
+import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.sweetiebelle.lib.LuckPermsManager;
+import org.bukkit.scheduler.BukkitTask;
 import org.sweetiebelle.lib.SweetieLib;
+import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
-import org.sweetiebelle.mcprofiler.NamesFetcher.Response;
-import org.sweetiebelle.mcprofiler.VanishController;
+import org.sweetiebelle.mcprofiler.Settings;
 import org.sweetiebelle.mcprofiler.api.account.Account;
+import org.sweetiebelle.mcprofiler.api.account.Note;
+import org.sweetiebelle.mcprofiler.api.account.Permission;
+import org.sweetiebelle.mcprofiler.api.response.OnlineResponse;
+import org.sweetiebelle.mcprofiler.api.response.NameResponse;
+import org.sweetiebelle.mcprofiler.controller.VanishController;
 
 public class StatusCommand extends AbstractCommand {
 
     private VanishController vc;
 
-    public StatusCommand(MCProfiler plugin, API api, LuckPermsManager manager) {
-        super(api, manager);
-        vc = new VanishController(plugin, api);
+    public StatusCommand(MCProfiler plugin, Settings settings, API api, PermissionManager manager) {
+        super(plugin, api, manager);
+        vc = new VanishController(plugin, settings, api);
     }
 
-    public boolean execute(CommandSender pSender, String playername) {
-        Optional<Account> ao = getAccount(playername, true);
-        if (!ao.isPresent()) {
-            pSender.sendMessage(ChatColor.RED + "Could not find the player '" + ChatColor.RESET + playername + ChatColor.RED + "' in the database!");
-            return true;
-        }
-        Account a = ao.get();
-        if (pSender.hasPermission("mcprofiler.info.basic.name")) {
-            // Get the UUID for the given player and read the note
-            // Print a "summary" of the given player
-            pSender.sendMessage(ChatColor.AQUA + "* " + chat.getCompletePlayerPrefix(a.getUUID()) + a.getName());
-            if (pSender.hasPermission("mcprofiler.info.basic.uuid"))
-                pSender.sendMessage(ChatColor.AQUA + "* [" + a.getUUID().toString() + "]");
-            if (pSender.hasPermission("mcprofiler.info.basic.previoususernames")) {
-                Response[] previousUsernames = a.getPreviousNames();
-                pSender.sendMessage(ChatColor.RED + "Player " + a.getName() + " has the known previous usernames:");
-                for (Response response : previousUsernames) {
-                    String time = getTimeStamp(response.changedToAt);
-                    if (response.changedToAt == 0L)
-                        time = "Original Name      ";
-                    pSender.sendMessage(ChatColor.AQUA + " " + time + " " + response.name);
+    public boolean execute(CommandSender sender, String playername) {
+        Permission perm = new Permission(sender);
+        CompletableFuture<Optional<Account>> future = getAccount(playername, true);
+        future.thenAccept((ao) -> {
+            if (!ao.isPresent()) {
+                sendMessage(sender, ChatColor.RED + "Could not find the player '" + ChatColor.RESET + playername + ChatColor.RED + "' in the database!");
+                return;
+            }
+            Account a = ao.get();
+            if (perm.canSeeBasicName()) {
+                // Get the UUID for the given player and read the note
+                // Print a "summary" of the given player
+                sendMessage(sender, ChatColor.AQUA + "* " + chat.getCompletePlayerPrefix(a.getUUID()) + a.getName());
+                if (perm.canSeeBasicUUID())
+                    sendMessage(sender, ChatColor.AQUA + "* [" + a.getUUID().toString() + "]");
+                if (perm.canSeeBasicPreviousUsernames()) {
+                    NameResponse[] previousUsernames = a.getPreviousNames();
+                    sendMessage(sender, ChatColor.RED + "Player " + a.getName() + " has the known previous usernames:");
+                    for (NameResponse response : previousUsernames) {
+                        String time = getTimeStamp(response.changedToAt);
+                        if (response.changedToAt == 0L)
+                            time = "Original Name      ";
+                        sendMessage(sender, ChatColor.AQUA + " " + time + " " + response.name);
+                    }
+                }
+            } else {
+                sendMessage(sender, SweetieLib.NO_PERMISSION);
+                return;
+            } // Check if the player is online or not
+            OnlineResponse response = new OnlineResponse(plugin, sender, vc);
+            if (sender.hasPermission("mcprofiler.info.online"))
+                if (response.isOnline && response.senderCanSee)
+                    sendMessage(sender, ChatColor.RED + "- " + ChatColor.RESET + "Last on: " + ChatColor.GREEN + "Online now");
+                else
+                    sendMessage(sender, ChatColor.RED + "- " + ChatColor.RESET + "Last on: " + ChatColor.BLUE + a.getLastOn());
+            if (sender.hasPermission("mcprofiler.info.ip"))
+                sendMessage(sender, ChatColor.RED + "- " + ChatColor.RESET + "Peer address: " + ChatColor.BLUE + a.getIP());
+            if (sender.hasPermission("mcprofiler.readnotes")) {
+                BukkitTask task = fillNotes(a);
+                while (Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId()) || Bukkit.getScheduler().isQueued(task.getTaskId())) {
+                    // Do nothing, wait for it to be done.
+                }
+                Note[] notes = a.getNotes();
+                if (notes.length == 0) {
+                    sendMessage(sender, ChatColor.RED + "No notes were found.");
+                }
+                for (Note note : notes) {
+                    sendMessage(sender, note.toString());
                 }
             }
-        } else {
-            pSender.sendMessage(SweetieLib.NO_PERMISSION);
-            return true;
-        }
-        // Check if the player is online or not
-        boolean isOnline = false;
-        boolean senderCanSee = true;
-        Player queriedPlayer = null;
-        if (pSender instanceof Player) {
-            senderCanSee = false;
-            for (Player player : Bukkit.getServer().getOnlinePlayers())
-                if (player.getName().equals(a.getName())) {
-                    isOnline = true;
-                    senderCanSee = vc.canSee(player, (Player) pSender);
-                    queriedPlayer = player;
-                    break;
-                }
-        } else {
-            senderCanSee = true;
-            for (Player player : Bukkit.getServer().getOnlinePlayers())
-                if (player.getName().equals(a.getName())) {
-                    isOnline = true;
-                    queriedPlayer = player;
-                    break;
-                }
-        }
-        if (pSender.hasPermission("mcprofiler.info.online"))
-            if (isOnline && senderCanSee)
-                pSender.sendMessage(ChatColor.RED + "- " + ChatColor.RESET + "Last on: " + ChatColor.GREEN + "Online now");
-            else
-                pSender.sendMessage(ChatColor.RED + "- " + ChatColor.RESET + "Last on: " + ChatColor.BLUE + a.getLastOn());
-        if (pSender.hasPermission("mcprofiler.info.ip"))
-            pSender.sendMessage(ChatColor.RED + "- " + ChatColor.RESET + "Peer address: " + ChatColor.BLUE + a.getIP());
-        if (pSender.hasPermission("mcprofiler.readnotes"))
-            pSender.sendMessage(a.getNotes());
-        if (pSender.hasPermission("mcprofiler.info.position"))
-            if (isOnline && senderCanSee && queriedPlayer != null)
-                pSender.sendMessage(ChatColor.RED + "- " + ChatColor.RESET + "Location: " + ChatColor.BLUE + API.locationToString(queriedPlayer.getLocation()));
-            else if (a.getLocation() != null)
-                pSender.sendMessage(ChatColor.RED + "- " + ChatColor.RESET + "Location: " + ChatColor.BLUE + a.getLocation());
-            else
-                pSender.sendMessage(ChatColor.RED + "- " + ChatColor.RESET + "Location: " + ChatColor.BLUE + "null");
+            if (sender.hasPermission("mcprofiler.info.position")) {
+                if (response.isOnline && response.senderCanSee && response.queriedPlayer != null)
+                    sendMessage(sender, ChatColor.RED + "- " + ChatColor.RESET + "Location: " + ChatColor.BLUE + API.locationToString(response.queriedPlayer.getLocation()));
+                else if (a.getLocation() != null)
+                    sendMessage(sender, ChatColor.RED + "- " + ChatColor.RESET + "Location: " + ChatColor.BLUE + a.getLocation());
+                else
+                    sendMessage(sender, ChatColor.RED + "- " + ChatColor.RESET + "Location: " + ChatColor.BLUE + "null");
+            }
+        });
         return true;
     }
 

@@ -2,17 +2,25 @@ package org.sweetiebelle.mcprofiler.command;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
-import org.sweetiebelle.lib.LuckPermsManager;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.scheduler.BukkitTask;
+import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
+import org.sweetiebelle.mcprofiler.MCProfiler;
 import org.sweetiebelle.mcprofiler.api.account.Account;
+import org.sweetiebelle.mcprofiler.api.account.Note;
 
 public abstract class AbstractCommand {
 
     protected API api;
-    protected LuckPermsManager chat;
+    protected PermissionManager chat;
+    protected MCProfiler plugin;
 
-    public AbstractCommand(API api, LuckPermsManager chat) {
+    public AbstractCommand(MCProfiler plugin, API api, PermissionManager chat) {
+        this.plugin = plugin;
         this.api = api;
         this.chat = chat;
     }
@@ -24,11 +32,32 @@ public abstract class AbstractCommand {
      * @param needsLastTime
      * @return
      */
-    protected Optional<Account> getAccount(String nameoruuid, boolean needsLastNames) {
+    protected CompletableFuture<Optional<Account>> getAccount(String nameoruuid, boolean needsLastNames) {
         try {
             return api.getAccount(UUID.fromString(nameoruuid), needsLastNames);
         } catch (IllegalArgumentException e) {
             return api.getAccount(nameoruuid, needsLastNames);
         }
+    }
+
+    protected BukkitTask fillNotes(Account account) {
+        return Bukkit.getScheduler().runTask(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                for (Note note : account.getNotes())
+                    note.getStaffName();
+            }
+        });
+    }
+
+    protected BukkitTask sendMessage(CommandSender sender, String message) {
+        return Bukkit.getScheduler().runTask(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                sender.sendMessage(message);
+            }
+        });
     }
 }
