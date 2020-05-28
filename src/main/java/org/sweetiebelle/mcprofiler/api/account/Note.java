@@ -12,19 +12,14 @@ public class Note {
     private String time;
     private String note;
 
-    public Note(String staffUUID, String time, String note) {
-        this(UUID.fromString(staffUUID), time, note);
-    }
-
-    public Note(UUID staffUUID, String time, String note) {
+    public Note(UUID staffUUID, String staffName, String time, String note) {
+        this.staffName = staffName;
         this.staffUUID = staffUUID;
         this.time = time;
         this.note = note;
     }
 
     public String staffName() {
-        if (staffName == null)
-            return staffUUID.toString();
         return staffName;
     }
 

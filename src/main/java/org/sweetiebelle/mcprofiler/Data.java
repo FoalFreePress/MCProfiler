@@ -10,11 +10,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.sweetiebelle.lib.SweetieLib;
 import org.sweetiebelle.lib.connection.ConnectionManager;
 import org.sweetiebelle.lib.exceptions.NoDataException;
 import org.sweetiebelle.mcprofiler.api.account.Account;
-import org.sweetiebelle.mcprofiler.api.account.ConsoleAccount;
 import org.sweetiebelle.mcprofiler.api.account.Note;
 import org.sweetiebelle.mcprofiler.api.account.alternate.AltAccount;
 import org.sweetiebelle.mcprofiler.api.account.alternate.BaseAccount;
@@ -107,10 +105,14 @@ class Data {
                 location = rs.getString("lastpos");
             } else
                 throw new NoDataException("No Account found.");
-            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "notes where UUID = \"" + uuid.toString() + "\";");
+            rs = getResultSet("SELECT " + s.dbPrefix + "notes.uuid, " + s.dbPrefix + "notes.time, " + s.dbPrefix + "notes.staffuuid, " + s.dbPrefix + "notes.note, " + s.dbPrefix + "profiles.lastKnownName FROM " + s.dbPrefix + "notes JOIN " + s.dbPrefix + "profiles ON " + s.dbPrefix + "notes.staffuuid = " + s.dbPrefix + "profiles.uuid WHERE " + s.dbPrefix + "notes.uuid = \"" + uuid.toString() + "\";");
             ArrayList<Note> nList = new ArrayList<Note>();
             while (rs.next()) {
-                nList.add(new Note(rs.getString("staffuuid"), rs.getString("time"), rs.getString("note")));
+                String time = rs.getString("time");
+                UUID staffUUID = UUID.fromString(rs.getString("staffuuid"));
+                String note = rs.getString("note");
+                String staffName = rs.getString("lastKnownName");
+                nList.add(new Note(staffUUID, staffName, time, note));
             }
             notes = nList.toArray(new Note[nList.size()]);
             rs.close();
@@ -138,8 +140,6 @@ class Data {
      *             if no such account exists
      */
     Optional<Account> getAccount(UUID uuid, boolean needsLastNames) {
-        if (uuid.equals(SweetieLib.CONSOLE_UUID))
-            return Optional.of(ConsoleAccount.getInstance());
         String name = null;
         String laston = null;
         String location = null;
@@ -159,10 +159,14 @@ class Data {
                 throw new NoDataException("No Account found.");
             }
             rs.close();
-            rs = getResultSet("SELECT * FROM " + s.dbPrefix + "notes where UUID = \"" + uuid.toString() + "\";");
+            rs = getResultSet("SELECT " + s.dbPrefix + "notes.uuid, " + s.dbPrefix + "notes.time, " + s.dbPrefix + "notes.staffuuid, " + s.dbPrefix + "notes.note, " + s.dbPrefix + "profiles.lastKnownName FROM " + s.dbPrefix + "notes JOIN " + s.dbPrefix + "profiles ON " + s.dbPrefix + "notes.staffuuid = " + s.dbPrefix + "profiles.uuid WHERE " + s.dbPrefix + "notes.uuid = \"" + uuid.toString() + "\";");
             ArrayList<Note> nList = new ArrayList<Note>();
             while (rs.next()) {
-                nList.add(new Note(rs.getString("staffuuid"), rs.getString("time"), rs.getString("note")));
+                String time = rs.getString("time");
+                UUID staffUUID = UUID.fromString(rs.getString("staffuuid"));
+                String note = rs.getString("note");
+                String staffName = rs.getString("lastKnownName");
+                nList.add(new Note(staffUUID, staffName, time, note));
             }
             notes = nList.toArray(new Note[nList.size()]);
             rs.close();
@@ -342,16 +346,10 @@ class Data {
      *
      * @param pQuery
      *            the query
-     * @return
+     * @return number of rows affected
      */
-    private boolean createTable(String pQuery) {
-        try {
-            executeQuery(pQuery);
-            return true;
-        } catch (SQLException e) {
-            error(e);
-        }
-        return false;
+    private int createTable(String pQuery) throws SQLException {
+        return executeQuery(pQuery);
     }
 
     /**
@@ -363,12 +361,18 @@ class Data {
         String profiles = "CREATE TABLE " + s.dbPrefix + "profiles (profileid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, uuid VARCHAR(36) NOT NULL, lastKnownName VARCHAR(16) NOT NULL, ip VARCHAR(39), laston TIMESTAMP, lastpos VARCHAR(75))";
         String iplog = "CREATE TABLE " + s.dbPrefix + "iplog (ipid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ip VARCHAR(36) NOT NULL, uuid VARCHAR(36) NOT NULL)";
         // Generate the database tables
-        if (!tableExists(s.dbPrefix + "profiles"))
+        try {
+        if (!tableExists(s.dbPrefix + "profiles")) {
             createTable(profiles);
+            executeQuery("INSERT INTO `" + s.dbPrefix + "profiles` (`profileid`,`uuid`,`lastKnownName`,`ip`,`laston`,`lastpos`) VALUES (1, '00000000-0000-0000-0000-000000000000', '~CONSOLE', '127.0.0.1', '1969-12-31 19:00:01', NULL);");
+        }
         if (!tableExists(s.dbPrefix + "iplog"))
             createTable(iplog);
         if (!tableExists(s.dbPrefix + "notes"))
             createTable(notes);
+        } catch (SQLException ex) {
+            error(ex);
+        }
     }
 
     /**

@@ -12,6 +12,6 @@ public class ConsoleAccount extends Account {
     }
 
     private ConsoleAccount() {
-        super(SweetieLib.CONSOLE_UUID, "CONSOLE", "NEVER", "EVERYWHERE", "127.0.0.1", new Note[0], new NameResponse[] { new NameResponse("CONSOLE", 0) }, false);
+        super(SweetieLib.CONSOLE_UUID, SweetieLib.CONSOLE_NAME, "NEVER", "EVERYWHERE", "127.0.0.1", new Note[0], new NameResponse[] { new NameResponse("~CONSOLE", 0) }, false);
     }
 }

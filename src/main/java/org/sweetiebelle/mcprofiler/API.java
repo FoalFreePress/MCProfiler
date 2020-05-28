@@ -9,7 +9,6 @@ import java.util.concurrent.CompletableFuture;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.sweetiebelle.lib.SweetieLib;
 import org.sweetiebelle.mcprofiler.api.account.Account;
 import org.sweetiebelle.mcprofiler.api.account.ConsoleAccount;
 import org.sweetiebelle.mcprofiler.api.account.alternate.BaseAccount;
@@ -33,7 +32,7 @@ public class API {
 
     private Data data;
 
-    API(Data data ) {
+    API(Data data) {
         this.data = data;
     }
 
@@ -50,6 +49,8 @@ public class API {
     public CompletableFuture<Optional<Account>> getAccount(String playerName, boolean needsLastNames) {
         return MCProfiler.makeFuture(() -> {
             Objects.requireNonNull(playerName);
+            if (playerName.toLowerCase().equals(ConsoleAccount.getInstance().getName().toLowerCase()))
+                return Optional.of(ConsoleAccount.getInstance());
             return data.getAccount(playerName, needsLastNames);
         });
     }
@@ -61,7 +62,7 @@ public class API {
     public CompletableFuture<Optional<Account>> getAccount(UUID playerUUID, boolean needsLastNames) {
         return MCProfiler.makeFuture(() -> {
             Objects.requireNonNull(playerUUID);
-            if (playerUUID.equals(SweetieLib.CONSOLE_UUID))
+            if (playerUUID.equals(ConsoleAccount.getInstance().getUUID()))
                 return Optional.of(ConsoleAccount.getInstance());
             return data.getAccount(playerUUID, needsLastNames);
         });
@@ -97,6 +98,8 @@ public class API {
      */
     @Deprecated
     public Account getAccountNoFuture(UUID uuid) throws NoSuchElementException {
+        if (uuid.equals(ConsoleAccount.getInstance().getUUID()))
+            return ConsoleAccount.getInstance();
         return data.getAccount(uuid, false).get();
     }
 

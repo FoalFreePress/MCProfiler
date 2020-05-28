@@ -5,10 +5,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitTask;
 import org.sweetiebelle.lib.SweetieLib;
 import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
@@ -68,10 +66,6 @@ public class StatusCommand extends AbstractCommand {
             if (sender.hasPermission("mcprofiler.info.ip"))
                 sendMessage(sender, ChatColor.RED + "- " + ChatColor.RESET + "Peer address: " + ChatColor.BLUE + a.getIP());
             if (sender.hasPermission("mcprofiler.readnotes")) {
-                BukkitTask task = fillNotes(a);
-                while (Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId()) || Bukkit.getScheduler().isQueued(task.getTaskId())) {
-                    // Do nothing, wait for it to be done.
-                }
                 Note[] notes = a.getNotes();
                 if (notes.length == 0) {
                     sendMessage(sender, ChatColor.RED + "No notes were found.");

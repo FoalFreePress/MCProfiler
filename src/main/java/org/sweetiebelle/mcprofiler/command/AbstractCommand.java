@@ -11,7 +11,6 @@ import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
 import org.sweetiebelle.mcprofiler.api.account.Account;
-import org.sweetiebelle.mcprofiler.api.account.Note;
 
 public abstract class AbstractCommand {
 
@@ -40,16 +39,6 @@ public abstract class AbstractCommand {
         }
     }
 
-    protected BukkitTask fillNotes(Account account) {
-        return Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                for (Note note : account.getNotes())
-                    note.getStaffName();
-            }
-        });
-    }
 
     protected BukkitTask sendMessage(CommandSender sender, String message) {
         return Bukkit.getScheduler().runTask(plugin, new Runnable() {

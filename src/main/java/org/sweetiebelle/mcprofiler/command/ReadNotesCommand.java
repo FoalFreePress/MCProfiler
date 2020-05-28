@@ -2,10 +2,8 @@ package org.sweetiebelle.mcprofiler.command;
 
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitTask;
 import org.sweetiebelle.lib.SweetieLib;
 import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
@@ -27,10 +25,6 @@ public class ReadNotesCommand extends AbstractCommand {
             future.thenAccept((oAccount) -> {
                 if (oAccount.isPresent()) {
                     Account account = oAccount.get();
-                    BukkitTask task = fillNotes(account);
-                    while (Bukkit.getScheduler().isCurrentlyRunning(task.getTaskId()) || Bukkit.getScheduler().isQueued(task.getTaskId())) {
-                        // Do nothing, wait for it to be done.
-                    }
                     Note[] notes = account.getNotes();
                     if (notes.length == 0) {
                         sendMessage(sender, ChatColor.RED + "No notes were found.");
