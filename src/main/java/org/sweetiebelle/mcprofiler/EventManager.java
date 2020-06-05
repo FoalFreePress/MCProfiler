@@ -60,12 +60,12 @@ public class EventManager implements Listener {
             future.thenAccept((oAccount) -> {
                 try {
                     if (oAccount.isPresent()) {
-                        api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true)).thenAccept((object) -> {
+                        api.savePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames())).thenAccept((object) -> {
                             if (s.additionalMessages)
                                 plugin.getLogger().info("Updated player information for " + name);
                         }).get();
                     } else {
-                        api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, new Note[0], null, false)).thenAccept((object) -> {
+                        api.createPlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, new Note[0], null)).thenAccept((object) -> {
                             if (s.additionalMessages)
                                 plugin.getLogger().info("Created player information for " + name);
                         }).get();
@@ -93,12 +93,12 @@ public class EventManager implements Listener {
         CompletableFuture<Optional<Account>> future = api.getAccount(player.getUniqueId());
         future.thenAccept((oAccount) -> {
             if (oAccount.isPresent())
-                api.updatePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames(), true)).thenAccept((object) -> {
+                api.savePlayerInformation(new Account(uuid, name, oAccount.get().getLastOn(), API.locationToString(player.getLocation()), ip, oAccount.get().getNotes(), oAccount.get().getPreviousNames())).thenAccept((object) -> {
                     if (s.additionalMessages)
                         plugin.getLogger().info("Updated player information for " + name);
                 });
             else
-                api.updatePlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, new Note[0], null, false)).thenAccept((object) -> {
+                api.createPlayerInformation(new Account(uuid, name, null, API.locationToString(player.getLocation()), ip, new Note[0], null)).thenAccept((object) -> {
                     if (s.additionalMessages)
                         plugin.getLogger().info("Created player information for " + name);
                 });

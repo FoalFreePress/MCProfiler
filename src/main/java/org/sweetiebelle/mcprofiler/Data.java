@@ -28,9 +28,11 @@ class Data {
     private ConnectionManager connection;
     private Logger logger;
     private Settings s;
+    private MCProfiler plugin;
 
     Data(MCProfiler p, ConnectionManager connection, Settings s) {
-        logger = p.getLogger();
+        this.plugin = p;
+        logger = plugin.getLogger();
         this.s = s;
         this.connection = connection;
         createTables();
@@ -67,6 +69,8 @@ class Data {
             statement.setString(3, account.getIP());
             statement.setNull(4, Types.TIMESTAMP);
             statement.setString(5, account.getLocation());
+            statement.executeUpdate();
+            statement.close();
         } catch (SQLException e) {
             error(e);
         }
@@ -127,7 +131,7 @@ class Data {
         } catch (IOException e) {
             error(e);
         }
-        return Optional.<Account>of(new Account(uuid, name, laston, location, ip, notes, names, true));
+        return Optional.<Account>of(new Account(uuid, name, laston, location, ip, notes, names));
     }
 
     /**
@@ -180,7 +184,7 @@ class Data {
         } catch (IOException e) {
             error(e);
         }
-        return Optional.<Account>of(new Account(uuid, name, laston, location, ip, notes, names, true));
+        return Optional.<Account>of(new Account(uuid, name, laston, location, ip, notes, names));
     }
 
     /**
@@ -362,14 +366,14 @@ class Data {
         String iplog = "CREATE TABLE " + s.dbPrefix + "iplog (ipid INT NOT NULL AUTO_INCREMENT PRIMARY KEY, ip VARCHAR(36) NOT NULL, uuid VARCHAR(36) NOT NULL)";
         // Generate the database tables
         try {
-        if (!tableExists(s.dbPrefix + "profiles")) {
-            createTable(profiles);
-            executeQuery("INSERT INTO `" + s.dbPrefix + "profiles` (`profileid`,`uuid`,`lastKnownName`,`ip`,`laston`,`lastpos`) VALUES (1, '00000000-0000-0000-0000-000000000000', '~CONSOLE', '127.0.0.1', '1969-12-31 19:00:01', NULL);");
-        }
-        if (!tableExists(s.dbPrefix + "iplog"))
-            createTable(iplog);
-        if (!tableExists(s.dbPrefix + "notes"))
-            createTable(notes);
+            if (!tableExists(s.dbPrefix + "profiles")) {
+                createTable(profiles);
+                executeQuery("INSERT INTO `" + s.dbPrefix + "profiles` (`profileid`,`uuid`,`lastKnownName`,`ip`,`laston`,`lastpos`) VALUES (1, '00000000-0000-0000-0000-000000000000', '~CONSOLE', '127.0.0.1', '1969-12-31 19:00:01', NULL);");
+            }
+            if (!tableExists(s.dbPrefix + "iplog"))
+                createTable(iplog);
+            if (!tableExists(s.dbPrefix + "notes"))
+                createTable(notes);
         } catch (SQLException ex) {
             error(ex);
         }

@@ -132,14 +132,17 @@ public class API {
         });
     }
 
-    public CompletableFuture<Void> updatePlayerInformation(Account account) {
+    public CompletableFuture<Void> savePlayerInformation(Account account) {
         return MCProfiler.makeFuture(() -> {
             data.storePlayerIP(account.getUUID(), account.getIP());
-            if (account.exists()) {
-                data.updatePlayerInformation(account);
-                data.setPlayerLastPosition(account.getUUID(), account.getLocation());
-            } else
-                data.createProfile(account);
+            data.updatePlayerInformation(account);
+            data.setPlayerLastPosition(account.getUUID(), account.getLocation());
+        });
+    }
+
+    public CompletableFuture<Void> createPlayerInformation(Account account) {
+        return MCProfiler.makeFuture(() -> {
+            data.createProfile(account);
         });
     }
 }

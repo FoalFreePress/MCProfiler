@@ -12,10 +12,6 @@ import org.sweetiebelle.mcprofiler.api.response.NameResponse;
 public class Account {
 
     /**
-     * Does this account exist in the database?
-     */
-    private boolean exists;
-    /**
      * The player's last IP.
      */
     private String ip;
@@ -55,7 +51,7 @@ public class Account {
      * @param notes
      * @param names
      */
-    public Account(UUID uuid, String name, String laston, String location, String ip, Note[] notes, NameResponse[] names, boolean exists) {
+    public Account(UUID uuid, String name, String laston, String location, String ip, Note[] notes, NameResponse[] names) {
         this.uuid = Objects.requireNonNull(uuid);
         this.name = Objects.requireNonNull(name);
         this.laston = laston == null ? "null" : laston;
@@ -63,7 +59,6 @@ public class Account {
         this.ip = ip == null ? "null" : ip;
         this.notes = notes;
         this.names = names;
-        this.exists = exists;
     }
 
     /**
@@ -77,10 +72,6 @@ public class Account {
             if (uuid.equals(((Account) obj).uuid))
                 return true;
         return false;
-    }
-
-    public boolean exists() {
-        return exists;
     }
 
     /**

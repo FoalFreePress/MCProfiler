@@ -80,6 +80,7 @@ public class MCProfiler extends JavaPlugin {
         } catch (Exception e) {
             e.printStackTrace();
             getServer().getPluginManager().disablePlugin(this);
+            return;
         }
         d = new Data(this, connectionManager, s);
         api = new API(d);
