@@ -26,6 +26,7 @@ public class NoteCommand extends AbstractCommand {
         if (sender instanceof Player) {
             if (perm.canAddNote()) {
                 addNoteToPlayer(sender, api.getAccountNoFuture(((Player) sender).getUniqueId()), targetPlayer, note);
+                return true;
             }
             sender.sendMessage(SweetieLib.NO_PERMISSION);
             return true;
