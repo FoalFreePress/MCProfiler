@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'org.sweetiebelle'
-version = '2.2'
+version = '2.3'
 
 repositories {
 	jcenter()
@@ -16,7 +16,7 @@ repositories {
 
 
 dependencies {
-	implementation 'org.bukkit:bukkit:1.15.2-R0.1-SNAPSHOT'
+	implementation 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
 	implementation fileTree(dir: 'libs', include: '*.jar')
 }
 

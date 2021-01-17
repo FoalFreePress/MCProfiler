@@ -7,11 +7,11 @@ import java.util.concurrent.CompletionException;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.sweetiebelle.lib.SweetieLib;
 import org.sweetiebelle.lib.connection.ConnectionManager;
+import org.sweetiebelle.lib.permission.PermissioNotFound;
 import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.command.handler.CoreCommandHandler;
 import org.sweetiebelle.mcprofiler.command.handler.NoteCommandHandler;
 import org.sweetiebelle.mcprofiler.command.handler.StatusCommandHandler;
-import org.sweetiebelle.mcprofiler.controller.DefaultLuckPermsImpl;
 import org.sweetiebelle.mcprofiler.scheduler.SchedulerAdapter;
 
 /**
@@ -73,7 +73,7 @@ public class MCProfiler extends JavaPlugin {
             lpManager = SweetieLib.getPlugin().getPermission();
         } catch (Exception e) {
             getLogger().warning("Couldn't find a permission plugin! Using a default implementation.");
-            lpManager = new DefaultLuckPermsImpl();
+            lpManager = new PermissioNotFound();
         }
         try {
             connectionManager = SweetieLib.getPlugin().getConnection();

@@ -34,8 +34,13 @@ public class BansController {
      * @return if the player is banned or not. New plugins must support uuid lookup.
      */
     public boolean isBanned(UUID uuid) {
-        if (brohoofBans != null)
-            return BrohoofBansPlugin.getAPI().isBanned(uuid);
+        if (brohoofBans != null) {
+            try {
+            return BrohoofBansPlugin.getAPI().isBanned(uuid).get();
+            } catch (Exception ex) {
+                // Do nothing...
+            }
+        }
         return Bukkit.getOfflinePlayer(uuid).isBanned();
     }
 }
