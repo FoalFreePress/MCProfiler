@@ -4,9 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.scheduler.BukkitTask;
 import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
@@ -40,13 +38,8 @@ public abstract class AbstractCommand {
     }
 
 
-    protected BukkitTask sendMessage(CommandSender sender, String message) {
-        return Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                sender.sendMessage(message);
-            }
-        });
+    protected void sendMessage(CommandSender sender, String message) {
+        // Async messages are actually fine lol
+        sender.sendMessage(message);
     }
 }

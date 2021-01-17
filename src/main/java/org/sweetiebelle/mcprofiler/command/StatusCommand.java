@@ -11,21 +11,21 @@ import org.sweetiebelle.lib.SweetieLib;
 import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
-import org.sweetiebelle.mcprofiler.Settings;
+import org.sweetiebelle.mcprofiler.api.IVanish;
 import org.sweetiebelle.mcprofiler.api.account.Account;
 import org.sweetiebelle.mcprofiler.api.account.Note;
 import org.sweetiebelle.mcprofiler.api.account.Permission;
 import org.sweetiebelle.mcprofiler.api.response.OnlineResponse;
+import org.sweetiebelle.mcprofiler.controller.vanish.Controllers;
 import org.sweetiebelle.mcprofiler.api.response.NameResponse;
-import org.sweetiebelle.mcprofiler.controller.VanishController;
 
 public class StatusCommand extends AbstractCommand {
 
-    private VanishController vc;
+    private IVanish vc;
 
-    public StatusCommand(MCProfiler plugin, Settings settings, API api, PermissionManager manager) {
+    public StatusCommand(MCProfiler plugin, API api, PermissionManager manager) {
         super(plugin, api, manager);
-        vc = new VanishController(plugin, settings, api);
+        vc = Controllers.getVanish();
     }
 
     public boolean execute(CommandSender sender, String playername) {

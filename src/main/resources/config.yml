@@ -5,6 +5,8 @@ general:
   recursivePlayerJoin: false
   #If true, logs additional debug messages.
   additionalMessages: true
+  #If true, sends "$s might be $o messages to console
+  sendAltsToConsole: true
 #MySQL Database settings
 database:
   #table prefix

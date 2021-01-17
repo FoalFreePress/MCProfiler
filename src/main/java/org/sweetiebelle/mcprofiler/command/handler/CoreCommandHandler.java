@@ -36,7 +36,7 @@ public class CoreCommandHandler extends AbstractCommandHandler {
         noteCommand = new NoteCommand(plugin, api, chat);
         lookupCommand = new LookupIPCommand(plugin, api, chat);
         readNotesCommand = new ReadNotesCommand(plugin, api, chat);
-        statusCommand = new StatusCommand(plugin, settings, api, chat);
+        statusCommand = new StatusCommand(plugin, api, chat);
         showAltsCommand = new ShowAltsCommand(plugin, api, chat);
         uuidCommand = new UUIDLookupCommand(plugin, api, chat);
         reloadCommand = new ReloadCommand(plugin, settings, api, chat);

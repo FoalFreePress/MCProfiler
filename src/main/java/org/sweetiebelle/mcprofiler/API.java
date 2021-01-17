@@ -37,7 +37,7 @@ public class API {
     }
 
     public CompletableFuture<Void> addNote(Account sender, Account target, String note) {
-        return MCProfiler.makeFuture(() -> {
+        return Scheduler.makeFuture(() -> {
             data.addNoteToUser(target.getUUID(), sender.getUUID(), note);
         });
     }
@@ -47,7 +47,7 @@ public class API {
     }
 
     public CompletableFuture<Optional<Account>> getAccount(String playerName, boolean needsLastNames) {
-        return MCProfiler.makeFuture(() -> {
+        return Scheduler.makeFuture(() -> {
             Objects.requireNonNull(playerName);
             if (playerName.toLowerCase().equals(ConsoleAccount.getInstance().getName().toLowerCase()))
                 return Optional.of(ConsoleAccount.getInstance());
@@ -60,7 +60,7 @@ public class API {
     }
 
     public CompletableFuture<Optional<Account>> getAccount(UUID playerUUID, boolean needsLastNames) {
-        return MCProfiler.makeFuture(() -> {
+        return Scheduler.makeFuture(() -> {
             Objects.requireNonNull(playerUUID);
             if (playerUUID.equals(ConsoleAccount.getInstance().getUUID()))
                 return Optional.of(ConsoleAccount.getInstance());
@@ -69,7 +69,7 @@ public class API {
     }
 
     public CompletableFuture<Account[]> getAccounts(String ip) {
-        return MCProfiler.makeFuture(() -> {
+        return Scheduler.makeFuture(() -> {
             ArrayList<String> uuids = data.getUsersAssociatedWithIP(ip);
             ArrayList<Account> accounts = new ArrayList<Account>(uuids.size());
             for (String uuid : uuids) {
@@ -111,7 +111,7 @@ public class API {
      * @return
      */
     public CompletableFuture<UUIDAlt[]> getAccounts(UUID uuid, boolean isRecursive) {
-        return MCProfiler.makeFuture(() -> {
+        return Scheduler.makeFuture(() -> {
             Objects.requireNonNull(uuid);
             UUIDAlt thisUUID = new UUIDAlt(uuid, null);
             ArrayList<? extends BaseAccount> accounts = data.getAltsOfPlayer(uuid, isRecursive);
@@ -126,14 +126,14 @@ public class API {
     }
 
     public CompletableFuture<String[]> getIPs(Account account) {
-        return MCProfiler.makeFuture(() -> {
+        return Scheduler.makeFuture(() -> {
             Objects.requireNonNull(account);
             return data.getIPsByPlayer(account).toArray(new String[0]);
         });
     }
 
     public CompletableFuture<Void> savePlayerInformation(Account account) {
-        return MCProfiler.makeFuture(() -> {
+        return Scheduler.makeFuture(() -> {
             data.storePlayerIP(account.getUUID(), account.getIP());
             data.updatePlayerInformation(account);
             data.setPlayerLastPosition(account.getUUID(), account.getLocation());
@@ -141,7 +141,7 @@ public class API {
     }
 
     public CompletableFuture<Void> createPlayerInformation(Account account) {
-        return MCProfiler.makeFuture(() -> {
+        return Scheduler.makeFuture(() -> {
             data.createProfile(account);
         });
     }

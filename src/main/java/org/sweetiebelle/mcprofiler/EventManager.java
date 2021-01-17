@@ -30,7 +30,7 @@ public class EventManager implements Listener {
         this.plugin = plugin;
         this.api = api;
         this.s = s;
-        notifyStaff = new NotifyStaffCommand(plugin, api, chat);
+        notifyStaff = new NotifyStaffCommand(plugin, s, api, chat);
     }
 
     /**

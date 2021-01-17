@@ -8,19 +8,30 @@ import org.bukkit.entity.Player;
 import org.sweetiebelle.lib.permission.PermissionManager;
 import org.sweetiebelle.mcprofiler.API;
 import org.sweetiebelle.mcprofiler.MCProfiler;
+import org.sweetiebelle.mcprofiler.Settings;
+import org.sweetiebelle.mcprofiler.api.IBans;
 import org.sweetiebelle.mcprofiler.api.account.Account;
 import org.sweetiebelle.mcprofiler.api.account.Permission;
 import org.sweetiebelle.mcprofiler.api.account.alternate.BaseAccount;
 import org.sweetiebelle.mcprofiler.api.account.alternate.UUIDAlt;
-import org.sweetiebelle.mcprofiler.controller.BansController;
+import org.sweetiebelle.mcprofiler.api.exception.BanPluginNotLoadedException;
+import org.sweetiebelle.mcprofiler.controller.ban.BrohoofBans;
+import org.sweetiebelle.mcprofiler.controller.ban.BukkitBans;
 
 public class NotifyStaffCommand extends AbstractCommand {
 
-    private BansController bc;
+    private IBans bc;
+    private Settings settings;
 
-    public NotifyStaffCommand(MCProfiler plugin, API api, PermissionManager manager) {
+    public NotifyStaffCommand(MCProfiler plugin, Settings settings, API api, PermissionManager manager) {
         super(plugin, api, manager);
-        bc = new BansController();
+        this.settings = settings;
+        try {
+            bc = new BrohoofBans();
+        } catch (BanPluginNotLoadedException ex) {
+            plugin.getLogger().info(ChatColor.RED + "I couldn't find BrohoofBans!");
+            bc = new BukkitBans();
+        }
     }
 
     @SuppressWarnings("deprecation")
@@ -41,7 +52,7 @@ public class NotifyStaffCommand extends AbstractCommand {
             for (BaseAccount altAccount : altAccounts) {
                 UUIDAlt alt = new UUIDAlt(altAccount.getUUID(), altAccount.getIP());
                 Account other = api.getAccountNoFuture(alt.getUUID());
-                if (bc.isBanned(alt.getUUID()))
+                if (bc.isBannedDangerous(alt.getUUID()))
                     string += chat.getCompletePlayerPrefix(other.getUUID()) + other.getName() + " " + ChatColor.GRAY + "(BANNED) " + ChatColor.RED + "";
                 else
                     string += chat.getCompletePlayerPrefix(other.getUUID()) + other.getName();
@@ -50,18 +61,13 @@ public class NotifyStaffCommand extends AbstractCommand {
             // Fix the tailing comma
             final String message = string.substring(0, string.length() - 4);
             // Find all players that should be notified and notify them
-            Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    for (Player admin : Bukkit.getServer().getOnlinePlayers()) {
-                        Permission perm = new Permission(admin);
-                        if (perm.canSeeAltsOnPlayerJoin())
-                            admin.sendMessage(message);
-                    }
-                    Bukkit.getConsoleSender().sendMessage(message);
-                }
-            });
+            for (Player admin : Bukkit.getServer().getOnlinePlayers()) {
+                Permission perm = new Permission(admin);
+                if (perm.canSeeAltsOnPlayerJoin())
+                    sendMessage(admin, message);
+            }
+            if(settings.sendAltsToConsole)
+                Bukkit.getConsoleSender().sendMessage(message);
         });
     }
 }
