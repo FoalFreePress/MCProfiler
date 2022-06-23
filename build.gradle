@@ -1,32 +1,34 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
 plugins {
 	id 'java'
 	id 'eclipse'
 }
 
-group = 'org.sweetiebelle'
-version = '2.4'
+group = 'net.shonx'
+version = '3.0'
 
 repositories {
-	jcenter()
+	mavenCentral()
 	maven {
 		name 'spigot'
 		url 'https://hub.spigotmc.org/nexus/content/groups/public/'
 	}
+    maven {
+        name 'jitpack'
+        url 'https://jitpack.io/'
+    }
 }
 
-
 dependencies {
-	implementation 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
+    implementation 'com.github.LeonMangler:SuperVanish:6.2.6-4'
+	implementation 'org.spigotmc:spigot-api:1.19-R0.1-SNAPSHOT'
 	implementation fileTree(dir: 'libs', include: '*.jar')
 }
 
 processResources {
-	inputs.properties version: project.version
 	from (sourceSets.main.resources.srcDirs) {
-		include 'plugin.yml'
-		expand version:project.version
-	}
-	from (sourceSets.main.resources.srcDirs) {
-		exclude 'plugin.yml'
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+		filter(ReplaceTokens, tokens: ['VERSION' : project.version])
 	}
 }

@@ -1,7 +1,7 @@
 name: MCProfiler
-main: org.sweetiebelle.mcprofiler.MCProfiler
-version: $version
-api-version: 1.15
+main: net.shonx.mcprofiler.MCProfiler
+version: @VERSION@
+api-version: 1.19
 authors: [SweetieBelle, Hepolite]
 softdepend: [CommandBook, VanishNoPacket, Vault, SuperVanish, PremiumVanish, BrohoofBans]
 depend: [SweetieLib]
